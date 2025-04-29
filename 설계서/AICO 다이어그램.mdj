@@ -19040,7 +19040,7 @@
 															"parentStyle": true,
 															"left": 461,
 															"top": 1319,
-															"width": 138.2236328125,
+															"width": 140.140625,
 															"height": 13,
 															"text": "이메일로 인증번호 발송"
 														},
@@ -19078,7 +19078,7 @@
 													"parentStyle": true,
 													"left": 456,
 													"top": 1312,
-													"width": 148.2236328125,
+													"width": 150.140625,
 													"height": 25,
 													"stereotypeLabel": {
 														"$ref": "AAAAAAGWe/L0DTaRw+A="
@@ -19099,7 +19099,7 @@
 											"containerChangeable": true,
 											"left": 456,
 											"top": 1312,
-											"width": 147.2236328125,
+											"width": 149.140625,
 											"height": 64,
 											"nameCompartment": {
 												"$ref": "AAAAAAGWe/L0DTaQcu4="
@@ -19964,9 +19964,9 @@
 													},
 													"font": "Arial;13;0",
 													"parentStyle": false,
-													"left": 536,
+													"left": 535,
 													"top": 1128,
-													"width": 122.05908203125,
+													"width": 125.6328125,
 													"height": 13,
 													"alpha": 1.6575341529630663,
 													"distance": 69.26037828369117,
@@ -23388,9 +23388,9 @@
 													},
 													"font": "Arial;13;0",
 													"parentStyle": false,
-													"left": 567,
+													"left": 565,
 													"top": 1240,
-													"width": 173.341796875,
+													"width": 177.68359375,
 													"height": 13,
 													"alpha": -4.849975568575416,
 													"distance": 131.24023773218335,
@@ -23680,9 +23680,9 @@
 													},
 													"font": "Arial;13;0",
 													"parentStyle": false,
-													"left": 344,
+													"left": 341,
 													"top": 1283,
-													"width": 176.95361328125,
+													"width": 182.25390625,
 													"height": 13,
 													"alpha": -1.633215768275939,
 													"distance": 96.18731725128839,
@@ -23995,7 +23995,7 @@
 															"parentStyle": true,
 															"left": 437,
 															"top": 1495,
-															"width": 199.6435546875,
+															"width": 201.71923828125,
 															"height": 13,
 															"text": "입력된 정보들을 Database에 추가"
 														},
@@ -24010,7 +24010,7 @@
 															"parentStyle": true,
 															"left": -448,
 															"top": 16,
-															"width": 86.6708984375,
+															"width": 90.20654296875,
 															"height": 13,
 															"text": "(from Activity1)"
 														},
@@ -24033,7 +24033,7 @@
 													"parentStyle": true,
 													"left": 432,
 													"top": 1488,
-													"width": 209.6435546875,
+													"width": 211.71923828125,
 													"height": 25,
 													"stereotypeLabel": {
 														"$ref": "AAAAAAGWgHCwAmoQ8BA="
@@ -24054,7 +24054,7 @@
 											"containerChangeable": true,
 											"left": 432,
 											"top": 1488,
-											"width": 208.6435546875,
+											"width": 210.71923828125,
 											"height": 72,
 											"nameCompartment": {
 												"$ref": "AAAAAAGWgHCwAmoPY1Y="
@@ -26172,9 +26172,9 @@
 													},
 													"font": "Arial;13;0",
 													"parentStyle": false,
-													"left": 392,
+													"left": 390,
 													"top": 327,
-													"width": 109.05908203125,
+													"width": 112.6328125,
 													"height": 13,
 													"alpha": -3.748197857770501,
 													"distance": 59.64059020499378,
@@ -26270,9 +26270,9 @@
 													},
 													"font": "Arial;13;0",
 													"parentStyle": false,
-													"left": 544,
+													"left": 543,
 													"top": 328,
-													"width": 96.05908203125,
+													"width": 99.6328125,
 													"height": 13,
 													"alpha": 3.1415914750183647,
 													"distance": 10,
@@ -26368,9 +26368,9 @@
 													},
 													"font": "Arial;13;0",
 													"parentStyle": false,
-													"left": 680,
+													"left": 678,
 													"top": 328,
-													"width": 109.05908203125,
+													"width": 112.6328125,
 													"height": 13,
 													"alpha": 3.778100765465778,
 													"distance": 57.201398584300364,
@@ -26503,7 +26503,7 @@
 															"parentStyle": true,
 															"left": -144,
 															"top": -96,
-															"width": 86.6708984375,
+															"width": 90.20654296875,
 															"height": 13,
 															"text": "(from Activity1)"
 														},
@@ -26693,7 +26693,7 @@
 															"parentStyle": true,
 															"left": 485,
 															"top": 511,
-															"width": 219.83544921875,
+															"width": 222.7109375,
 															"height": 13,
 															"text": "연동된 데이터를 데이터베이스에 추가"
 														},
@@ -26708,7 +26708,7 @@
 															"parentStyle": true,
 															"left": 448,
 															"top": -96,
-															"width": 86.6708984375,
+															"width": 90.20654296875,
 															"height": 13,
 															"text": "(from Activity1)"
 														},
@@ -26731,7 +26731,7 @@
 													"parentStyle": true,
 													"left": 480,
 													"top": 504,
-													"width": 229.83544921875,
+													"width": 232.7109375,
 													"height": 25,
 													"stereotypeLabel": {
 														"$ref": "AAAAAAGWgHMKdWp9qbs="
@@ -26752,7 +26752,7 @@
 											"containerChangeable": true,
 											"left": 480,
 											"top": 504,
-											"width": 228.83544921875,
+											"width": 231.7109375,
 											"height": 72,
 											"nameCompartment": {
 												"$ref": "AAAAAAGWgHMKdWp8juw="
@@ -29750,7 +29750,7 @@
 															"parentStyle": true,
 															"left": 733,
 															"top": 463,
-															"width": 234.28271484375,
+															"width": 238.65625,
 															"height": 13,
 															"text": "네이버, 구글, 카카오 간편 회원가입 이동"
 														},
@@ -29765,7 +29765,7 @@
 															"parentStyle": true,
 															"left": -203.4345703125,
 															"top": 208,
-															"width": 86.6708984375,
+															"width": 90.20654296875,
 															"height": 13,
 															"text": "(from Activity1)"
 														},
@@ -29788,7 +29788,7 @@
 													"parentStyle": true,
 													"left": 728,
 													"top": 456,
-													"width": 244.28271484375,
+													"width": 248.65625,
 													"height": 25,
 													"stereotypeLabel": {
 														"$ref": "AAAAAAGWgGLh41wgYG8="
@@ -29809,7 +29809,7 @@
 											"containerChangeable": true,
 											"left": 728,
 											"top": 456,
-											"width": 243.28271484375,
+											"width": 247.65625,
 											"height": 72,
 											"nameCompartment": {
 												"$ref": "AAAAAAGWgGLh41wfDw4="
@@ -29836,9 +29836,9 @@
 													},
 													"font": "Arial;13;0",
 													"parentStyle": false,
-													"left": 614,
+													"left": 613,
 													"top": 467,
-													"width": 96.05908203125,
+													"width": 99.6328125,
 													"height": 13,
 													"alpha": -4.307497797548038,
 													"distance": 15.231546211727817,
@@ -29951,9 +29951,9 @@
 													},
 													"font": "Arial;13;0",
 													"parentStyle": false,
-													"left": 547,
+													"left": 546,
 													"top": 528,
-													"width": 96.05908203125,
+													"width": 99.6328125,
 													"height": 13,
 													"alpha": 2.677943483983815,
 													"distance": 6.708203932499369,
@@ -30086,7 +30086,7 @@
 															"parentStyle": true,
 															"left": 560,
 															"top": -32,
-															"width": 86.6708984375,
+															"width": 90.20654296875,
 															"height": 13,
 															"text": "(from Activity1)"
 														},
@@ -33149,7 +33149,7 @@
 															"parentStyle": true,
 															"left": 533,
 															"top": 535,
-															"width": 138.2236328125,
+															"width": 140.140625,
 															"height": 13,
 															"text": "이메일로 인증번호 발송"
 														},
@@ -33187,7 +33187,7 @@
 													"parentStyle": true,
 													"left": 528,
 													"top": 528,
-													"width": 148.2236328125,
+													"width": 150.140625,
 													"height": 25,
 													"stereotypeLabel": {
 														"$ref": "AAAAAAGWe/SxE0kAEhY="
@@ -33208,7 +33208,7 @@
 											"containerChangeable": true,
 											"left": 528,
 											"top": 528,
-											"width": 147.2236328125,
+											"width": 149.140625,
 											"height": 72,
 											"nameCompartment": {
 												"$ref": "AAAAAAGWe/SxE0j/1ic="
@@ -46147,7 +46147,7 @@
 														"$ref": "AAAAAAGWfJnMGZHNrqA="
 													},
 													"edgePosition": 1,
-													"text": " [5번 반복 시]"
+													"text": " [5번 반복 후]"
 												},
 												{
 													"_type": "EdgeLabelView",
@@ -46245,7 +46245,7 @@
 														"$ref": "AAAAAAGWfJo2BpHfV3M="
 													},
 													"edgePosition": 1,
-													"text": " [5번 못했을 시]"
+													"text": " [5번 반복]"
 												},
 												{
 													"_type": "EdgeLabelView",
@@ -47009,7 +47009,7 @@
 									"target": {
 										"$ref": "AAAAAAGWfJetv5EZToY="
 									},
-									"guard": "5번 반복 시"
+									"guard": "5번 반복 후"
 								},
 								{
 									"_type": "UMLControlFlow",
@@ -47023,7 +47023,7 @@
 									"target": {
 										"$ref": "AAAAAAGWe0PZ0AFapT4="
 									},
-									"guard": "5번 못했을 시"
+									"guard": "5번 반복"
 								},
 								{
 									"_type": "UMLControlFlow",
@@ -55532,7 +55532,7 @@
 													},
 													"font": "Arial;13;0",
 													"parentStyle": false,
-													"left": 552,
+													"left": 557,
 													"top": 403,
 													"width": 125.6328125,
 													"height": 13,
@@ -55556,7 +55556,7 @@
 													"visible": null,
 													"font": "Arial;13;0",
 													"parentStyle": false,
-													"left": 614,
+													"left": 619,
 													"top": 388,
 													"height": 13,
 													"alpha": 1.5707963267948966,
@@ -55578,7 +55578,7 @@
 													"visible": false,
 													"font": "Arial;13;0",
 													"parentStyle": false,
-													"left": 614,
+													"left": 619,
 													"top": 433,
 													"height": 13,
 													"alpha": -1.5707963267948966,
@@ -58784,9 +58784,9 @@
 													},
 													"font": "Arial;13;0",
 													"parentStyle": false,
-													"left": 494,
+													"left": 492,
 													"top": 285,
-													"width": 106.90087890625,
+													"width": 111.36328125,
 													"height": 13,
 													"alpha": -1.6798224618167619,
 													"distance": 53.03772242470448,
@@ -58882,9 +58882,9 @@
 													},
 													"font": "Arial;13;0",
 													"parentStyle": false,
-													"left": 691,
+													"left": 689,
 													"top": 230,
-													"width": 106.90087890625,
+													"width": 111.36328125,
 													"height": 13,
 													"alpha": -1.5182129618920566,
 													"distance": 57.07889277132134,
@@ -59770,7 +59770,7 @@
 															"parentStyle": true,
 															"left": 253,
 															"top": 311,
-															"width": 86.2236328125,
+															"width": 89.27685546875,
 															"height": 13,
 															"text": "소리 감소/증폭"
 														},
@@ -59808,7 +59808,7 @@
 													"parentStyle": true,
 													"left": 248,
 													"top": 304,
-													"width": 96.2236328125,
+													"width": 99.27685546875,
 													"height": 25,
 													"stereotypeLabel": {
 														"$ref": "AAAAAAGWe/VkC0y/A0U="
@@ -59829,7 +59829,7 @@
 											"containerChangeable": true,
 											"left": 248,
 											"top": 304,
-											"width": 95.2236328125,
+											"width": 98.27685546875,
 											"height": 56,
 											"nameCompartment": {
 												"$ref": "AAAAAAGWe/VkC0y+GqU="
