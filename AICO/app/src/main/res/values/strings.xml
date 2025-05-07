@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">AICO</string>
+
+    <!-- 네이버 로그인 정보 -->
+    <string name="naver_client_id">y7Vc6FAx36XgFOMLiWMa</string>
+    <string name="naver_client_secret">8SGyaSg6pf</string>
+    <string name="naver_client_name">AICO</string>
+
+    <string name="kakao_app_key">8c33170088d1275581c9464e2c8ef71b</string>
 </resources>
