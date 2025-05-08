@@ -49,7 +49,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 
     // 네이버 로그인 SDK
-    implementation("com.navercorp.nid:naveridlogin-android-sdk:4.2.6")
+    //implementation("com.navercorp.nid:naveridlogin-android-sdk:4.2.6")
 
     // 카카오 로그인 SDK
     implementation("com.kakao.sdk:v2-user:2.19.0")
