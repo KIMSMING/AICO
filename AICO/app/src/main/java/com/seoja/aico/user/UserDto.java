@@ -6,7 +6,7 @@ public class UserDto{
     private String password;
     private String name;
     private String nickname;
-    private Integer age;
+    private Integer birth;
     private String email;
     private Integer tel;
     private String gender;
