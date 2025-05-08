@@ -16,7 +16,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url = uri("https://naver.github.io/naveridlogin/android/sdk") }  // 네이버 SDK 저장소
         maven { url = uri("https://devrepo.kakao.com/nexus/content/groups/public/") }  // 카카오 SDK 저장소
     }
 }
