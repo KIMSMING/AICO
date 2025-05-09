@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".user.RegisterActivity">
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#D3D3D3"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="회원가입"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp" />
+
+            <!-- 아이디 + 중복확인 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp">
+
+                <EditText
+                    android:id="@+id/editTextId"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="50dp"
+                    android:hint="아이디 (6~16자)"
+                    android:inputType="text" />
+
+                <Button
+                    android:id="@+id/btnCheckId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="중복확인"
+                    android:textSize="12sp"
+                    android:backgroundTint="#006494"
+                    android:textColor="#fff"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+            <!-- 비밀번호 -->
+            <EditText
+                android:id="@+id/editTextPassword"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="비밀번호 (8~20자, 특수문자 포함)"
+                android:inputType="textPassword"
+                android:layout_marginTop="12dp" />
+
+            <!-- 비밀번호 확인 -->
+            <EditText
+                android:id="@+id/editTextPasswordConfirm"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="비밀번호 확인"
+                android:inputType="textPassword"
+                android:layout_marginTop="12dp" />
+
+            <!-- 이름 -->
+            <EditText
+                android:id="@+id/editTextName"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="이름"
+                android:inputType="textPersonName"
+                android:layout_marginTop="12dp" />
+
+            <!-- 생년월일 -->
+            <EditText
+                android:id="@+id/editTextBirth"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="생년월일 (YYYY-MM-DD)"
+                android:inputType="date"
+                android:layout_marginTop="12dp" />
+
+            <!-- 성별 -->
+            <RadioGroup
+                android:id="@+id/radioGroupGender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp">
+
+                <RadioButton
+                    android:id="@+id/radioMale"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="남성" />
+
+                <RadioButton
+                    android:id="@+id/radioFemale"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="여성"
+                    android:layout_marginStart="16dp" />
+            </RadioGroup>
+
+            <!-- 주소 -->
+            <EditText
+                android:id="@+id/editTextAddress"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="주소"
+                android:inputType="textPostalAddress"
+                android:layout_marginTop="12dp" />
+
+            <!-- 전화번호 -->
+            <EditText
+                android:id="@+id/editTextPhone"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="전화번호 (숫자만 입력)"
+                android:inputType="phone"
+                android:maxLength="11"
+                android:layout_marginTop="12dp" />
+
+            <!-- 이메일 + 전송 버튼 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp">
+
+                <EditText
+                    android:id="@+id/editTextEmail"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="50dp"
+                    android:hint="이메일"
+                    android:inputType="textEmailAddress" />
+
+                <Button
+                    android:id="@+id/btnSendEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="전송"
+                    android:textSize="12sp"
+                    android:backgroundTint="#006494"
+                    android:textColor="#fff"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+            <!-- 인증번호 + 재전송 버튼 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp">
+
+                <EditText
+                    android:id="@+id/editTextVerificationCode"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="50dp"
+                    android:hint="인증번호 입력"
+                    android:inputType="number" />
+
+                <Button
+                    android:id="@+id/btnResendCode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="재전송"
+                    android:textSize="12sp"
+                    android:backgroundTint="#006494"
+                    android:textColor="#fff"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+            <!-- 계정 생성 버튼 -->
+            <Button
+                android:id="@+id/btnSignUp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="계정 생성"
+                android:layout_marginTop="24dp"
+                android:backgroundTint="#006494"
+                android:textColor="#fff" />
+
+        </LinearLayout>
+    </ScrollView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
