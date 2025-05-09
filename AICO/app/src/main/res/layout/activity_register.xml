@@ -29,7 +29,7 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="24dp" />
 
-            <!-- 아이디 + 중복확인 -->
+            <!-- 이메일 + 전송 버튼 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -37,32 +37,82 @@
                 android:layout_marginTop="12dp">
 
                 <EditText
-                    android:id="@+id/editTextId"
+                    android:id="@+id/editTextEmail"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="50dp"
-                    android:hint="아이디 (6~16자)"
-                    android:inputType="text" />
+                    android:hint="이메일"
+                    android:inputType="textEmailAddress" />
 
                 <Button
-                    android:id="@+id/btnCheckId"
+                    android:id="@+id/btnSendEmail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="중복확인"
+                    android:text="전송"
                     android:textSize="12sp"
                     android:backgroundTint="#006494"
                     android:textColor="#fff"
                     android:layout_marginStart="8dp" />
             </LinearLayout>
 
-            <!-- 비밀번호 -->
+            <!-- 인증번호 + 재전송 버튼 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp">
+
+                <EditText
+                    android:id="@+id/editTextVerificationCode"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="50dp"
+                    android:hint="인증번호 입력"
+                    android:inputType="number" />
+
+                <Button
+                    android:id="@+id/btnResendCode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="재전송"
+                    android:textSize="12sp"
+                    android:background="@android:color/transparent"
+                    android:textColor="#FF0000FF"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+            <!-- 비밀번호 조건 -->
             <EditText
-                android:id="@+id/editTextPassword"
+                android:id="@+id/passwordCondition"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:hint="비밀번호 (8~20자, 특수문자 포함)"
                 android:inputType="textPassword"
                 android:layout_marginTop="12dp" />
+
+            <TextView
+                android:id="@+id/editTextPassword1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="8~20자 사이로 입력해주세요"
+                android:textSize="12dp"
+                android:layout_gravity="left" />
+
+            <TextView
+                android:id="@+id/editTextPassword2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="특수문자가 포함되어야 합니다"
+                android:textSize="12dp"
+                android:layout_gravity="left" />
+
+            <TextView
+                android:id="@+id/editTextPassword3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="대문자와 소문자가 함께 있어야 합니다"
+                android:textSize="12dp"
+                android:layout_gravity="left" />
 
             <!-- 비밀번호 확인 -->
             <EditText
@@ -131,58 +181,6 @@
                 android:inputType="phone"
                 android:maxLength="11"
                 android:layout_marginTop="12dp" />
-
-            <!-- 이메일 + 전송 버튼 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="12dp">
-
-                <EditText
-                    android:id="@+id/editTextEmail"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="50dp"
-                    android:hint="이메일"
-                    android:inputType="textEmailAddress" />
-
-                <Button
-                    android:id="@+id/btnSendEmail"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="전송"
-                    android:textSize="12sp"
-                    android:backgroundTint="#006494"
-                    android:textColor="#fff"
-                    android:layout_marginStart="8dp" />
-            </LinearLayout>
-
-            <!-- 인증번호 + 재전송 버튼 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="12dp">
-
-                <EditText
-                    android:id="@+id/editTextVerificationCode"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="50dp"
-                    android:hint="인증번호 입력"
-                    android:inputType="number" />
-
-                <Button
-                    android:id="@+id/btnResendCode"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="재전송"
-                    android:textSize="12sp"
-                    android:backgroundTint="#006494"
-                    android:textColor="#fff"
-                    android:layout_marginStart="8dp" />
-            </LinearLayout>
 
             <!-- 계정 생성 버튼 -->
             <Button

@@ -34,15 +34,16 @@
 <!--        android:scaleType="centerInside"-->
 
     <!-- ID 입력 -->
+
+    <!-- 비밀번호 입력 -->
     <EditText
         android:id="@+id/editTextId"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="24dp"
-        android:hint="id"
+        android:hint="email"
         android:inputType="text" />
 
-    <!-- 비밀번호 입력 -->
     <EditText
         android:id="@+id/editTextPassword"
         android:layout_width="match_parent"
