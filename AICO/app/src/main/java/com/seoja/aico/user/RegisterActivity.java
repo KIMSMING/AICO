@@ -1,14 +1,20 @@
 package com.seoja.aico.user;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.seoja.aico.R;
@@ -20,21 +26,21 @@ public class RegisterActivity extends AppCompatActivity {
 
     private EditText editTextId, editTextPassword, editTextPasswordConfirm,
             editTextName, editTextBirth, editTextAddress, editTextPhone,
-            editTextEmail, editTextVerificationCode;
+            editTextEmail;
     private RadioGroup radioGroupGender;
     private Button btnSignUp;
 
     private DatabaseReference database;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        // Firebase DB 참조 가져오기
+        mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance().getReference("users");
 
-        // View 바인딩
         editTextId = findViewById(R.id.editTextId);
         editTextPassword = findViewById(R.id.editTextPassword);
         editTextPasswordConfirm = findViewById(R.id.editTextPasswordConfirm);
@@ -43,50 +49,70 @@ public class RegisterActivity extends AppCompatActivity {
         editTextAddress = findViewById(R.id.editTextAddress);
         editTextPhone = findViewById(R.id.editTextPhone);
         editTextEmail = findViewById(R.id.editTextEmail);
-        editTextVerificationCode = findViewById(R.id.editTextVerificationCode);
         radioGroupGender = findViewById(R.id.radioGroupGender);
         btnSignUp = findViewById(R.id.btnSignUp);
 
-        // 버튼 클릭 시 데이터 수집 & Firebase 저장
         btnSignUp.setOnClickListener(v -> saveUserToFirebase());
     }
 
     private void saveUserToFirebase() {
-        String id = editTextId.getText().toString();
-        String password = editTextPassword.getText().toString();
-        String passwordConfirm = editTextPasswordConfirm.getText().toString();
-        String name = editTextName.getText().toString();
-        String birth = editTextBirth.getText().toString();
-        String address = editTextAddress.getText().toString();
-        String phone = editTextPhone.getText().toString();
-        String email = editTextEmail.getText().toString();
+        String id = editTextId.getText().toString().trim();
+        String password = editTextPassword.getText().toString().trim();
+        String passwordConfirm = editTextPasswordConfirm.getText().toString().trim();
+        String name = editTextName.getText().toString().trim();
+        String birth = editTextBirth.getText().toString().trim();
+        String address = editTextAddress.getText().toString().trim();
+        String phone = editTextPhone.getText().toString().trim();
+        String email = editTextEmail.getText().toString().trim();
         String gender = (radioGroupGender.getCheckedRadioButtonId() == R.id.radioMale) ? "M" : "F";
+
+        if (id.isEmpty() || email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "아이디, 이메일, 비밀번호는 필수입니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         if (!password.equals(passwordConfirm)) {
             Toast.makeText(this, "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // 유저 정보 맵 구성
-        Map<String, Object> user = new HashMap<>();
-        user.put("id", id);
-        user.put("password", password);
-        user.put("name", name);
-        user.put("birth", birth);
-        user.put("gender", gender);
-        user.put("address", address);
-        user.put("tel", phone);
-        user.put("email", email);
-        user.put("profileImage", ""); // 추후 구현
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(RegisterActivity.this, task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                        if (firebaseUser != null) {
+                            String uid = firebaseUser.getUid();
 
-        // DB에 저장
-        database.child(id).setValue(user)
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(RegisterActivity.this, "회원가입 성공", Toast.LENGTH_SHORT).show();
-                    finish(); // 회원가입 후 액티비티 종료 또는 이동
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(RegisterActivity.this, "회원가입 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Map<String, Object> userMap = new HashMap<>();
+                            userMap.put("uid", uid);
+                            userMap.put("id", id);
+                            userMap.put("name", name);
+                            userMap.put("birth", birth);
+                            userMap.put("gender", gender);
+                            userMap.put("address", address);
+                            userMap.put("phone", phone);
+                            userMap.put("email", email);
+
+                            database.child(uid).setValue(userMap)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Toast.makeText(RegisterActivity.this, "회원가입 성공", Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Toast.makeText(RegisterActivity.this, "데이터 저장 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    });
+                        }
+                    } else {
+                        String errorMessage = "회원가입 실패";
+                        if (task.getException() instanceof FirebaseAuthException) {
+                            errorMessage = ((FirebaseAuthException) task.getException()).getMessage();
+                        } else if (task.getException() != null) {
+                            errorMessage = task.getException().getMessage();
+                        }
+                        Toast.makeText(RegisterActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                    }
                 });
     }
 }
