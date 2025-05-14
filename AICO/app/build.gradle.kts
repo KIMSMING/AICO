@@ -51,6 +51,9 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")  // Firebase 인증
     implementation("com.google.firebase:firebase-database")  // RealTime
 
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")       // Retrofit 본체
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0") // JSON 응답을 객체로 변환하는 Gson 컨버터
+
     // 구글 로그인
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 

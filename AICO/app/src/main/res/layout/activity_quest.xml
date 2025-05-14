@@ -7,28 +7,18 @@
     android:layout_height="match_parent"
     tools:context=".QuestActivity">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="298dp"
-        android:layout_height="37dp"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="40dp"
-        android:text="질문"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/request_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="84dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="64dp"
         android:text="질문하기"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/request_text" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/response_textView"
         android:layout_width="300dp"
         android:layout_height="331dp"
         android:layout_marginStart="28dp"
@@ -36,4 +26,17 @@
         android:text="답변"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/request_text"
+        android:layout_width="337dp"
+        android:layout_height="92dp"
+        android:layout_marginTop="36dp"
+        android:ems="10"
+        android:inputType="text"
+        android:text="질문"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.378"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
