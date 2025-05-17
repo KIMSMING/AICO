@@ -55,11 +55,15 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 
     // 네이버 로그인 SDK
-    implementation("com.navercorp.nid:oauth:5.10.0")
+    implementation("com.navercorp.nid:oauth-jdk8:5.10.0")
 
     // 카카오 로그인 SDK
     implementation("com.kakao.sdk:v2-user:2.19.0")
 
     // 안드로이드X 라이브러리 등 필요한 의존성 추가
+    implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+
 }
