@@ -19,7 +19,7 @@ import java.security.MessageDigest;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btnLogin;
+    Button btnLogin, btnQuest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,9 +35,15 @@ public class MainActivity extends AppCompatActivity {
         printKeyHash();
 
         btnLogin = findViewById(R.id.btnGoLogin);
+        btnQuest = findViewById(R.id.btnQuest);
 
         btnLogin.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, com.seoja.aico.user.LoginActivity.class);
+            startActivity(intent);
+        });
+
+        btnQuest.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, QuestActivity.class);
             startActivity(intent);
         });
     }
