@@ -19,12 +19,6 @@
             android:name=".QuestActivity"
             android:exported="false" />
         <activity
-            android:name=".user.SocialRegisterActivity"
-            android:exported="false" />
-        <activity
-            android:name=".user.ResultActivity"
-            android:exported="false" />
-        <activity
             android:name=".user.RegisterActivity"
             android:exported="false" />
         <activity
