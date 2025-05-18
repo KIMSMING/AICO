@@ -13,7 +13,20 @@
           "package_name": "com.seoja.aico"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "148432991298-tbjqhjmalf8b10ukeoor6gpb1bfg82io.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.seoja.aico",
+            "certificate_hash": "d858d1cec182bf6710b293203163d35d3a74f649"
+          }
+        },
+        {
+          "client_id": "148432991298-94qdjm1j2q5a0cfcb8lhlii730babmq7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCrdkxwBcemUGogq2bWRjKmCRkDl-8M6eg"
@@ -21,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "148432991298-94qdjm1j2q5a0cfcb8lhlii730babmq7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -1,6 +1,7 @@
 package com.seoja.aico;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
@@ -24,6 +25,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // 1. 로그인 상태 체크
+        if (!isUserLoggedIn()) {
+            Intent intent = new Intent(MainActivity.this, com.seoja.aico.user.LoginActivity.class);
+            startActivity(intent);
+            finish(); // MainActivity 종료
+            return;
+        }
+
+        // 2. 로그인 되어 있으면 MainActivity 화면 세팅
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -38,14 +49,27 @@ public class MainActivity extends AppCompatActivity {
         btnQuest = findViewById(R.id.btnQuest);
 
         btnLogin.setOnClickListener(v -> {
+            // 로그아웃 처리
+            SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
+            prefs.edit().putBoolean("isLoggedIn", false).apply();
+
+            // LoginActivity로 이동
             Intent intent = new Intent(MainActivity.this, com.seoja.aico.user.LoginActivity.class);
             startActivity(intent);
+            finish();
         });
+
 
         btnQuest.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, QuestActivity.class);
             startActivity(intent);
         });
+    }
+
+    // 로그인 상태 확인
+    private boolean isUserLoggedIn() {
+        SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        return prefs.getBoolean("isLoggedIn", false);
     }
 
     private void printKeyHash() {

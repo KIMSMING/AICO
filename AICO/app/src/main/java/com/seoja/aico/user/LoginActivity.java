@@ -262,7 +262,14 @@ public class LoginActivity extends AppCompatActivity {
 
     // 메인화면 이동
     private void goToMain() {
+        // 로그인 상태 저장 (추가)
+        getSharedPreferences("user_prefs", MODE_PRIVATE)
+                .edit()
+                .putBoolean("isLoggedIn", true)
+                .apply();
+
         startActivity(new Intent(this, MainActivity.class));
         finish();
     }
+
 }
