@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private EditText editTextId, editTextPassword, editTextPasswordConfirm,
+    private EditText editTextPassword, editTextPasswordConfirm,
             editTextName, editTextBirth, editTextAddress, editTextPhone,
             editTextEmail;
     private RadioGroup radioGroupGender;
@@ -41,7 +41,6 @@ public class RegisterActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance().getReference("users");
 
-        editTextId = findViewById(R.id.editTextId);
         editTextPassword = findViewById(R.id.editTextPassword);
         editTextPasswordConfirm = findViewById(R.id.editTextPasswordConfirm);
         editTextName = findViewById(R.id.editTextName);
@@ -56,7 +55,6 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void saveUserToFirebase() {
-        String id = editTextId.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
         String passwordConfirm = editTextPasswordConfirm.getText().toString().trim();
         String name = editTextName.getText().toString().trim();
@@ -66,8 +64,8 @@ public class RegisterActivity extends AppCompatActivity {
         String email = editTextEmail.getText().toString().trim();
         String gender = (radioGroupGender.getCheckedRadioButtonId() == R.id.radioMale) ? "M" : "F";
 
-        if (id.isEmpty() || email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "아이디, 이메일, 비밀번호는 필수입니다.", Toast.LENGTH_SHORT).show();
+        if (email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "이메일과 비밀번호는 필수입니다.", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -85,13 +83,13 @@ public class RegisterActivity extends AppCompatActivity {
 
                             Map<String, Object> userMap = new HashMap<>();
                             userMap.put("uid", uid);
-                            userMap.put("id", id);
+                            userMap.put("email", email);
                             userMap.put("name", name);
+                            userMap.put("nickname", uid);
                             userMap.put("birth", birth);
                             userMap.put("gender", gender);
                             userMap.put("address", address);
                             userMap.put("phone", phone);
-                            userMap.put("email", email);
 
                             database.child(uid).setValue(userMap)
                                     .addOnSuccessListener(aVoid -> {

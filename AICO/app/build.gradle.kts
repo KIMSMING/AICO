@@ -46,6 +46,9 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
+    // OkHttp 라이브러리 의존성 추가
+    implementation("com.squareup.okhttp3:okhttp:4.9.3")
+
     implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")  // Firebase 인증

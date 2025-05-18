@@ -6,7 +6,9 @@
     <string name="naver_client_secret">8SGyaSg6pf</string>
     <string name="naver_client_name">AICO</string>
 
+    <!-- 카카오 로그인 정보 -->
     <string name="kakao_app_key">8c33170088d1275581c9464e2c8ef71b</string>
+
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
