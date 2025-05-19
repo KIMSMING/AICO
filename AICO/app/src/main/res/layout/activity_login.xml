@@ -87,7 +87,7 @@
             android:textSize="12sp" />
 
         <Button
-            android:id="@+id/btnFindByPw"
+            android:id="@+id/btnResetPw"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="비밀번호 초기화"
@@ -127,8 +127,8 @@
             android:src="@drawable/ic_kakao"
             android:scaleType="fitXY"
             android:background="@android:color/transparent"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp" />
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp" />
 
         <ImageButton
             android:id="@+id/btnNaverLogin"

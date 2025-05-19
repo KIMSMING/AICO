@@ -11,12 +11,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * 소셜 회원가입 처리 클래스
- * - FirebaseUser 정보를 기반으로 Realtime Database에 사용자 데이터 저장
- * - 닉네임, 이메일, 프로필 사진 등 기본 정보 저장
- * - 추가 정보(생일, 성별 등)는 기본값으로 초기화
- */
 public class SocialRegisterImpl {
 
     private static final String TAG = "SocialRegisterImpl";

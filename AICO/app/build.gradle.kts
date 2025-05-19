@@ -57,6 +57,13 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")       // Retrofit 본체
     implementation("com.squareup.retrofit2:converter-gson:2.9.0") // JSON 응답을 객체로 변환하는 Gson 컨버터
 
+    implementation("com.google.android.material:material:1.11.0") // 레이아웃 머터리얼
+
+    // 사용자 정보 조회 수정
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+    implementation("com.google.firebase:firebase-storage:20.3.0")
+
     // 구글 로그인
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 

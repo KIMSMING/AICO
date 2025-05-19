@@ -16,6 +16,8 @@ import android.text.TextWatcher;
 import com.google.firebase.auth.*;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.seoja.aico.MainActivity;
+import com.seoja.aico.QuestActivity;
 import com.seoja.aico.R;
 
 import java.util.HashMap;
@@ -27,10 +29,10 @@ public class RegisterActivity extends AppCompatActivity {
             editTextName, editTextBirth, editTextAddress, editTextPhone,
             editTextEmail, editTextVerificationCode;
     private RadioGroup radioGroupGender;
-    private Button btnSignUp, btnSendEmail, btnResendCode;
+    private Button btnSignUp, btnSendEmail, btnResendCode, btnCancle;
     private TextView passwordRule1, passwordRule2, passwordRule3;
 
-    // 추가: 초록색 V 아이콘
+    // 초록색 V 아이콘
     private ImageView ivCodeCheck, ivPwCheck;
 
     private DatabaseReference database;
@@ -48,25 +50,27 @@ public class RegisterActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance().getReference("users");
 
-        editTextPassword = findViewById(R.id.editTextPassword);
-        editTextPasswordConfirm = findViewById(R.id.editTextPasswordConfirm);
-        editTextName = findViewById(R.id.editTextName);
-        editTextBirth = findViewById(R.id.editTextBirth);
-        editTextAddress = findViewById(R.id.editTextAddress);
-        editTextPhone = findViewById(R.id.editTextPhone);
-        editTextEmail = findViewById(R.id.editTextEmail);
-        editTextVerificationCode = findViewById(R.id.editTextVerificationCode);
-        radioGroupGender = findViewById(R.id.radioGroupGender);
-        btnSignUp = findViewById(R.id.btnSignUp);
-        btnSendEmail = findViewById(R.id.btnSendEmail);
-        btnResendCode = findViewById(R.id.btnResendCode);
-        passwordRule1 = findViewById(R.id.passwordRule1);
-        passwordRule2 = findViewById(R.id.passwordRule2);
-        passwordRule3 = findViewById(R.id.passwordRule3);
+        // View 바인딩
+        editTextPassword = (EditText) findViewById(R.id.editTextPassword);
+        editTextPasswordConfirm = (EditText) findViewById(R.id.editTextPasswordConfirm);
+        editTextName = (EditText) findViewById(R.id.editTextName);
+        editTextBirth = (EditText) findViewById(R.id.editTextBirth);
+        editTextAddress = (EditText) findViewById(R.id.editTextAddress);
+        editTextPhone = (EditText) findViewById(R.id.editTextPhone);
+        editTextEmail = (EditText) findViewById(R.id.editTextEmail);
+        editTextVerificationCode = (EditText) findViewById(R.id.editTextVerificationCode);
+        radioGroupGender = (RadioGroup) findViewById(R.id.radioGroupGender);
+        btnSignUp = (Button) findViewById(R.id.btnSignUp);
+        btnSendEmail = (Button) findViewById(R.id.btnSendEmail);
+        btnResendCode = (Button) findViewById(R.id.btnResendCode);
+        btnCancle = (Button) findViewById(R.id.btnCancle);
+        passwordRule1 = (TextView) findViewById(R.id.passwordRule1);
+        passwordRule2 = (TextView) findViewById(R.id.passwordRule2);
+        passwordRule3 = (TextView) findViewById(R.id.passwordRule3);
 
         // 추가: 초록색 V 아이콘
-        ivCodeCheck = findViewById(R.id.ivCodeCheck);
-        ivPwCheck = findViewById(R.id.ivPwCheck);
+        ivCodeCheck = (ImageView) findViewById(R.id.ivCodeCheck);
+        ivPwCheck = (ImageView) findViewById(R.id.ivPwCheck);
 
         // 인증번호 입력칸, 재전송 버튼, V 아이콘 초기 숨김
         editTextVerificationCode.setVisibility(View.GONE);
@@ -84,13 +88,17 @@ public class RegisterActivity extends AppCompatActivity {
             }
             // 인증번호 생성 (실제 서비스는 서버에서 이메일 발송)
             sentVerificationCode = String.valueOf((int)(Math.random()*900000)+100000);
-            Toast.makeText(this, "인증번호(테스트): " + sentVerificationCode, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, sentVerificationCode, Toast.LENGTH_LONG).show();
 
             editTextVerificationCode.setVisibility(View.VISIBLE);
             btnResendCode.setVisibility(View.VISIBLE);
             isEmailVerified = false;
             editTextVerificationCode.setText("");
-            ivCodeCheck.setVisibility(View.GONE); // 새로 전송 시 V 숨김
+            ivCodeCheck.setVisibility(View.GONE);
+        });
+
+        btnCancle.setOnClickListener(v -> {
+            finish();
         });
 
         // 인증번호 재전송
@@ -158,7 +166,7 @@ public class RegisterActivity extends AppCompatActivity {
         String address = editTextAddress.getText().toString().trim();
         String phone = editTextPhone.getText().toString().trim();
         String email = editTextEmail.getText().toString().trim();
-        String gender = (radioGroupGender.getCheckedRadioButtonId() == R.id.radioMale) ? "M" : "F";
+        String gender = (radioGroupGender.getCheckedRadioButtonId() == R.id.radioMale) ? "M" : "W";
 
         // 미입력 체크 & 포커스 이동
         if (email.isEmpty()) {
@@ -234,6 +242,7 @@ public class RegisterActivity extends AppCompatActivity {
                             userMap.put("gender", gender);
                             userMap.put("address", address);
                             userMap.put("phone", phone);
+                            userMap.put("photoUrl", "");
 
                             database.child(uid).setValue(userMap)
                                     .addOnSuccessListener(aVoid -> {

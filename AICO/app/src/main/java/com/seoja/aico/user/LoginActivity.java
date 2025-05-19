@@ -34,7 +34,7 @@ import okhttp3.*;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText editTextId, editTextPassword;
-    private Button btnLogin, btnSignUp;
+    private Button btnLogin, btnSignUp, btnFindById, btnResetPw;
     private ImageButton btnGoogleLogin, btnNaverLogin, btnKakaoLogin;
 
     private FirebaseAuth mAuth;
@@ -55,13 +55,15 @@ public class LoginActivity extends AppCompatActivity {
         KakaoSdk.init(this, getString(R.string.kakao_app_key));
 
         // View 바인딩
-        editTextId = findViewById(R.id.editTextId);
-        editTextPassword = findViewById(R.id.editTextPassword);
-        btnLogin = findViewById(R.id.btnLogin);
-        btnSignUp = findViewById(R.id.btnSignUp);
-        btnGoogleLogin = findViewById(R.id.btnGoogleLogin);
-        btnNaverLogin = findViewById(R.id.btnNaverLogin);
-        btnKakaoLogin = findViewById(R.id.btnKakaoLogin);
+        editTextId = (EditText) findViewById(R.id.editTextId);
+        editTextPassword = (EditText) findViewById(R.id.editTextPassword);
+        btnLogin = (Button) findViewById(R.id.btnLogin);
+        btnSignUp = (Button) findViewById(R.id.btnSignUp);
+        btnFindById = (Button) findViewById(R.id.btnFindById);
+        btnResetPw = (Button) findViewById(R.id.btnResetPw);
+        btnGoogleLogin = (ImageButton) findViewById(R.id.btnGoogleLogin);
+        btnNaverLogin = (ImageButton) findViewById(R.id.btnNaverLogin);
+        btnKakaoLogin = (ImageButton) findViewById(R.id.btnKakaoLogin);
 
         // Google 로그인 초기화
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -115,13 +117,19 @@ public class LoginActivity extends AppCompatActivity {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        Toast.makeText(this, "로그인 성공", Toast.LENGTH_SHORT).show();
-                        goToMain();
+                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                        if (firebaseUser != null) {
+                            firebaseUser.reload().addOnSuccessListener(unused -> {
+                                Toast.makeText(this, "로그인 성공", Toast.LENGTH_SHORT).show();
+                                goToMain();
+                            });
+                        }
                     } else {
                         Toast.makeText(this, "로그인 실패: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
+
 
     // Google 로그인
     private void signInWithGoogle() {

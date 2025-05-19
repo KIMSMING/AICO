@@ -1,7 +1,6 @@
 package com.seoja.aico;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
@@ -16,21 +15,29 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.seoja.aico.user.LoginActivity;
+import com.seoja.aico.user.UserViewActivity;
+import com.seoja.aico.QuestActivity;
+
 import java.security.MessageDigest;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btnLogin, btnQuest;
+    Button btnQuest, btnUserView;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mAuth = FirebaseAuth.getInstance();
+
         // 1. 로그인 상태 체크
-        if (!isUserLoggedIn()) {
-            Intent intent = new Intent(MainActivity.this, com.seoja.aico.user.LoginActivity.class);
-            startActivity(intent);
-            finish(); // MainActivity 종료
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            redirectToLogin();
             return;
         }
 
@@ -43,33 +50,36 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        printKeyHash();
+        // printKeyHash(); // 해쉬 키 필요할 때만 쓰면 됨
 
-        btnLogin = findViewById(R.id.btnGoLogin);
-        btnQuest = findViewById(R.id.btnQuest);
+        btnUserView = (Button) findViewById(R.id.btnGoUserView);
+        btnQuest = (Button) findViewById(R.id.btnQuest);
 
-        btnLogin.setOnClickListener(v -> {
-            // 로그아웃 처리
-            SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
-            prefs.edit().putBoolean("isLoggedIn", false).apply();
-
-            // LoginActivity로 이동
-            Intent intent = new Intent(MainActivity.this, com.seoja.aico.user.LoginActivity.class);
-            startActivity(intent);
-            finish();
+        // 유저정보
+        btnUserView.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, UserViewActivity.class));
         });
 
-
+        // 퀘스트
         btnQuest.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, QuestActivity.class);
-            startActivity(intent);
+            startActivity(new Intent(MainActivity.this, QuestActivity.class));
         });
     }
 
-    // 로그인 상태 확인
-    private boolean isUserLoggedIn() {
-        SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        return prefs.getBoolean("isLoggedIn", false);
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // 앱이 백그라운드에서 복귀할 때마다 로그인 상태 확인
+        if (mAuth.getCurrentUser() == null) {
+            redirectToLogin();
+        }
+    }
+
+    private void redirectToLogin() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private void printKeyHash() {
