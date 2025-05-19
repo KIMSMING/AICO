@@ -1,5 +1,7 @@
 package com.seoja.aico.user;
 
+import static com.seoja.aico.user.SocialRegisterImpl.generateDefaultNickname;
+
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -227,7 +229,7 @@ public class RegisterActivity extends AppCompatActivity {
                             userMap.put("uid", uid);
                             userMap.put("email", email);
                             userMap.put("name", name);
-                            userMap.put("nickname", uid);
+                            userMap.put("nickname", generateDefaultNickname(uid));
                             userMap.put("birth", birth);
                             userMap.put("gender", gender);
                             userMap.put("address", address);

@@ -70,7 +70,7 @@ public class SocialRegisterImpl {
                 });
     }
 
-    private static String generateDefaultNickname(String uid) {
+    static String generateDefaultNickname(String uid) {
         String suffix = uid.length() > 6 ? uid.substring(uid.length() - 6) : uid;
         return "User" + suffix;
     }

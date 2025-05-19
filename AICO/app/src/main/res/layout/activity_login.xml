@@ -90,7 +90,7 @@
             android:id="@+id/btnFindByPw"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="비밀번호 찾기"
+            android:text="비밀번호 초기화"
             android:background="@android:color/transparent"
             android:textColor="#555"
             android:textSize="12sp" />
@@ -117,6 +117,7 @@
             android:layout_width="72dp"
             android:layout_height="72dp"
             android:src="@drawable/ic_google"
+            android:scaleType="fitXY"
             android:background="@android:color/transparent" />
 
         <ImageButton
@@ -124,6 +125,7 @@
             android:layout_width="72dp"
             android:layout_height="72dp"
             android:src="@drawable/ic_kakao"
+            android:scaleType="fitXY"
             android:background="@android:color/transparent"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp" />
@@ -132,6 +134,7 @@
             android:id="@+id/btnNaverLogin"
             android:layout_width="72dp"
             android:layout_height="72dp"
+            android:scaleType="fitXY"
             android:src="@drawable/ic_naver"
             android:background="@android:color/transparent" />
     </LinearLayout>
