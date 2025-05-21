@@ -99,6 +99,7 @@ public class LoginActivity extends AppCompatActivity {
         // 버튼 리스너
         btnLogin.setOnClickListener(v -> signInWithEmail());
         btnSignUp.setOnClickListener(v -> startActivity(new Intent(this, RegisterActivity.class)));
+        btnResetPw.setOnClickListener(v -> startActivity(new Intent(this, ResetPasswordActivity.class)));
         btnGoogleLogin.setOnClickListener(v -> signInWithGoogle());
         btnNaverLogin.setOnClickListener(v -> signInWithNaver());
         btnKakaoLogin.setOnClickListener(v -> signInWithKakao());
