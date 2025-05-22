@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "148432991298-57hrsqgndknc6qpbsevkpmeopp0cq6dm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.seoja.aico",
+            "certificate_hash": "aa71d3119354a8b6775b10324fe6766241deef36"
+          }
+        },
+        {
           "client_id": "148432991298-tbjqhjmalf8b10ukeoor6gpb1bfg82io.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

@@ -56,49 +56,56 @@ public class ResetPasswordActivity extends AppCompatActivity {
     }
 
     private void checkUserExists(String email, String phone) {
-        // 1. 이메일 존재 여부 확인
-        mAuth.fetchSignInMethodsForEmail(email).addOnCompleteListener(task -> {
-            Log.d("ResetPassword", "입력 이메일: [" + email + "]");
-            if (!task.isSuccessful() || task.getResult().getSignInMethods().isEmpty()) {
-                showError("존재하지 않는 이메일입니다");
-                return;
-            }
+        // 1. Realtime DB에서 이메일로 사용자 조회
+        database.orderByChild("email").equalTo(email)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        if (!snapshot.exists()) {
+                            showError("가입된 이메일이 아닙니다");
+                            return;
+                        }
 
-            // 2. Realtime DB에서 사용자 조회
-            database.orderByChild("email").equalTo(email)
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot snapshot) {
-                            if (!snapshot.exists()) {
-                                showError("가입 정보를 찾을 수 없습니다");
-                                return;
-                            }
-
-                            // 3. 전화번호 일치 확인
-                            boolean isMatch = false;
-                            for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                                String storedPhone = userSnapshot.child("phone").getValue(String.class);
-                                if (storedPhone != null &&
-                                        storedPhone.replaceAll("[^0-9]", "").equals(phone.replaceAll("[^0-9]", ""))) {
-                                    isMatch = true;
-                                    break;
-                                }
-                            }
-
-                            if (isMatch) {
-                                sendPasswordResetEmail(email);
-                            } else {
-                                showError("등록된 전화번호와 일치하지 않습니다");
+                        // 2. 전화번호 일치 확인
+                        boolean isMatch = false;
+                        for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                            String storedPhone = userSnapshot.child("phone").getValue(String.class);
+                            if (storedPhone != null &&
+                                    sanitizePhone(storedPhone).equals(sanitizePhone(phone))) {
+                                isMatch = true;
+                                break;
                             }
                         }
 
-                        @Override
-                        public void onCancelled(DatabaseError error) {
-                            showError("데이터 조회 실패: " + error.getMessage());
+                        if (!isMatch) {
+                            showError("등록된 전화번호와 일치하지 않습니다");
+                            return;
                         }
-                    });
-        });
+
+                        // 3. 비밀번호 재설정 이메일 전송 시도
+                        mAuth.sendPasswordResetEmail(email)
+                                .addOnCompleteListener(task -> {
+                                    // 소셜로그인 감지
+                                    if (task.isSuccessful()) {
+                                        showSuccess("이메일로 임시 비밀번호가 전송되었습니다");
+                                    } else {
+                                        showError("비밀번호 초기화가 불가능한 계정입니다");
+                                    }
+                                });
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                        showError("데이터 조회 실패: " + error.getMessage());
+                    }
+                });
     }
+
+    // 전화번호 형식 정리 (숫자만 남기기)
+    private String sanitizePhone(String phone) {
+        return phone.replaceAll("[^0-9]", "");
+    }
+
 
     private void sendPasswordResetEmail(String email) {
         mAuth.sendPasswordResetEmail(email)

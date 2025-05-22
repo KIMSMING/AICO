@@ -196,12 +196,12 @@ public class LoginActivity extends AppCompatActivity {
     private final OkHttpClient httpClient = new OkHttpClient();
 
     private void getFirebaseCustomTokenFromServer(String accessToken, String provider) {
-        // TODO: 실제 서버 주소로 변경
-        String url = "https://YOUR_SERVER_URL/api/socialCustomToken";
+        String url = provider.equals("kakao")
+                ? "https://[region]-[projectId].cloudfunctions.net/kakaoCustomToken"
+                : "https://[region]-[projectId].cloudfunctions.net/naverCustomToken";
 
         RequestBody body = new FormBody.Builder()
                 .add("accessToken", accessToken)
-                .add("provider", provider) // "naver" 또는 "kakao"
                 .build();
 
         Request request = new Request.Builder()
@@ -230,6 +230,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+
 
     private void signInWithFirebaseCustomToken(String customToken) {
         mAuth.signInWithCustomToken(customToken)
