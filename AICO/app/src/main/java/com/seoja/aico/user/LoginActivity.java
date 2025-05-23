@@ -34,7 +34,7 @@ import okhttp3.*;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText editTextId, editTextPassword;
-    private Button btnLogin, btnSignUp, btnFindById, btnResetPw;
+    private Button btnLogin, btnSignUp, btnResetPw;
     private ImageButton btnGoogleLogin, btnNaverLogin, btnKakaoLogin;
 
     private FirebaseAuth mAuth;
@@ -59,7 +59,6 @@ public class LoginActivity extends AppCompatActivity {
         editTextPassword = (EditText) findViewById(R.id.editTextPassword);
         btnLogin = (Button) findViewById(R.id.btnLogin);
         btnSignUp = (Button) findViewById(R.id.btnSignUp);
-        btnFindById = (Button) findViewById(R.id.btnFindById);
         btnResetPw = (Button) findViewById(R.id.btnResetPw);
         btnGoogleLogin = (ImageButton) findViewById(R.id.btnGoogleLogin);
         btnNaverLogin = (ImageButton) findViewById(R.id.btnNaverLogin);
