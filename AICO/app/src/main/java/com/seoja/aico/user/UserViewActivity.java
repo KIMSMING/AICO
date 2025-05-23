@@ -12,6 +12,9 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.*;
 import com.google.firebase.database.*;
 
@@ -82,8 +85,20 @@ public class UserViewActivity extends AppCompatActivity {
 
         // 로그아웃 처리
         btnLogout.setOnClickListener(v -> {
-            mAuth.signOut(); // Firebase 로그아웃
-            redirectToLogin();
+            // 1. Firebase 인증 로그아웃
+            mAuth.signOut();
+
+            // 2. Google 로그아웃 처리
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestEmail()
+                    .build();
+
+            GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, gso);
+
+            googleSignInClient.signOut().addOnCompleteListener(task -> {
+                // 3. 로그인 화면으로 이동
+                redirectToLogin(); // 로그인 액티비티로 이동하는 메서드
+            });
         });
 
         // 계정 삭제
