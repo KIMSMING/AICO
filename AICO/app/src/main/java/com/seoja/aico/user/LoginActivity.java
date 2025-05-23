@@ -34,7 +34,7 @@ import okhttp3.*;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText editTextId, editTextPassword;
-    private Button btnLogin, btnSignUp, btnFindById, btnResetPw;
+    private Button btnLogin, btnSignUp, btnResetPw;
     private ImageButton btnGoogleLogin, btnNaverLogin, btnKakaoLogin;
 
     private FirebaseAuth mAuth;
@@ -59,7 +59,6 @@ public class LoginActivity extends AppCompatActivity {
         editTextPassword = (EditText) findViewById(R.id.editTextPassword);
         btnLogin = (Button) findViewById(R.id.btnLogin);
         btnSignUp = (Button) findViewById(R.id.btnSignUp);
-        btnFindById = (Button) findViewById(R.id.btnFindById);
         btnResetPw = (Button) findViewById(R.id.btnResetPw);
         btnGoogleLogin = (ImageButton) findViewById(R.id.btnGoogleLogin);
         btnNaverLogin = (ImageButton) findViewById(R.id.btnNaverLogin);
@@ -99,6 +98,7 @@ public class LoginActivity extends AppCompatActivity {
         // 버튼 리스너
         btnLogin.setOnClickListener(v -> signInWithEmail());
         btnSignUp.setOnClickListener(v -> startActivity(new Intent(this, RegisterActivity.class)));
+        btnResetPw.setOnClickListener(v -> startActivity(new Intent(this, ResetPasswordActivity.class)));
         btnGoogleLogin.setOnClickListener(v -> signInWithGoogle());
         btnNaverLogin.setOnClickListener(v -> signInWithNaver());
         btnKakaoLogin.setOnClickListener(v -> signInWithKakao());
@@ -195,12 +195,12 @@ public class LoginActivity extends AppCompatActivity {
     private final OkHttpClient httpClient = new OkHttpClient();
 
     private void getFirebaseCustomTokenFromServer(String accessToken, String provider) {
-        // TODO: 실제 서버 주소로 변경
-        String url = "https://YOUR_SERVER_URL/api/socialCustomToken";
+        String url = provider.equals("kakao")
+                ? "https://[region]-[projectId].cloudfunctions.net/kakaoCustomToken"
+                : "https://[region]-[projectId].cloudfunctions.net/naverCustomToken";
 
         RequestBody body = new FormBody.Builder()
                 .add("accessToken", accessToken)
-                .add("provider", provider) // "naver" 또는 "kakao"
                 .build();
 
         Request request = new Request.Builder()
@@ -229,6 +229,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+
 
     private void signInWithFirebaseCustomToken(String customToken) {
         mAuth.signInWithCustomToken(customToken)
