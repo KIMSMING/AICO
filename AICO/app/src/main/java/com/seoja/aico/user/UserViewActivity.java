@@ -257,15 +257,26 @@ public class UserViewActivity extends AppCompatActivity {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
 
-        // 1. Authentication에서 삭제
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, gso);
+
         user.delete().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                // 2. Realtime Database에서 삭제
+                // Realtime DB 삭제
                 database.child(user.getUid()).removeValue();
+
+                // Firebase 로그아웃
+                FirebaseAuth.getInstance().signOut();
+
+                // Google 로그아웃
+                googleSignInClient.signOut();
 
                 Toast.makeText(this, "계정이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
 
-                // 스택 초기화 및 메인 이동
+                // 메인 화면 이동
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
@@ -275,4 +286,5 @@ public class UserViewActivity extends AppCompatActivity {
             }
         });
     }
+
 }

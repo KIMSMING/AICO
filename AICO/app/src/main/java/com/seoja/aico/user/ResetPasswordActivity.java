@@ -16,6 +16,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
     private EditText editTextEmail, editTextPhone;
     private Button btnSend;
+    private ImageButton btnBack;
     private TextView textResult;
     private FirebaseAuth mAuth;
     private DatabaseReference database;
@@ -30,8 +31,11 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
         editTextEmail = findViewById(R.id.editTextEmail);
         editTextPhone = findViewById(R.id.editTextPhoneNumber);
+        btnBack = findViewById(R.id.btnBack);
         btnSend = findViewById(R.id.btnSend);
         textResult = findViewById(R.id.textResult);
+
+        btnBack.setOnClickListener(v -> finish());
 
         btnSend.setOnClickListener(v -> {
             String email = editTextEmail.getText().toString().trim();

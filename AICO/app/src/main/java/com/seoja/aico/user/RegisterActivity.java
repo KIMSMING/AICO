@@ -14,8 +14,11 @@ import android.text.Editable;
 import android.text.TextWatcher;
 
 import com.google.firebase.auth.*;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.seoja.aico.MainActivity;
 import com.seoja.aico.QuestActivity;
 import com.seoja.aico.R;
@@ -78,6 +81,8 @@ public class RegisterActivity extends AppCompatActivity {
         ivCodeCheck.setVisibility(View.GONE);
         ivPwCheck.setVisibility(View.GONE);
 
+        btnCancle.setOnClickListener(v -> finish());
+
         // 이메일 인증번호 전송
         btnSendEmail.setOnClickListener(v -> {
             String email = editTextEmail.getText().toString().trim();
@@ -86,20 +91,36 @@ public class RegisterActivity extends AppCompatActivity {
                 editTextEmail.requestFocus();
                 return;
             }
-            // 인증번호 생성 (실제 서비스는 서버에서 이메일 발송)
-            sentVerificationCode = String.valueOf((int)(Math.random()*900000)+100000);
-            Toast.makeText(this, sentVerificationCode, Toast.LENGTH_LONG).show();
 
-            editTextVerificationCode.setVisibility(View.VISIBLE);
-            btnResendCode.setVisibility(View.VISIBLE);
-            isEmailVerified = false;
-            editTextVerificationCode.setText("");
-            ivCodeCheck.setVisibility(View.GONE);
+            // 중복 체크: 리얼타임 DB에서 email 값이 같은 사용자 존재 여부 확인
+            database.orderByChild("email").equalTo(email)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                // 중복된 이메일이 이미 DB에 존재
+                                Toast.makeText(RegisterActivity.this, "이미 가입된 이메일입니다.", Toast.LENGTH_SHORT).show();
+                                editTextEmail.requestFocus();
+                            } else {
+                                // 인증번호 생성 및 UI 표시
+                                sentVerificationCode = String.valueOf((int) (Math.random() * 900000) + 100000);
+                                Toast.makeText(RegisterActivity.this, "인증번호: " + sentVerificationCode, Toast.LENGTH_LONG).show();
+
+                                editTextVerificationCode.setVisibility(View.VISIBLE);
+                                btnResendCode.setVisibility(View.VISIBLE);
+                                isEmailVerified = false;
+                                editTextVerificationCode.setText("");
+                                ivCodeCheck.setVisibility(View.GONE);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(RegisterActivity.this, "DB 오류: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
         });
 
-        btnCancle.setOnClickListener(v -> {
-            finish();
-        });
 
         // 인증번호 재전송
         btnResendCode.setOnClickListener(v -> btnSendEmail.performClick());
