@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 퀘스트
         btnQuest.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, QuestActivity.class));
+            startActivity(new Intent(MainActivity.this, FieldActivity.class));
         });
     }
 
