@@ -1,0 +1,12 @@
+package com.example.aicoserver.user.dto;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class SocialUserDto {
+    private String providerId;
+    private String email;
+    private String nickname;
+}
