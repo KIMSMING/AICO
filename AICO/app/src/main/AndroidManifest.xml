@@ -28,9 +28,6 @@
             android:name=".user.UserViewActivity"
             android:exported="false" />
         <activity
-            android:name=".user.FindByIdActivity"
-            android:exported="false" />
-        <activity
             android:name=".QuestActivity"
             android:exported="false" />
         <activity
