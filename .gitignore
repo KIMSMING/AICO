@@ -26,3 +26,4 @@ replay_pid*
 # 안드로이드 스튜디오 특정 설정 파일 무시
 .idea/
 *.iml
+aicoServer/src/main/resources/aico-1853c-firebase-adminsdk-fbsvc-3b763ae0b9.json
