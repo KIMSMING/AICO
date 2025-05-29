@@ -14,9 +14,10 @@ import java.io.InputStream;
 public class FirebaseConfig {
     @PostConstruct
     public void init() throws IOException {
-        InputStream serviceAccount = getClass().getResourceAsStream("/firebase-service-account.json");
+        InputStream serviceAccount = getClass().getResourceAsStream("/aico-1853c-firebase-adminsdk-fbsvc-3b763ae0b9.json");
         FirebaseOptions options = new FirebaseOptions.Builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                .setDatabaseUrl("https://aico-1853c.firebaseio.com")
                 .build();
         FirebaseApp.initializeApp(options);
     }

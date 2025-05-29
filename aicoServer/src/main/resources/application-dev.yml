@@ -1,0 +1,7 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+myapp:
+  api-key: dev-api-key

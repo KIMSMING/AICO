@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    private FirebaseAuth firebaseAuth;
+    private final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     private final KakaoAuthService kakaoAuthService;
     private final NaverAuthService naverAuthService;
 
