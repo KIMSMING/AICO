@@ -39,7 +39,7 @@ public class KakaoAuthService {
 
         Map<String, Object> kakaoAccount = (Map<String, Object>) body.get("kakao_account");
         String email = kakaoAccount != null ? (String) kakaoAccount.get("email") : null;
-        String name = kakaoAccount != null ? (String) kakaoAccount.get("name") : null;
+        // String name = kakaoAccount != null ? (String) kakaoAccount.get("name") : null;
         String birth = kakaoAccount != null ? (String) kakaoAccount.get("birth") : null;
         String gender = kakaoAccount != null ? (String) kakaoAccount.get("gender") : null;
 
@@ -54,13 +54,18 @@ public class KakaoAuthService {
         SocialUserDto userDto = new SocialUserDto();
         userDto.setProviderId(id);
         userDto.setEmail(email);
-        userDto.setName(name);
-        userDto.setNickname(nickname);
+        userDto.setName(nickname);
+        userDto.setNickname(generateDefaultNickname(id));
         userDto.setBirth(birth);
         userDto.setGender(gender);
         userDto.setPhotoUrl(profileImage);
 
         log.info("카카오 사용자 정보: {}", userDto);
         return userDto;
+    }
+
+    static String generateDefaultNickname(String uid) {
+        String suffix = uid.length() > 6 ? uid.substring(uid.length() - 6) : uid;
+        return "User" + suffix;
     }
 }

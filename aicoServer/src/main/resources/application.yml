@@ -9,6 +9,17 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
       location: ./files
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: minwns10@gmail.com
+    password: dnti fgte azfv sute
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 logging:
   level:

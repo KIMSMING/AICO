@@ -59,7 +59,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/editTextEmail" />
 
-            <!-- 인증번호 + 재전송 버튼 -->
+            <!-- 인증번호 + 타이머 -->
             <EditText
                 android:id="@+id/editTextVerificationCode"
                 android:layout_width="0dp"
@@ -68,7 +68,7 @@
                 android:hint="인증번호 입력"
                 android:inputType="number"
                 android:visibility="gone"
-                app:layout_constraintEnd_toStartOf="@id/btnResendCode"
+                app:layout_constraintEnd_toStartOf="@id/codeTimer"
                 app:layout_constraintHorizontal_weight="1"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/editTextEmail" />
@@ -85,12 +85,11 @@
                 app:layout_constraintTop_toTopOf="@id/editTextVerificationCode" />
 
             <Button
-                android:id="@+id/btnResendCode"
+                android:id="@+id/codeTimer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:background="@android:color/transparent"
-                android:text="재전송"
                 android:textColor="#FF0000FF"
                 android:textSize="12sp"
                 android:visibility="gone"

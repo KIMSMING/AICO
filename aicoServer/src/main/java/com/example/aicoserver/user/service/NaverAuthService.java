@@ -53,7 +53,7 @@ public class NaverAuthService {
         userDto.setProviderId(id);
         userDto.setEmail(email);
         userDto.setName(name);
-        userDto.setNickname(nickname);
+        userDto.setNickname(generateDefaultNickname(id));
         userDto.setBirth(birth);
         userDto.setGender(gender);
         userDto.setAddress(address);
@@ -62,5 +62,10 @@ public class NaverAuthService {
 
         log.info("네이버 사용자 정보: {}", userDto);
         return userDto;
+    }
+
+    static String generateDefaultNickname(String uid) {
+        String suffix = uid.length() > 6 ? uid.substring(uid.length() - 6) : uid;
+        return "User" + suffix;
     }
 }

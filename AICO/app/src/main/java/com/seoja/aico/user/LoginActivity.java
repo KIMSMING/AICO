@@ -190,12 +190,13 @@ public class LoginActivity extends AppCompatActivity {
     private final OkHttpClient httpClient = new OkHttpClient();
     //서버 연동
     private void getFirebaseCustomTokenFromServer(String accessToken, String provider) {
-        // 서버 엔드포인트를 provider별로 분기
         String url;
+        String serverUrl = getString(R.string.server_url);
+
         if ("kakao".equals(provider)) {
-            url = "http://10.0.2.2:8080/api/auth/kakao";
+            url = "http://" + serverUrl + "/api/auth/kakao";
         } else if ("naver".equals(provider)) {
-            url = "http://10.0.2.2:8080/api/auth/naver";
+            url = "http://" + serverUrl + "/api/auth/naver";
         } else {
             runOnUiThread(() -> Toast.makeText(this, "지원하지 않는 소셜 로그인", Toast.LENGTH_SHORT).show());
             return;
