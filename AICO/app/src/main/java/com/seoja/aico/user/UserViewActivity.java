@@ -2,6 +2,7 @@ package com.seoja.aico.user;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
@@ -12,11 +13,12 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.*;
 import com.google.firebase.auth.*;
 import com.google.firebase.database.*;
+
+import com.navercorp.nid.NaverIdLoginSDK; // 네이버 SDK 최신 import
+import com.kakao.sdk.user.UserApiClient;
 
 import com.seoja.aico.MainActivity;
 import com.seoja.aico.R;
@@ -33,11 +35,12 @@ public class UserViewActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
     private FirebaseAuth mAuth;
 
+    private GoogleSignInClient googleSignInClient;
+
     // 수정 화면 결과 받기
     private final ActivityResultLauncher<Intent> updateUserLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
                 if (result.getResultCode() == RESULT_OK && currentUser != null) {
-                    // 수정 완료 시 사용자 정보 즉시 새로고침
                     loadUserProfile(currentUser.getUid());
                 }
             });
@@ -48,27 +51,34 @@ public class UserViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user_view);
 
         // View 연결
-        btnBack = (ImageButton) findViewById(R.id.btnBack);
-        imageProfile = (ImageView) findViewById(R.id.imageProfile);
-        textNickname = (TextView) findViewById(R.id.textNickname);
-        textEmail = (TextView) findViewById(R.id.textEmail);
-        textName = (TextView) findViewById(R.id.textName);
-        textBirth = (TextView) findViewById(R.id.textBirth);
-        textGender = (TextView) findViewById(R.id.textGender);
-        textAddress = (TextView) findViewById(R.id.textAddress);
-        textPhone = (TextView) findViewById(R.id.textPhone);
-        btnEdit = (Button) findViewById(R.id.btnEdit);
-        btnLogout = (Button) findViewById(R.id.btnLogout);
-        btnChangePassword = (Button) findViewById(R.id.btnChangePassword);
-        btnDeleteAccount = (Button) findViewById(R.id.btnDeleteAccount);
-        btnHistory = (Button) findViewById(R.id.btnHistory);
+        btnBack = findViewById(R.id.btnBack);
+        imageProfile = findViewById(R.id.imageProfile);
+        textNickname = findViewById(R.id.textNickname);
+        textEmail = findViewById(R.id.textEmail);
+        textName = findViewById(R.id.textName);
+        textBirth = findViewById(R.id.textBirth);
+        textGender = findViewById(R.id.textGender);
+        textAddress = findViewById(R.id.textAddress);
+        textPhone = findViewById(R.id.textPhone);
+        btnEdit = findViewById(R.id.btnEdit);
+        btnLogout = findViewById(R.id.btnLogout);
+        btnChangePassword = findViewById(R.id.btnChangePassword);
+        btnDeleteAccount = findViewById(R.id.btnDeleteAccount);
+        btnHistory = findViewById(R.id.btnHistory);
 
         mAuth = FirebaseAuth.getInstance();
+
+        // 구글 로그인 클라이언트 준비
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
 
         // 뒤로가기
         btnBack.setOnClickListener(v -> finish());
 
-        // 내 정보 수정 (registerForActivityResult 사용)
+        // 내 정보 수정
         btnEdit.setOnClickListener(v -> {
             Intent intent = new Intent(this, UpdateUserActivity.class);
             updateUserLauncher.launch(intent);
@@ -80,28 +90,13 @@ public class UserViewActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // 비밀번호 변경 (모달창)
+        // 비밀번호 변경
         btnChangePassword.setOnClickListener(v -> showPasswordResetDialog());
 
-        // 로그아웃 처리
-        btnLogout.setOnClickListener(v -> {
-            // 1. Firebase 인증 로그아웃
-            mAuth.signOut();
+        // 로그아웃 (버튼 하나로 통합)
+        btnLogout.setOnClickListener(v -> handleLogoutOrDelete(false));
 
-            // 2. Google 로그아웃 처리
-            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestEmail()
-                    .build();
-
-            GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, gso);
-
-            googleSignInClient.signOut().addOnCompleteListener(task -> {
-                // 3. 로그인 화면으로 이동
-                redirectToLogin(); // 로그인 액티비티로 이동하는 메서드
-            });
-        });
-
-        // 계정 삭제
+        // 계정 삭제 (버튼 하나로 통합)
         btnDeleteAccount.setOnClickListener(v -> showDeleteConfirmDialog());
 
         // Firebase 연결
@@ -125,6 +120,73 @@ public class UserViewActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    // 로그아웃/계정삭제 통합 처리
+    private void handleLogoutOrDelete(boolean isDelete) {
+        SharedPreferences prefs = getSharedPreferences("aico_prefs", MODE_PRIVATE);
+        String socialType = prefs.getString("social_type", ""); // "google", "kakao", "naver", "email" 등
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        Runnable redirect = () -> {
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        };
+
+        if (isDelete && user != null) {
+            user.delete().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    // DB에서 유저 정보 삭제
+                    database.child(user.getUid()).removeValue();
+                    Toast.makeText(this, "계정이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                    doSocialLogout(socialType, redirect);
+                } else {
+                    Toast.makeText(this, "계정 삭제 실패: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            doSocialLogout(socialType, redirect);
+        }
+    }
+
+    // 실제 소셜 로그아웃/연결해제 + Firebase 로그아웃
+    private void doSocialLogout(String socialType, Runnable redirect) {
+        switch (socialType) {
+            case "google":
+                googleSignInClient.signOut().addOnCompleteListener(task -> {
+                    FirebaseAuth.getInstance().signOut();
+                    redirect.run();
+                });
+                break;
+            case "kakao":
+                UserApiClient.getInstance().logout(error -> {
+                    FirebaseAuth.getInstance().signOut();
+                    redirect.run();
+                    return null;
+                });
+                break;
+            case "naver":
+                NaverIdLoginSDK.INSTANCE.logout();
+                FirebaseAuth.getInstance().signOut();
+                redirect.run();
+                break;
+            default:
+                FirebaseAuth.getInstance().signOut();
+                redirect.run();
+                break;
+        }
+    }
+
+    // 계정 삭제 확인 다이얼로그
+    private void showDeleteConfirmDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("계정 삭제")
+                .setMessage("정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.")
+                .setPositiveButton("네", (dialog, which) -> handleLogoutOrDelete(true))
+                .setNegativeButton("아니오", null)
+                .show();
     }
 
     private void loadUserProfile(String uid) {
@@ -157,7 +219,7 @@ public class UserViewActivity extends AppCompatActivity {
                         ? "전화번호: " + formatPhone(phone)
                         : "전화번호: -");
 
-                // Glide로 프로필 사진 표시 (photoUrl이 있으면)
+                // Glide로 프로필 사진 표시
                 if (photoUrl != null && !photoUrl.isEmpty()) {
                     Glide.with(UserViewActivity.this)
                             .load(photoUrl)
@@ -175,13 +237,11 @@ public class UserViewActivity extends AppCompatActivity {
         });
     }
 
-    // 생년월일 포맷: 19991231 → 1999/12/31
     private String formatBirth(String birth) {
         if (birth == null || birth.length() != 8) return birth != null ? birth : "-";
         return birth.substring(0, 4) + "/" + birth.substring(4, 6) + "/" + birth.substring(6, 8);
     }
 
-    // 전화번호 포맷: 01012345678 → 010-1234-5678, 0212345678 → 02-1234-5678
     private String formatPhone(String phone) {
         if (phone == null) return "-";
         String digits = phone.replaceAll("[^0-9]", "");
@@ -198,7 +258,6 @@ public class UserViewActivity extends AppCompatActivity {
         }
     }
 
-    // 비밀번호 재설정 이메일 모달
     private void showPasswordResetDialog() {
         TextView emailView = new TextView(this);
         emailView.setTextSize(16);
@@ -235,56 +294,10 @@ public class UserViewActivity extends AppCompatActivity {
                 .show();
     }
 
-    // 로그인 화면이동
     private void redirectToLogin() {
         Intent intent = new Intent(this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
     }
-
-    // 삭제 경고 팝업
-    private void showDeleteConfirmDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("계정 삭제")
-                .setMessage("정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.")
-                .setPositiveButton("네", (dialog, which) -> deleteAccount())
-                .setNegativeButton("아니오", null)
-                .show();
-    }
-
-    private void deleteAccount() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) return;
-
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, gso);
-
-        user.delete().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                // Realtime DB 삭제
-                database.child(user.getUid()).removeValue();
-
-                // Firebase 로그아웃
-                FirebaseAuth.getInstance().signOut();
-
-                // Google 로그아웃
-                googleSignInClient.signOut();
-
-                Toast.makeText(this, "계정이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
-
-                // 메인 화면 이동
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                finish();
-            } else {
-                Toast.makeText(this, "계정 삭제 실패: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
 }

@@ -11,7 +11,6 @@ import java.util.Map;
 @Service
 @Slf4j
 public class NaverAuthService {
-
     private static final String NAVER_USERINFO_URL = "https://openapi.naver.com/v1/nid/me";
 
     public SocialUserDto getUserInfo(String accessToken) {
@@ -46,7 +45,6 @@ public class NaverAuthService {
         String phone = responseMap != null ? (String) responseMap.get("mobile") : null;
         String photoUrl = responseMap != null ? (String) responseMap.get("profile_image") : null;
 
-        // 필수값만 체크
         if (id == null || email == null || nickname == null) {
             throw new RuntimeException("네이버 필수 사용자 정보 누락(id, email, nickname)");
         }

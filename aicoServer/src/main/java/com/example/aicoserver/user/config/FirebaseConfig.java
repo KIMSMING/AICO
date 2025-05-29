@@ -6,19 +6,26 @@ import com.google.firebase.FirebaseOptions;
 import jakarta.annotation.PostConstruct;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
+
+import org.springframework.core.io.ClassPathResource;
 
 @Configuration
 public class FirebaseConfig {
     @PostConstruct
-    public void init() throws IOException {
-        InputStream serviceAccount = getClass().getResourceAsStream("/aico-1853c-firebase-adminsdk-fbsvc-3b763ae0b9.json");
-        FirebaseOptions options = new FirebaseOptions.Builder()
-                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                .setDatabaseUrl("https://aico-1853c.firebaseio.com")
-                .build();
-        FirebaseApp.initializeApp(options);
+    public void init() {
+        try {
+            // ClassPathResource로 클래스패스에서 파일 로드
+            InputStream serviceAccount = new ClassPathResource("serviceAccountKey.json").getInputStream();
+
+            FirebaseOptions options = FirebaseOptions.builder()
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .setDatabaseUrl("https://aico-1853c-default-rtdb.firebaseio.com") // 필요 시 추가
+                    .build();
+
+            FirebaseApp.initializeApp(options);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

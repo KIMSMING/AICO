@@ -1,3 +1,4 @@
+// KakaoAuthService.java
 package com.example.aicoserver.user.service;
 
 import com.example.aicoserver.user.dto.SocialUserDto;
@@ -11,7 +12,6 @@ import java.util.Map;
 @Service
 @Slf4j
 public class KakaoAuthService {
-
     private static final String KAKAO_USERINFO_URL = "https://kapi.kakao.com/v2/user/me";
 
     public SocialUserDto getUserInfo(String accessToken) {
@@ -47,7 +47,6 @@ public class KakaoAuthService {
         String nickname = properties != null ? (String) properties.get("nickname") : null;
         String profileImage = properties != null ? (String) properties.get("profile_image") : null;
 
-        // 필수값만 체크
         if (id == null || email == null || nickname == null) {
             throw new RuntimeException("카카오 필수 사용자 정보 누락(id, email, nickname)");
         }

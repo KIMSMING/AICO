@@ -100,8 +100,8 @@ public class LoginActivity extends AppCompatActivity {
         btnSignUp.setOnClickListener(v -> startActivity(new Intent(this, RegisterActivity.class)));
         btnResetPw.setOnClickListener(v -> startActivity(new Intent(this, ResetPasswordActivity.class)));
         btnGoogleLogin.setOnClickListener(v -> signInWithGoogle());
-        btnNaverLogin.setOnClickListener(v -> signInWithNaver());
-        btnKakaoLogin.setOnClickListener(v -> signInWithKakao());
+        btnKakaoLogin.setOnClickListener(v -> { UserApiClient.getInstance().loginWithKakaoAccount(this, kakaoCallback); });
+        btnNaverLogin.setOnClickListener(v -> { signInWithNaver(); });
     }
 
     // 이메일 로그인
