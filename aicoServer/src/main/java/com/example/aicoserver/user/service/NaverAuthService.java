@@ -38,12 +38,29 @@ public class NaverAuthService {
 
         String id = responseMap != null ? (String) responseMap.get("id") : null;
         String email = responseMap != null ? (String) responseMap.get("email") : null;
+        String name = responseMap != null ? (String) responseMap.get("name") : null;
         String nickname = responseMap != null ? (String) responseMap.get("nickname") : null;
+        String birth = responseMap != null ? (String) responseMap.get("birth") : null;
+        String gender = responseMap != null ? (String) responseMap.get("gender") : null;
+        String address = responseMap != null ? (String) responseMap.get("address") : null;
+        String phone = responseMap != null ? (String) responseMap.get("mobile") : null;
+        String photoUrl = responseMap != null ? (String) responseMap.get("profile_image") : null;
+
+        // 필수값만 체크
+        if (id == null || email == null || nickname == null) {
+            throw new RuntimeException("네이버 필수 사용자 정보 누락(id, email, nickname)");
+        }
 
         SocialUserDto userDto = new SocialUserDto();
         userDto.setProviderId(id);
         userDto.setEmail(email);
+        userDto.setName(name);
         userDto.setNickname(nickname);
+        userDto.setBirth(birth);
+        userDto.setGender(gender);
+        userDto.setAddress(address);
+        userDto.setPhone(phone);
+        userDto.setPhotoUrl(photoUrl);
 
         log.info("네이버 사용자 정보: {}", userDto);
         return userDto;

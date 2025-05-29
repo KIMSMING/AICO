@@ -39,14 +39,27 @@ public class KakaoAuthService {
 
         Map<String, Object> kakaoAccount = (Map<String, Object>) body.get("kakao_account");
         String email = kakaoAccount != null ? (String) kakaoAccount.get("email") : null;
+        String name = kakaoAccount != null ? (String) kakaoAccount.get("name") : null;
+        String birth = kakaoAccount != null ? (String) kakaoAccount.get("birth") : null;
+        String gender = kakaoAccount != null ? (String) kakaoAccount.get("gender") : null;
 
         Map<String, Object> properties = (Map<String, Object>) body.get("properties");
         String nickname = properties != null ? (String) properties.get("nickname") : null;
+        String profileImage = properties != null ? (String) properties.get("profile_image") : null;
+
+        // 필수값만 체크
+        if (id == null || email == null || nickname == null) {
+            throw new RuntimeException("카카오 필수 사용자 정보 누락(id, email, nickname)");
+        }
 
         SocialUserDto userDto = new SocialUserDto();
         userDto.setProviderId(id);
         userDto.setEmail(email);
+        userDto.setName(name);
         userDto.setNickname(nickname);
+        userDto.setBirth(birth);
+        userDto.setGender(gender);
+        userDto.setPhotoUrl(profileImage);
 
         log.info("카카오 사용자 정보: {}", userDto);
         return userDto;

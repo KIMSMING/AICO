@@ -13,3 +13,6 @@ spring:
 logging:
   level:
     root: INFO
+
+firebase:
+  database-url: https://aico-1853c.firebaseio.com
