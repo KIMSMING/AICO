@@ -155,8 +155,6 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onSuccess() {
                 String accessToken = NaverIdLoginSDK.INSTANCE.getAccessToken();
-                // TODO: 서버에 accessToken 전달, customToken 받아오기
-                Toast.makeText(LoginActivity.this, "네이버 로그인은 서버 연동 후 사용 가능합니다.", Toast.LENGTH_SHORT).show();
                 getFirebaseCustomTokenFromServer(accessToken, "naver");
             }
             @Override
@@ -184,23 +182,28 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(this, "카카오 로그인 실패: " + error.getMessage(), Toast.LENGTH_SHORT).show();
         } else if (token != null) {
             String accessToken = token.getAccessToken();
-            // TODO: 서버에 accessToken 전달, customToken 받아오기
-            Toast.makeText(this, "카카오 로그인은 서버 연동 후 사용 가능합니다.", Toast.LENGTH_SHORT).show();
             getFirebaseCustomTokenFromServer(accessToken, "kakao");
         }
         return null;
     };
 
-    // 서버 연동 후 사용할 함수 예시 (현재는 미구현)
     private final OkHttpClient httpClient = new OkHttpClient();
-
+    //서버 연동
     private void getFirebaseCustomTokenFromServer(String accessToken, String provider) {
-        // TODO: 실제 서버 주소로 변경
-        String url = "https://YOUR_SERVER_URL/api/socialCustomToken";
-        RequestBody body = new FormBody.Builder()
-                .add("accessToken", accessToken)
-                .add("provider", provider) // "naver" 또는 "kakao"
-                .build();
+        // 서버 엔드포인트를 provider별로 분기
+        String url;
+        if ("kakao".equals(provider)) {
+            url = "https://YOUR_SERVER_URL/api/auth/kakao";
+        } else if ("naver".equals(provider)) {
+            url = "https://YOUR_SERVER_URL/api/auth/naver";
+        } else {
+            runOnUiThread(() -> Toast.makeText(this, "지원하지 않는 소셜 로그인", Toast.LENGTH_SHORT).show());
+            return;
+        }
+
+        MediaType JSON = MediaType.get("application/json; charset=utf-8");
+        String json = "{\"accessToken\":\"" + accessToken + "\"}";
+        RequestBody body = RequestBody.create(json, JSON);
 
         Request request = new Request.Builder()
                 .url(url)
@@ -218,8 +221,14 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful() && response.body() != null) {
-                    String customToken = response.body().string().trim();
-                    signInWithFirebaseCustomToken(customToken);
+                    String responseBody = response.body().string().trim();
+                    try {
+                        org.json.JSONObject obj = new org.json.JSONObject(responseBody);
+                        String customToken = obj.getString("customToken");
+                        signInWithFirebaseCustomToken(customToken);
+                    } catch (org.json.JSONException e) {
+                        runOnUiThread(() -> Toast.makeText(LoginActivity.this, "서버 응답 파싱 오류", Toast.LENGTH_SHORT).show());
+                    }
                 } else {
                     runOnUiThread(() ->
                             Toast.makeText(LoginActivity.this, "커스텀 토큰 발급 실패", Toast.LENGTH_SHORT).show()
@@ -228,7 +237,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-
 
     private void signInWithFirebaseCustomToken(String customToken) {
         mAuth.signInWithCustomToken(customToken)
