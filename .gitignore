@@ -27,3 +27,4 @@ replay_pid*
 .idea/
 *.iml
 aicoServer/src/main/resources/aico-1853c-firebase-adminsdk-fbsvc-3b763ae0b9.json
+aicoServer/src/main/resources/serviceAccountKey.json
