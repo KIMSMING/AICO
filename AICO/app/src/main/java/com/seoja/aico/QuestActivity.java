@@ -3,6 +3,7 @@ package com.seoja.aico;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,7 +29,10 @@ public class QuestActivity extends AppCompatActivity {
     // Android 에뮬레이터에서 PC(호스트)의 localhost(127.0.0.1)를 가리키는 특수 주소
 //    private static final String BASE_URL = "http://10.0.2.2:8000";
 
-    private TextView textRequest, textResponse;
+    private TextView textRequest, textFeedback;
+
+    private EditText textResponse;
+
     private Button btnRequest;
 
     private List<String> questionList = new ArrayList<>();
@@ -53,6 +57,7 @@ public class QuestActivity extends AppCompatActivity {
         textRequest = findViewById(R.id.textRequest);
         textResponse = findViewById(R.id.textResponse);
         btnRequest = findViewById(R.id.btnRequest);
+        textFeedback = findViewById(R.id.textFeedback);
 
         selectedFirst = getIntent().getStringExtra("selectedFirst");
         selectedSecond = getIntent().getStringExtra("selectedSecond");
@@ -71,38 +76,57 @@ public class QuestActivity extends AppCompatActivity {
 
     // Firebase에서 데이터 가져오기
     private void fetchJobQeustion() {
-        DatabaseReference database = FirebaseDatabase.getInstance()
-                .getReference("면접질문")
-                .child("직업질문")
-                .child(selectedFirst)
-                .child(selectedSecond); // 건축 도장공
-        database.addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference("면접질문");
+
+        rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                questionList.clear();
-                // 질문 목록 가져와서 리스트에 저장
-                    String commonQuestion = dataSnapshot.child("공통질문").getValue(String.class);
-                    String manageQuestion = dataSnapshot.child("인사질문").getValue(String.class);
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    // 질문 가져오기
-                    String question = snapshot.getValue(String.class);
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // 1. 공통질문 가져오기
+                DataSnapshot commonSnap = snapshot.child("공통질문");
+                for (DataSnapshot questionSnap : commonSnap.getChildren()) {
+                    String question = questionSnap.getValue(String.class);
                     if (question != null && !question.isEmpty()) {
                         questionList.add(question);
                     }
                 }
+
+                // 2. 인사질문 가져오기
+                DataSnapshot hrSnap = snapshot.child("인사질문");
+                for (DataSnapshot questionSnap : hrSnap.getChildren()) {
+                    String question = questionSnap.getValue(String.class);
+                    if (question != null && !question.isEmpty()) {
+                        questionList.add(question);
+                    }
+                }
+
+                // 3. 직업질문 가져오기 (selectedFirst, selectedSecond 기준)
+                DataSnapshot jobSnap = snapshot.child("직업질문")
+                        .child(selectedFirst)
+                        .child(selectedSecond);
+                for (DataSnapshot questionSnap : jobSnap.getChildren()) {
+                    String question = questionSnap.getValue(String.class);
+                    if (question != null && !question.isEmpty()) {
+                        questionList.add(question);
+                    }
+                }
+
+                // 리스트 셔플 후 첫 질문 출력
                 if (!questionList.isEmpty()) {
-                    Collections.shuffle(questionList);  // 랜덤 섞기
-                    loadNewQuestion();                  // 첫 질문 출력
+                    Collections.shuffle(questionList);
+                    currentQuestion = 0;
+                    loadNewQuestion();
                 } else {
-                    Log.d("QuestActivity", "질문 목록이 비어 있습니다.");
+                    Toast.makeText(QuestActivity.this, "질문이 없습니다.", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(QuestActivity.this, "데이터 로딩 실패", Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 
     private void loadNewQuestion() {
