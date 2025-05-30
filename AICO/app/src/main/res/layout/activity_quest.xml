@@ -8,17 +8,17 @@
     tools:context=".QuestActivity">
 
     <Button
-        android:id="@+id/request_button"
+        android:id="@+id/btnRequest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="64dp"
         android:text="질문하기"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/request_text" />
+        app:layout_constraintTop_toBottomOf="@+id/textRequest" />
 
     <TextView
-        android:id="@+id/response_textView"
+        android:id="@+id/textResponse"
         android:layout_width="300dp"
         android:layout_height="331dp"
         android:layout_marginStart="28dp"
@@ -27,10 +27,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <EditText
-        android:id="@+id/request_text"
-        android:layout_width="337dp"
-        android:layout_height="92dp"
+    <TextView
+        android:id="@+id/textRequest"
+        android:layout_width="340dp"
+        android:layout_height="47dp"
         android:layout_marginTop="36dp"
         android:ems="10"
         android:inputType="text"
