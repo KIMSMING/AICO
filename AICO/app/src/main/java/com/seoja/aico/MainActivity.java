@@ -64,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
         btnQuest.setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, FieldActivity.class));
         });
+
+//        printKeyHash();
+        
     }
 
     @Override
