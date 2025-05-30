@@ -34,6 +34,7 @@ public class FieldActivity extends AppCompatActivity implements View.OnClickList
 
     TextView firstText, secondText; // 텍스트 라벨
 
+    String selectedFirst = "";  // 대분류
     String selectedSecond = ""; // 사용자가 선택한 소분류 값 저장
 
     @Override
@@ -69,11 +70,11 @@ public class FieldActivity extends AppCompatActivity implements View.OnClickList
                     // 해당 대분류의 소분류 값들 읽기
                     for (DataSnapshot subSnapshot : categorySnapshot.getChildren()) {
                         String subKey = subSnapshot.getKey();
-                        if (subKey != null){
+                        if (subKey != null) {
                             subList.add(subKey);
                         }
                     }
-                    if (!subList.isEmpty()){
+                    if (!subList.isEmpty()) {
                         jobMap.put(key, subList); // 맵에 추가
                     }
                 }
@@ -102,7 +103,7 @@ public class FieldActivity extends AppCompatActivity implements View.OnClickList
         firstSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedFirst = firstList.get(position); // 선택한 대분류
+                selectedFirst = firstList.get(position); // 선택한 대분류
 
                 if (position == 0 || !jobMap.containsKey(selectedFirst)) {
                     // "직업분류 선택하기"가 선택된 경우 소분류 숨김
@@ -132,11 +133,7 @@ public class FieldActivity extends AppCompatActivity implements View.OnClickList
                 secondSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        if (position == 0) {
-                            selectedSecond = "";
-                        } else {
-                            selectedSecond = rawSecondList.get(position); // 선택된 소분류 저장
-                        }
+                        selectedSecond = rawSecondList.get(position); // 선택된 소분류 저장
                     }
 
                     @Override
@@ -162,6 +159,7 @@ public class FieldActivity extends AppCompatActivity implements View.OnClickList
 
         if (v.getId() == R.id.btnQuest) {
             Intent intent = new Intent(FieldActivity.this, QuestActivity.class);
+            intent.putExtra("selectedFirst", selectedFirst);
             intent.putExtra("selectedSecond", selectedSecond);
             startActivity(intent);
         }

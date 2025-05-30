@@ -18,19 +18,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.seoja.aico.gpt.GptApi;
-import com.seoja.aico.gpt.GptRequest;
-import com.seoja.aico.gpt.GptResponse;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class QuestActivity extends AppCompatActivity {
 
@@ -40,10 +31,13 @@ public class QuestActivity extends AppCompatActivity {
     private TextView textRequest, textResponse;
     private Button btnRequest;
 
-    private List<Question> questionList = new ArrayList<>();
+    private List<String> questionList = new ArrayList<>();
 
     // 셔플된 리스트에서 문제출력을 위한 인덱스
     private int currentQuestion = 0;
+
+    private String selectedFirst = "";
+    private String selectedSecond = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,31 +54,45 @@ public class QuestActivity extends AppCompatActivity {
         textResponse = findViewById(R.id.textResponse);
         btnRequest = findViewById(R.id.btnRequest);
 
-        fetchQeustion();
+        selectedFirst = getIntent().getStringExtra("selectedFirst");
+        selectedSecond = getIntent().getStringExtra("selectedSecond");
+
+        if (selectedSecond == null || selectedSecond.isEmpty()) {
+            Toast.makeText(this, "소분류 정보가 없습니다", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        fetchJobQeustion();
 
 //        btnRequest.setOnClickListener(v -> sendGptRequest());
     }
 
 
     // Firebase에서 데이터 가져오기
-    private void fetchQeustion() {
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference("면접질문");
+    private void fetchJobQeustion() {
+        DatabaseReference database = FirebaseDatabase.getInstance()
+                .getReference("면접질문")
+                .child("직업질문")
+                .child(selectedFirst)
+                .child(selectedSecond); // 건축 도장공
         database.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                questionList.clear();
                 // 질문 목록 가져와서 리스트에 저장
+                    String commonQuestion = dataSnapshot.child("공통질문").getValue(String.class);
+                    String manageQuestion = dataSnapshot.child("인사질문").getValue(String.class);
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     // 질문 가져오기
-                    String commonQuestion = snapshot.child("공통질문").getValue(String.class);
-                    String manageQuestion = snapshot.child("인사질문").getValue(String.class);
-                    String jobQuestion = snapshot.child("직업질문").getValue(String.class);
-                    if (commonQuestion != null && manageQuestion != null && jobQuestion != null) {
-                        questionList.add(new Question(commonQuestion, manageQuestion, jobQuestion));
+                    String question = snapshot.getValue(String.class);
+                    if (question != null && !question.isEmpty()) {
+                        questionList.add(question);
                     }
                 }
                 if (!questionList.isEmpty()) {
-                    Collections.shuffle(questionList);
-                    loadNewQuestion();
+                    Collections.shuffle(questionList);  // 랜덤 섞기
+                    loadNewQuestion();                  // 첫 질문 출력
                 } else {
                     Log.d("QuestActivity", "질문 목록이 비어 있습니다.");
                 }
@@ -97,37 +105,13 @@ public class QuestActivity extends AppCompatActivity {
         });
     }
 
-    // Question 객체 클래스 정의
-    private static class Question {
-        private String commonQuestion;
-        private String manageQuestion;
-        private String jobQuestion;
-
-        public Question(String commonQuestion, String manageQuestion, String jobQuestion) {
-            this.commonQuestion = commonQuestion;
-            this.manageQuestion = manageQuestion;
-            this.jobQuestion = jobQuestion;
-        }
-
-        public String getCommonQuestion() {
-            return commonQuestion;
-        }
-
-        public String getManageQuestion() {
-            return manageQuestion;
-        }
-
-        public String getJobQuestion() {
-            return jobQuestion;
-        }
-    }
-
     private void loadNewQuestion() {
         if (currentQuestion >= questionList.size()) {
+            Toast.makeText(this, "더이상 낼 문제가 없습니다.", Toast.LENGTH_SHORT).show();
             return;
         }
-        Question question = questionList.get(currentQuestion);
-        textRequest.setText(question.getCommonQuestion());
+        String question = questionList.get(currentQuestion);
+        textRequest.setText(question);
         currentQuestion++;
     }
 
