@@ -100,8 +100,8 @@ public class LoginActivity extends AppCompatActivity {
         btnSignUp.setOnClickListener(v -> startActivity(new Intent(this, RegisterActivity.class)));
         btnResetPw.setOnClickListener(v -> startActivity(new Intent(this, ResetPasswordActivity.class)));
         btnGoogleLogin.setOnClickListener(v -> signInWithGoogle());
-        btnKakaoLogin.setOnClickListener(v -> { UserApiClient.getInstance().loginWithKakaoAccount(this, kakaoCallback); });
-        btnNaverLogin.setOnClickListener(v -> { signInWithNaver(); });
+        btnKakaoLogin.setOnClickListener(v -> signInWithKakao());
+        btnNaverLogin.setOnClickListener(v -> signInWithNaver());
     }
 
     // 이메일 로그인
@@ -133,9 +133,12 @@ public class LoginActivity extends AppCompatActivity {
 
     // Google 로그인
     private void signInWithGoogle() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        googleSignInLauncher.launch(signInIntent);
+        mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
+            Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+            googleSignInLauncher.launch(signInIntent);
+        });
     }
+
 
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
