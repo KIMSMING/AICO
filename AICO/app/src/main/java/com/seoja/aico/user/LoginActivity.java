@@ -197,7 +197,7 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(this, "카카오 로그인 실패: " + error.getMessage(), Toast.LENGTH_SHORT).show();
         } else if (token != null) {
             String accessToken = token.getAccessToken();
-            
+
             getSharedPreferences("aico_prefs", MODE_PRIVATE).edit()
                     .putString("social_type", "kakao")
                     .apply();
