@@ -7,4 +7,18 @@
     android:layout_height="match_parent"
     tools:context=".reviewBoard.AddBoardActivity">
 
+    <!-- 뒤로가기 버튼 -->
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_backarrow"
+        android:contentDescription="뒤로가기 버튼"
+        app:tint="#222"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+    
 </androidx.constraintlayout.widget.ConstraintLayout>

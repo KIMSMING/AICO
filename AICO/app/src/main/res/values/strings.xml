@@ -22,4 +22,5 @@
     <string name="title_activity_reset_password">ResetPasswordActivity</string>
 
     <string name="server_url" translatable="false">10.0.2.2:8081</string>
+<!--    <string name="server_url" translatable="false">172.31.51.0:8081</string>-->
 </resources>
