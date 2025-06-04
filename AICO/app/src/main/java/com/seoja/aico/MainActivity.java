@@ -17,15 +17,26 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.seoja.aico.gpt.AskRequest;
+import com.seoja.aico.gpt.GptApi;
+import com.seoja.aico.gpt.GptResponse;
+import com.seoja.aico.gpt.HistoryItem;
+import com.seoja.aico.gpt.RetrofitClient;
 import com.seoja.aico.user.LoginActivity;
 import com.seoja.aico.user.UserViewActivity;
 import com.seoja.aico.QuestActivity;
 
 import java.security.MessageDigest;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class MainActivity extends AppCompatActivity {
 
-    Button btnQuest, btnUserView;
+    Button btnQuest, btnUserView, btnTestApi;
     private FirebaseAuth mAuth;
 
     @Override
@@ -65,8 +76,62 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, FieldActivity.class));
         });
 
+        //API Test
+        btnTestApi = findViewById(R.id.btnTestApi);
+        btnTestApi.setOnClickListener(v -> {
+            runFeedbackTest();
+        });
+
+        //RetrofitClient 초기화
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://10.0.2.2:8000/") //에뮬레이터에서 Localhost
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        GptApi api = retrofit.create(GptApi.class);
+
+        //GPT 피드백 요청 보내기
+        AskRequest ask = new AskRequest("testuser1", "자기소개 해주세요");
+        api.askGpt(ask).enqueue(new Callback<GptResponse>() {
+            @Override
+            public void onResponse(Call<GptResponse> call, Response<GptResponse> response) {
+                if (response.isSuccessful()) {
+                    String feedback = response.body().getContent();
+                    Log.d("GPT_FEEDBACK", feedback);
+
+                    //받은 피드백을 히스토리로 저장
+                    HistoryItem item = new HistoryItem(
+                            "testuser1",
+                            "자기소개 해주세요",
+                            "저는 책임감이 강하고 팀워크에 강합니다.",
+                            feedback
+                    );
+
+                    api.saveHistory(item).enqueue(new Callback<Void>() {
+                        @Override
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+                            Log.d("SAVE", "히스토리 저장 완료");
+                        }
+
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+                            Log.e("SAVE_ERR", t.getMessage());
+                        }
+                    });
+
+                } else {
+                    Log.e("GPT_ERR", response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GptResponse> call, Throwable t) {
+                Log.e("GPT_CALL_ERR", t.getMessage());
+            }
+        });
+
 //        printKeyHash();
-        
+
     }
 
     @Override
@@ -97,5 +162,30 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    //API 테스트 함수
+    private void runFeedbackTest() {
+        Retrofit retrofit = RetrofitClient.getClient("http://10.0.2.2:8000/");
+        GptApi api = retrofit.create(GptApi.class);
+
+        AskRequest ask = new AskRequest("testuser1", "자기소개 해주세요");
+
+        api.askGpt(ask).enqueue(new Callback<GptResponse>() {
+            @Override
+            public void onResponse(Call<GptResponse> call, Response<GptResponse> response) {
+                if(response.isSuccessful()) {
+                    String feedback = response.body().getContent();
+                    Log.d("GPT_FEEDBACK", feedback);
+                } else {
+                    Log.e("GPT_ERROR", response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GptResponse> call, Throwable t) {
+                Log.e("GPT_FAILURE", t.getMessage());
+            }
+        });
     }
 }
