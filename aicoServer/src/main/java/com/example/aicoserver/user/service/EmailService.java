@@ -29,7 +29,7 @@ public class EmailService {
 
             helper.setTo(toEmail);
             helper.setReplyTo("AICO");
-            helper.setFrom("minwns10@gmail.com");
+            helper.setFrom("seoja250502@gmail.com");
             helper.setSubject("[AICO] 이메일 인증번호 안내");
 
             String htmlContent = """

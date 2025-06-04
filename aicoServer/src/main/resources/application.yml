@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8081
 
 spring:
   profiles:
@@ -12,8 +12,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: minwns10@gmail.com
-    password: dnti fgte azfv sute
+    username: seoja250502@gmail.com
+    password: iqhx rity tyrq qene
     properties:
       mail:
         smtp:

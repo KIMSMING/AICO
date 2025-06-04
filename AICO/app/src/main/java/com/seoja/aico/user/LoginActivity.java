@@ -100,8 +100,8 @@ public class LoginActivity extends AppCompatActivity {
         btnSignUp.setOnClickListener(v -> startActivity(new Intent(this, RegisterActivity.class)));
         btnResetPw.setOnClickListener(v -> startActivity(new Intent(this, ResetPasswordActivity.class)));
         btnGoogleLogin.setOnClickListener(v -> signInWithGoogle());
-        btnKakaoLogin.setOnClickListener(v -> { UserApiClient.getInstance().loginWithKakaoAccount(this, kakaoCallback); });
-        btnNaverLogin.setOnClickListener(v -> { signInWithNaver(); });
+        btnKakaoLogin.setOnClickListener(v -> signInWithKakao());
+        btnNaverLogin.setOnClickListener(v -> signInWithNaver());
     }
 
     // 이메일 로그인
@@ -133,15 +133,23 @@ public class LoginActivity extends AppCompatActivity {
 
     // Google 로그인
     private void signInWithGoogle() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        googleSignInLauncher.launch(signInIntent);
+        mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
+            Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+            googleSignInLauncher.launch(signInIntent);
+        });
     }
+
 
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
+                        // social_type 저장
+                        getSharedPreferences("aico_prefs", MODE_PRIVATE).edit()
+                                .putString("social_type", "google")
+                                .apply();
+
                         checkFirstSocialLogin();
                     } else {
                         Toast.makeText(this, "Firebase 인증 실패: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
@@ -155,12 +163,19 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onSuccess() {
                 String accessToken = NaverIdLoginSDK.INSTANCE.getAccessToken();
+
+                getSharedPreferences("aico_prefs", MODE_PRIVATE).edit()
+                        .putString("social_type", "naver")
+                        .apply();
+
                 getFirebaseCustomTokenFromServer(accessToken, "naver");
             }
+
             @Override
             public void onFailure(int httpStatus, String message) {
                 Toast.makeText(LoginActivity.this, "네이버 로그인 실패: " + message, Toast.LENGTH_SHORT).show();
             }
+
             @Override
             public void onError(int errorCode, String message) {
                 onFailure(errorCode, message);
@@ -182,6 +197,11 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(this, "카카오 로그인 실패: " + error.getMessage(), Toast.LENGTH_SHORT).show();
         } else if (token != null) {
             String accessToken = token.getAccessToken();
+
+            getSharedPreferences("aico_prefs", MODE_PRIVATE).edit()
+                    .putString("social_type", "kakao")
+                    .apply();
+
             getFirebaseCustomTokenFromServer(accessToken, "kakao");
         }
         return null;
