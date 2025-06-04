@@ -17,6 +17,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.seoja.aico.reviewBoard.BoardListActivity;
 import com.seoja.aico.user.LoginActivity;
 import com.seoja.aico.user.UserViewActivity;
 import com.seoja.aico.QuestActivity;
@@ -25,7 +26,7 @@ import java.security.MessageDigest;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btnQuest, btnUserView;
+    Button btnQuest, btnUserView, btnBoard1, btnBoard2, btnBoard3 ;
     private FirebaseAuth mAuth;
 
     @Override
@@ -54,6 +55,9 @@ public class MainActivity extends AppCompatActivity {
 
         btnUserView = (Button) findViewById(R.id.btnGoUserView);
         btnQuest = (Button) findViewById(R.id.btnQuest);
+        btnBoard1 = (Button) findViewById(R.id.btnBoard1);
+        btnBoard2 = (Button) findViewById(R.id.btnBoard2);
+        btnBoard3 = (Button) findViewById(R.id.btnBoard3);
 
         // 유저정보
         btnUserView.setOnClickListener(v -> {
@@ -65,8 +69,13 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, FieldActivity.class));
         });
 
+        // 게시판
+        btnBoard1.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, BoardListActivity.class));
+        });
+
 //        printKeyHash();
-        
+
     }
 
     @Override
