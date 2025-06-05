@@ -8,7 +8,6 @@
     android:background="#F5F6FA"
     tools:context=".reviewBoard.UpdateBoardActivity">
 
-    <!-- 입력 영역(스크롤뷰) -->
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="0dp"

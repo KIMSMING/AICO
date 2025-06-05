@@ -72,35 +72,35 @@
         app:layout_constraintStart_toEndOf="@+id/btnQuest"
         app:layout_constraintTop_toBottomOf="@+id/btnAddQuestion" />
 
-    <Button
-        android:id="@+id/btnBoard1"
-        android:layout_width="112dp"
-        android:layout_height="228dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="36dp"
-        android:text="Button"
+    <!-- 후기보기  -->
+    <TextView
+        android:id="@+id/btnGoBoard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="후기보기 >"
+        android:textSize="16sp"
+        android:textColor="#2196F3"
+        android:textStyle="bold"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="24dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintTop_toBottomOf="@id/btnTestSpeech"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- 카드형 게시글 -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvMainPreview"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        app:layout_constraintTop_toBottomOf="@id/btnGoBoard"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnQuest" />
-
-    <Button
-        android:id="@+id/btnBoard2"
-        android:layout_width="128dp"
-        android:layout_height="224dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginBottom="112dp"
-        android:text="Button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btnBoard1" />
-
-    <Button
-        android:id="@+id/btnBoard3"
-        android:layout_width="126dp"
-        android:layout_height="230dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="108dp"
-        android:text="Button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:listitem="@layout/item_board_preview"
+        tools:itemCount="3"/>
 
     <ImageView
         android:id="@+id/imageView3"

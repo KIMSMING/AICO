@@ -145,15 +145,7 @@ public class AddBoardActivity extends AppCompatActivity {
     }
 
     private void savePostToDatabase(String title, String content, FirebaseUser user, String imageUrl) {
-        String safeTitle = title.replace(".", "_")
-                .replace("$", "_")
-                .replace("#", "_")
-                .replace("[", "_")
-                .replace("]", "_")
-                .replace("/", "_")
-                .replace(" ", "_");
-
-        String uniqueKey = safeTitle + "_" + System.currentTimeMillis();
+        String uniqueKey = String.valueOf(System.currentTimeMillis());
 
         // 사용자 닉네임 조회
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
