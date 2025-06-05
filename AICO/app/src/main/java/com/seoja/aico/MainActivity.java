@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         mAuth = FirebaseAuth.getInstance();
 
         // 1. 로그인 상태 체크
@@ -72,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         btnUserView = (Button) findViewById(R.id.btnGoUserView);
         btnQuest = (Button) findViewById(R.id.btnQuest);
         btnGoBoard = (TextView) findViewById(R.id.btnGoBoard);
+        btnAddQuestion = (Button) findViewById(R.id.btnAddQuestion);
 
         // 유저정보
         btnUserView.setOnClickListener(v -> {
