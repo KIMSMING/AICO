@@ -16,6 +16,18 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".reviewBoard.BoardListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".reviewBoard.BoardActivity"
+            android:exported="false" />
+        <activity
+            android:name=".reviewBoard.UpdateBoardActivity"
+            android:exported="false" />
+        <activity
+            android:name=".reviewBoard.AddBoardActivity"
+            android:exported="false" />
+        <activity
             android:name=".FieldActivity"
             android:exported="false" />
         <activity
@@ -63,9 +75,7 @@
                     android:host="oauth"
                     android:scheme="kakao8c33170088d1275581c9464e2c8ef71b" />
             </intent-filter>
-        </activity>
-
-        <!-- 네이버 -->
+        </activity> <!-- 네이버 -->
         <meta-data
             android:name="com.naver.sdk.clientId"
             android:value="@string/naver_client_id" />

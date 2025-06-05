@@ -22,6 +22,7 @@ import com.seoja.aico.gpt.GptApi;
 import com.seoja.aico.gpt.GptResponse;
 import com.seoja.aico.gpt.HistoryItem;
 import com.seoja.aico.gpt.RetrofitClient;
+import com.seoja.aico.reviewBoard.BoardListActivity;
 import com.seoja.aico.user.LoginActivity;
 import com.seoja.aico.user.UserViewActivity;
 import com.seoja.aico.QuestActivity;
@@ -36,6 +37,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
+    Button btnQuest, btnUserView, btnBoard1, btnBoard2, btnBoard3 ;
     Button btnQuest, btnUserView, btnTestApi;
     private FirebaseAuth mAuth;
 
@@ -65,6 +67,9 @@ public class MainActivity extends AppCompatActivity {
 
         btnUserView = (Button) findViewById(R.id.btnGoUserView);
         btnQuest = (Button) findViewById(R.id.btnQuest);
+        btnBoard1 = (Button) findViewById(R.id.btnBoard1);
+        btnBoard2 = (Button) findViewById(R.id.btnBoard2);
+        btnBoard3 = (Button) findViewById(R.id.btnBoard3);
 
         // 유저정보
         btnUserView.setOnClickListener(v -> {
@@ -128,6 +133,11 @@ public class MainActivity extends AppCompatActivity {
             public void onFailure(Call<GptResponse> call, Throwable t) {
                 Log.e("GPT_CALL_ERR", t.getMessage());
             }
+        });
+
+        // 게시판
+        btnBoard1.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, BoardListActivity.class));
         });
 
 //        printKeyHash();
