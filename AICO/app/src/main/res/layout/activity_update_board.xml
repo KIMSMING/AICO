@@ -42,14 +42,15 @@
                 android:id="@+id/textTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="16dp"
                 android:text="게시글 수정"
+                android:textColor="#222"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:textColor="#222"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toEndOf="@id/btnBack"
                 app:layout_constraintBottom_toBottomOf="@id/btnBack"
-                android:layout_marginStart="12dp"/>
+                app:layout_constraintStart_toEndOf="@id/btnBack"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <!-- 제목 입력 -->
             <EditText
