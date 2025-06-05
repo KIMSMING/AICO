@@ -17,39 +17,51 @@
         tools:targetApi="31">
         <activity
             android:name=".reviewBoard.BoardListActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".reviewBoard.BoardActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".reviewBoard.UpdateBoardActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".reviewBoard.AddBoardActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".FieldActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".user.UpdateUserActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".user.ResetPasswordActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".user.UserViewActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".QuestActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".user.RegisterActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".user.LoginActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
+            android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

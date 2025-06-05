@@ -192,6 +192,7 @@ public class BoardActivity extends AppCompatActivity {
                     post.likedUsers.put(user.getUid(), true);
                 }
                 mutableData.setValue(post);
+                setResult(RESULT_OK);
                 return Transaction.success(mutableData);
             }
 
@@ -235,6 +236,7 @@ public class BoardActivity extends AppCompatActivity {
                         imageRef.delete();
                     }
                     Toast.makeText(this, "게시글이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK);
                     finish();
                 })
                 .addOnFailureListener(e -> {

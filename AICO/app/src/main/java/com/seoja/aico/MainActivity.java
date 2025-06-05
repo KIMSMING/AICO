@@ -9,6 +9,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,7 +42,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btnQuest, btnUserView, btnAddQuestion;
+    Button btnQuest, btnAddQuestion;
+    ImageButton btnUserView, btnOption;
     private FirebaseAuth mAuth;
     TextView btnGoBoard;
 
@@ -68,7 +70,8 @@ public class MainActivity extends AppCompatActivity {
 
         // printKeyHash(); // 해쉬 키 필요할 때만 쓰면 됨
 
-        btnUserView = (Button) findViewById(R.id.btnGoUserView);
+        btnUserView = (ImageButton) findViewById(R.id.btnGoUserView);
+        btnOption = (ImageButton) findViewById(R.id.btnOption);
         btnQuest = (Button) findViewById(R.id.btnQuest);
         btnGoBoard = (TextView) findViewById(R.id.btnGoBoard);
         btnAddQuestion = (Button) findViewById(R.id.btnAddQuestion);
