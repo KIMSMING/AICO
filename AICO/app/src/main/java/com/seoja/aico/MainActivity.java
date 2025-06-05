@@ -8,9 +8,13 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -38,14 +42,14 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btnQuest, btnUserView ;
+    Button btnQuest, btnAddQuestion, btnTestSpeech;
+    ImageButton btnUserView, btnOption;
     private FirebaseAuth mAuth;
     TextView btnGoBoard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         mAuth = FirebaseAuth.getInstance();
 
         // 1. 로그인 상태 체크
@@ -66,9 +70,22 @@ public class MainActivity extends AppCompatActivity {
 
         // printKeyHash(); // 해쉬 키 필요할 때만 쓰면 됨
 
-        btnUserView = (Button) findViewById(R.id.btnGoUserView);
+        btnUserView = (ImageButton) findViewById(R.id.btnGoUserView);
+        btnOption = (ImageButton) findViewById(R.id.btnOption);
         btnQuest = (Button) findViewById(R.id.btnQuest);
         btnGoBoard = (TextView) findViewById(R.id.btnGoBoard);
+        btnTestSpeech = (Button) findViewById(R.id.btnTestSpeech);
+        btnAddQuestion = (Button) findViewById(R.id.btnAddQuestion);
+
+        //질문 추가하기
+        btnOption.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, OptionActivity.class));
+        });
+
+        // 마이크테스트
+        btnTestSpeech.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, MiceTestActivity .class));
+        });
 
         // 유저정보
         btnUserView.setOnClickListener(v -> {
@@ -85,8 +102,14 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, BoardListActivity.class));
         });
 
+        //질문 추가하기
+        btnAddQuestion.setOnClickListener(v -> {
+            showQuestionDialog();
+        });
+
 //        printKeyHash();
 
+        // 게시판 글 출력
         RecyclerView rvMainPreview = findViewById(R.id.rvMainPreview);
         rvMainPreview.setLayoutManager(
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
@@ -103,12 +126,12 @@ public class MainActivity extends AppCompatActivity {
         });
         rvMainPreview.setAdapter(previewAdapter);
 
-// 후기보기 > 클릭 시 게시판 이동
+        // 후기보기 > 클릭 시 게시판 이동
         findViewById(R.id.btnGoBoard).setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, BoardListActivity.class));
         });
 
-// 데이터 로딩 (좋아요순 4개만)
+        // 데이터 로딩 (좋아요순 4개만)
         DatabaseReference boardRef = FirebaseDatabase.getInstance().getReference("board");
         boardRef.get().addOnSuccessListener(snapshot -> {
             List<BoardPost> allPosts = new ArrayList<>();
@@ -127,9 +150,22 @@ public class MainActivity extends AppCompatActivity {
             previewAdapter.notifyDataSetChanged();
         });
 
+        // 알람권한
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 1001);
+            }
+        }
+        // 마이크권한
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{android.Manifest.permission.RECORD_AUDIO}, 2001);
+            }
+        }
+
     }
-
-
 
     @Override
     protected void onStart() {
@@ -159,5 +195,48 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    //질문 추가하기 다이얼로그 함수
+    private void showQuestionDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("듣고 싶은 질문을 입력해주세요");
+
+        final EditText input = new EditText(this);
+        input.setHint("예: 이 직무에서 가장 도전적인 부분은?");
+        builder.setView(input);
+
+        builder.setPositiveButton("추가", (dialog, which) -> {
+            String question = input.getText().toString().trim();
+            if(!question.isEmpty()) {
+                saveQuestionToFirebase(question);
+            } else {
+                Toast.makeText(this, "질문을 입력해주세요", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("취소", (dialog, which) -> dialog.cancel());
+        builder.show();
+    }
+
+    //Firebase에 질문 저장 함수
+    private void saveQuestionToFirebase(String question) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(currentUser == null) return;
+
+        String uid = currentUser.getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance()
+                .getReference("users")
+                .child(uid)
+                .child("custom_questions");
+
+        String key = ref.push().getKey(); //고유 키 자동 생성
+        ref.child(key).setValue(question)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "질문이 추가되었습니다!", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "저장 실패 : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 }
