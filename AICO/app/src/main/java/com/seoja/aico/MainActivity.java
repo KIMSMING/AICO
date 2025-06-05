@@ -8,9 +8,12 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -38,7 +41,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btnQuest, btnUserView ;
+    Button btnQuest, btnUserView, btnAddQuestion;
     private FirebaseAuth mAuth;
     TextView btnGoBoard;
 
@@ -83,6 +86,11 @@ public class MainActivity extends AppCompatActivity {
         // 후기 게시판
         btnGoBoard.setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, BoardListActivity.class));
+        });
+
+        //질문 추가하기
+        btnAddQuestion.setOnClickListener(v -> {
+            showQuestionDialog();
         });
 
 //        printKeyHash();
@@ -159,5 +167,48 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    //질문 추가하기 다이얼로그 함수
+    private void showQuestionDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("듣고 싶은 질문을 입력해주세요");
+
+        final EditText input = new EditText(this);
+        input.setHint("예: 이 직무에서 가장 도전적인 부분은?");
+        builder.setView(input);
+
+        builder.setPositiveButton("추가", (dialog, which) -> {
+            String question = input.getText().toString().trim();
+            if(!question.isEmpty()) {
+                saveQuestionToFirebase(question);
+            } else {
+                Toast.makeText(this, "질문을 입력해주세요", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("취소", (dialog, which) -> dialog.cancel());
+        builder.show();
+    }
+
+    //Firebase에 질문 저장 함수
+    private void saveQuestionToFirebase(String question) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(currentUser == null) return;
+
+        String uid = currentUser.getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance()
+                .getReference("users")
+                .child(uid)
+                .child("custom_questions");
+
+        String key = ref.push().getKey(); //고유 키 자동 생성
+        ref.child(key).setValue(question)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "질문이 추가되었습니다!", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "저장 실패 : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 }
