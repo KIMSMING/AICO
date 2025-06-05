@@ -42,7 +42,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btnQuest, btnAddQuestion;
+    Button btnQuest, btnAddQuestion, btnTestSpeech;
     ImageButton btnUserView, btnOption;
     private FirebaseAuth mAuth;
     TextView btnGoBoard;
@@ -74,7 +74,18 @@ public class MainActivity extends AppCompatActivity {
         btnOption = (ImageButton) findViewById(R.id.btnOption);
         btnQuest = (Button) findViewById(R.id.btnQuest);
         btnGoBoard = (TextView) findViewById(R.id.btnGoBoard);
+        btnTestSpeech = (Button) findViewById(R.id.btnTestSpeech);
         btnAddQuestion = (Button) findViewById(R.id.btnAddQuestion);
+
+        //질문 추가하기
+        btnOption.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, OptionActivity.class));
+        });
+
+        // 마이크테스트
+        btnTestSpeech.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, MiceTestActivity .class));
+        });
 
         // 유저정보
         btnUserView.setOnClickListener(v -> {
@@ -98,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
 
 //        printKeyHash();
 
+        // 게시판 글 출력
         RecyclerView rvMainPreview = findViewById(R.id.rvMainPreview);
         rvMainPreview.setLayoutManager(
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
@@ -114,12 +126,12 @@ public class MainActivity extends AppCompatActivity {
         });
         rvMainPreview.setAdapter(previewAdapter);
 
-// 후기보기 > 클릭 시 게시판 이동
+        // 후기보기 > 클릭 시 게시판 이동
         findViewById(R.id.btnGoBoard).setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, BoardListActivity.class));
         });
 
-// 데이터 로딩 (좋아요순 4개만)
+        // 데이터 로딩 (좋아요순 4개만)
         DatabaseReference boardRef = FirebaseDatabase.getInstance().getReference("board");
         boardRef.get().addOnSuccessListener(snapshot -> {
             List<BoardPost> allPosts = new ArrayList<>();
@@ -138,9 +150,22 @@ public class MainActivity extends AppCompatActivity {
             previewAdapter.notifyDataSetChanged();
         });
 
+        // 알람권한
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 1001);
+            }
+        }
+        // 마이크권한
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{android.Manifest.permission.RECORD_AUDIO}, 2001);
+            }
+        }
+
     }
-
-
 
     @Override
     protected void onStart() {
