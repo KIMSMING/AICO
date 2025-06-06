@@ -60,12 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-<<<<<<< HEAD
-            android:gravity="center_vertical" >
-=======
-            android:gravity="center_vertical"
             android:layout_marginTop="8dp" >
->>>>>>> main
 
             <ImageButton
                 android:id="@+id/btnLike"

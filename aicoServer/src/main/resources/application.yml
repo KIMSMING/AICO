@@ -5,6 +5,7 @@ server:
 spring:
   profiles:
     active: prod
+
   servlet:
     multipart:
       max-file-size: 10MB
@@ -21,6 +22,15 @@ spring:
           auth: true
           starttls:
             enable: true
+
+oci:
+  config:
+    file: /home/opc/.oci/config
+    profile: DEFAULT
+  namespace: axs1tvst9t3n
+  bucket: bucket-20250606-0153
+  region: ap-chuncheon-1
+  bucket-public: false
 
 logging:
   level:

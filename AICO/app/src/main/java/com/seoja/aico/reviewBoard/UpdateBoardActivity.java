@@ -1,9 +1,12 @@
 package com.seoja.aico.reviewBoard;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -22,12 +25,23 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+import com.seoja.aico.ApiService;
 import com.seoja.aico.R;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class UpdateBoardActivity extends AppCompatActivity {
 
@@ -38,15 +52,16 @@ public class UpdateBoardActivity extends AppCompatActivity {
 
     private final List<Uri> imageUriList = new ArrayList<>();
     private ImageAdapter imageAdapter;
-
-    // 게시글 고유키
     private String postKey;
     private String oldImageUrl = "";
 
+    // Firebase
     private DatabaseReference boardRef;
-    private StorageReference storageRef;
 
-    // 이미지 선택 결과 처리
+    // Retrofit 서비스
+    private ApiService apiService;
+
+    // 이미지 선택
     private final ActivityResultLauncher<Intent> imagePickerLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
@@ -65,6 +80,7 @@ public class UpdateBoardActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_update_board);
 
+        // UI 바인딩
         btnBack = findViewById(R.id.btnBack);
         editTitle = findViewById(R.id.editTitle);
         editContent = findViewById(R.id.editContent);
@@ -73,23 +89,30 @@ public class UpdateBoardActivity extends AppCompatActivity {
         btnCancel = findViewById(R.id.btnCancel);
         rvImages = findViewById(R.id.rvImages);
 
-        // Firebase 참조
+        // Firebase 초기화
         boardRef = FirebaseDatabase.getInstance().getReference("board");
-        storageRef = FirebaseStorage.getInstance().getReference("boardImages");
 
-        // 게시글 고유키 받아오기
+        // Retrofit 초기화
+        String baseUrl = "http://" + getString(R.string.server_url) + "/";
+        apiService = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(ApiService.class);
+
+        // 게시글 키 확인
         postKey = getIntent().getStringExtra("postKey");
         if (postKey == null) {
-            Toast.makeText(this, "잘못된 접근입니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "잘못된 접근", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
-        // 뒤로가기 및 취소
+        // 뒤로가기/취소 버튼
         btnBack.setOnClickListener(v -> finish());
         btnCancel.setOnClickListener(v -> finish());
 
-        // 이미지 RecyclerView 세팅
+        // 이미지 어댑터 설정
         imageAdapter = new ImageAdapter(imageUriList, position -> {
             imageUriList.remove(position);
             imageAdapter.notifyDataSetChanged();
@@ -97,13 +120,13 @@ public class UpdateBoardActivity extends AppCompatActivity {
         rvImages.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         rvImages.setAdapter(imageAdapter);
 
-        // 사진 추가
+        // 이미지 추가 버튼
         btnAddImage.setOnClickListener(v -> openImagePicker());
 
-        // 수정 완료
+        // 수정 버튼
         btnUpdate.setOnClickListener(v -> updatePost());
 
-        // 기존 게시글 데이터 불러오기
+        // 기존 데이터 로드
         loadPostData();
     }
 
@@ -119,7 +142,7 @@ public class UpdateBoardActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 BoardPost post = snapshot.getValue(BoardPost.class);
                 if (post == null) {
-                    Toast.makeText(UpdateBoardActivity.this, "게시글이 존재하지 않습니다.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UpdateBoardActivity.this, "게시글 없음", Toast.LENGTH_SHORT).show();
                     finish();
                     return;
                 }
@@ -132,8 +155,7 @@ public class UpdateBoardActivity extends AppCompatActivity {
                 }
                 imageAdapter.notifyDataSetChanged();
             }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {}
+            @Override public void onCancelled(@NonNull DatabaseError error) {}
         });
     }
 
@@ -141,38 +163,67 @@ public class UpdateBoardActivity extends AppCompatActivity {
         String title = editTitle.getText().toString().trim();
         String content = editContent.getText().toString().trim();
 
-        if (title.isEmpty()) {
-            Toast.makeText(this, "제목을 입력하세요.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (content.isEmpty()) {
-            Toast.makeText(this, "내용을 입력하세요.", Toast.LENGTH_SHORT).show();
+        if (title.isEmpty() || content.isEmpty()) {
+            Toast.makeText(this, "제목/내용 필수", Toast.LENGTH_SHORT).show();
             return;
         }
 
         btnUpdate.setEnabled(false);
 
-        // 이미지가 새로 첨부되었는지 확인
-        if (!imageUriList.isEmpty() && (imageUriList.get(0).getScheme() == null || !"http".equals(imageUriList.get(0).getScheme()) && !"https".equals(imageUriList.get(0).getScheme()))) {
-            // 새 이미지 업로드
-            Uri newImageUri = imageUriList.get(0);
-            String imageFileName = "IMG_" + System.currentTimeMillis() + ".jpg";
-            StorageReference imageRef = storageRef.child(imageFileName);
-            imageRef.putFile(newImageUri)
-                    .addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                        // 기존 이미지가 있으면 삭제
-                        if (!oldImageUrl.isEmpty()) {
-                            StorageReference oldImageRef = FirebaseStorage.getInstance().getReferenceFromUrl(oldImageUrl);
-                            oldImageRef.delete();
-                        }
-                        saveUpdatedPost(title, content, uri.toString());
-                    }))
-                    .addOnFailureListener(e -> {
-                        btnUpdate.setEnabled(true);
-                        Toast.makeText(this, "이미지 업로드 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
+        // 새 이미지가 있는 경우 업로드
+        if (!imageUriList.isEmpty() && !isOldImage(imageUriList.get(0))) {
+            uploadNewImage(imageUriList.get(0));
         } else {
             saveUpdatedPost(title, content, oldImageUrl);
+        }
+    }
+
+    private boolean isOldImage(Uri uri) {
+        return uri.toString().equals(oldImageUrl);
+    }
+
+    private void uploadNewImage(Uri newImageUri) {
+        String filePath = FileUtils.getPath(this, newImageUri);
+        if (filePath == null) {
+            handleError("이미지 파일 경로를 찾을 수 없습니다.");
+            return;
+        }
+        File file = new File(filePath);
+        RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), file);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
+
+        apiService.uploadImage(body).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    try {
+                        String newImageUrl = response.body().string();
+                        deleteOldImageIfNeeded(newImageUrl);
+                        saveUpdatedPost(editTitle.getText().toString(),
+                                editContent.getText().toString(),
+                                newImageUrl);
+                    } catch (IOException e) {
+                        handleError("이미지 처리 오류: " + e.getMessage());
+                    }
+                } else {
+                    handleError("서버 오류: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                handleError("네트워크 오류: " + t.getMessage());
+            }
+        });
+    }
+
+    private void deleteOldImageIfNeeded(String newImageUrl) {
+        if (!oldImageUrl.isEmpty() && !oldImageUrl.equals(newImageUrl)) {
+            // 서버에 이미지 삭제 요청 (Retrofit 인터페이스에서 @DELETE, @Query("url") String imageUrl 필요)
+            apiService.deleteImage(oldImageUrl).enqueue(new Callback<Void>() {
+                @Override public void onResponse(Call<Void> call, Response<Void> response) {}
+                @Override public void onFailure(Call<Void> call, Throwable t) {}
+            });
         }
     }
 
@@ -181,13 +232,31 @@ public class UpdateBoardActivity extends AppCompatActivity {
         boardRef.child(postKey).child("content").setValue(content);
         boardRef.child(postKey).child("imageUrl").setValue(imageUrl)
                 .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "게시글이 수정되었습니다!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "수정 성공!", Toast.LENGTH_SHORT).show();
                     setResult(RESULT_OK);
                     finish();
                 })
-                .addOnFailureListener(e -> {
-                    btnUpdate.setEnabled(true);
-                    Toast.makeText(this, "게시글 수정 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(e -> handleError("저장 실패: " + e.getMessage()));
+    }
+
+    private void handleError(String message) {
+        btnUpdate.setEnabled(true);
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    // FileUtils: SAF 미대응, 기본 갤러리/사진만 지원
+    public static class FileUtils {
+        public static String getPath(Context context, Uri uri) {
+            String[] projection = { MediaStore.Images.Media.DATA };
+            Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
+            if (cursor != null) {
+                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                cursor.moveToFirst();
+                String path = cursor.getString(column_index);
+                cursor.close();
+                return path;
+            }
+            return null;
+        }
     }
 }

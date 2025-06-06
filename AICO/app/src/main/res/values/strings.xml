@@ -21,5 +21,8 @@
     <string name="default_web_client_id">148432991298-tbjqhjmalf8b10ukeoor6gpb1bfg82io.apps.googleusercontent.com</string>
     <string name="title_activity_reset_password">ResetPasswordActivity</string>
 
+    <!--    로컬 서버-->
+<!--    <string name="server_url" translatable="false">10.0.2.2:8081</string>-->
+<!--    오라클 클라우드-->
     <string name="server_url" translatable="false">146.56.98.69:8081</string>
 </resources>

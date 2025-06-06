@@ -239,20 +239,24 @@ public class UpdateUserActivity extends AppCompatActivity {
 
         // 프로필 이미지가 변경된 경우 업로드
         if (imageUri != null) {
-            StorageReference fileRef = storageRef.child(currentUser.getUid() + ".jpg");
-            fileRef.putFile(imageUri)
-                    .continueWithTask(task -> {
-                        if (!task.isSuccessful()) throw task.getException();
-                        return fileRef.getDownloadUrl();
-                    })
-                    .addOnSuccessListener(uri -> {
-                        photoUrl = uri.toString();
-                        saveUserToDatabase(nickname, name, birth, gender, address, phone, photoUrl);
-                    })
-                    .addOnFailureListener(e -> Toast.makeText(this, "프로필 이미지 업로드 실패", Toast.LENGTH_SHORT).show());
+            // 기존 이미지가 있으면 삭제
+            if (originalPhotoUrl != null && !originalPhotoUrl.isEmpty()) {
+                StorageReference oldImageRef = FirebaseStorage.getInstance().getReferenceFromUrl(originalPhotoUrl);
+                oldImageRef.delete().addOnSuccessListener(aVoid -> {
+                    // 삭제 성공 후 새 이미지 업로드
+                    uploadNewProfileImageAndSave(nickname, name, birth, gender, address, phone);
+                }).addOnFailureListener(e -> {
+                    // 삭제 실패해도 새 이미지 업로드 진행
+                    uploadNewProfileImageAndSave(nickname, name, birth, gender, address, phone);
+                });
+            } else {
+                // 기존 이미지 없으면 바로 업로드
+                uploadNewProfileImageAndSave(nickname, name, birth, gender, address, phone);
+            }
         } else {
             saveUserToDatabase(nickname, name, birth, gender, address, phone, originalPhotoUrl);
         }
+
     }
 
     private void saveUserToDatabase(String nickname, String name, String birth, String gender, String address, String phone, String photoUrl) {
@@ -275,6 +279,23 @@ public class UpdateUserActivity extends AppCompatActivity {
                     Toast.makeText(this, "수정 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+
+    private void uploadNewProfileImageAndSave(String nickname, String name, String birth, String gender, String address, String phone) {
+        StorageReference fileRef = storageRef.child(currentUser.getUid() + ".jpg");
+        fileRef.putFile(imageUri)
+                .continueWithTask(task -> {
+                    if (!task.isSuccessful()) throw task.getException();
+                    return fileRef.getDownloadUrl();
+                })
+                .addOnSuccessListener(uri -> {
+                    photoUrl = uri.toString();
+                    saveUserToDatabase(nickname, name, birth, gender, address, phone, photoUrl);
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "프로필 이미지 업로드 실패", Toast.LENGTH_SHORT).show();
+                });
+    }
+
 
     // 간단한 TextWatcher 구현
     abstract class SimpleTextWatcher implements android.text.TextWatcher {

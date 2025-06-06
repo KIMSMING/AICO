@@ -219,14 +219,31 @@ public class UserViewActivity extends AppCompatActivity {
                         ? "전화번호: " + formatPhone(phone)
                         : "전화번호: -");
 
-                // Glide로 프로필 사진 표시
+                // 1순위: DB에 저장된 프로필 이미지(photoUrl)
                 if (photoUrl != null && !photoUrl.isEmpty()) {
                     Glide.with(UserViewActivity.this)
                             .load(photoUrl)
                             .placeholder(R.drawable.ic_person)
+                            .error(R.drawable.ic_person)
                             .into(imageProfile);
                 } else {
-                    imageProfile.setImageResource(R.drawable.ic_person);
+                    // 2순위: 소셜 로그인(구글/네이버/카카오 등) 프로필 이미지
+                    FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+                    String socialPhotoUrl = null;
+                    if (firebaseUser != null && firebaseUser.getPhotoUrl() != null) {
+                        socialPhotoUrl = firebaseUser.getPhotoUrl().toString();
+                    }
+
+                    if (socialPhotoUrl != null && !socialPhotoUrl.isEmpty()) {
+                        Glide.with(UserViewActivity.this)
+                                .load(socialPhotoUrl)
+                                .placeholder(R.drawable.ic_person)
+                                .error(R.drawable.ic_person)
+                                .into(imageProfile);
+                    } else {
+                        // 3순위: 기본 이미지
+                        imageProfile.setImageResource(R.drawable.ic_person);
+                    }
                 }
             }
 

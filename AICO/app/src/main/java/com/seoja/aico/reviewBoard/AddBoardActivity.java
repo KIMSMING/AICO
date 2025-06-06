@@ -2,6 +2,7 @@ package com.seoja.aico.reviewBoard;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -28,10 +30,22 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.seoja.aico.ApiService;
 import com.seoja.aico.R;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class AddBoardActivity extends AppCompatActivity {
 
@@ -125,24 +139,76 @@ public class AddBoardActivity extends AppCompatActivity {
 
         btnUpload.setEnabled(false);
 
+        String baseUrl = "http://" + getString(R.string.server_url) + "/";
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ApiService apiService = retrofit.create(ApiService.class);
+
         if (selectedImageUri != null) {
-            // 1. 이미지를 Storage에 업로드
-            String imageFileName = "IMG_" + System.currentTimeMillis() + ".jpg";
-            StorageReference imageRef = storageRef.child(imageFileName);
-            imageRef.putFile(selectedImageUri)
-                    .addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                        // 2. 이미지 URL과 함께 게시글 데이터 저장
-                        savePostToDatabase(title, content, user, uri.toString());
-                    }))
-                    .addOnFailureListener(e -> {
-                        btnUpload.setEnabled(true);
-                        Toast.makeText(this, "이미지 업로드 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
+            String filePath = getRealPathFromURI(selectedImageUri);
+            if (filePath == null) {
+                Toast.makeText(this, "이미지 파일 경로를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
+                btnUpload.setEnabled(true);
+                return;
+            }
+            File file = new File(getRealPathFromURI(selectedImageUri));
+            RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), file);
+            MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
+
+            Call<ResponseBody> call = apiService.uploadImage(body);
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        try {
+                            String imageUrl = response.body().string(); // 서버에서 반환한 이미지 URL
+                            // 1. 게시글 데이터에 이미지 URL 저장
+                            savePostToDatabase(title, content, user, imageUrl);
+                            // 2. ImageView에 바로 이미지 표시 (예: imagePreview가 ImageView인 경우)
+                            Glide.with(AddBoardActivity.this)
+                                    .load(imageUrl)
+                                    .into(imagePreview);
+
+                            Toast.makeText(AddBoardActivity.this, "이미지 업로드 성공!", Toast.LENGTH_SHORT).show();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            Toast.makeText(AddBoardActivity.this, "이미지 처리 오류", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(AddBoardActivity.this, "이미지 업로드 실패: " + response.code(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Toast.makeText(AddBoardActivity.this, "서버 연결 실패: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
         } else {
-            // 이미지 없이 게시글만 저장
             savePostToDatabase(title, content, user, "");
         }
     }
+    //  Content Uri를 실제 파일 경로로 변환 (API 19 이상)
+    private String getRealPathFromURI(Uri uri) {
+        String filePath = null;
+        String[] proj = { MediaStore.Images.Media.DATA };
+        Cursor cursor = getContentResolver().query(uri, proj, null, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                filePath = cursor.getString(column_index);
+            }
+            cursor.close();
+        }
+        // SAF 방식 등 다른 경로가 필요하면 추가 구현 필요
+        return filePath;
+    }
+
 
     private void savePostToDatabase(String title, String content, FirebaseUser user, String imageUrl) {
         String uniqueKey = String.valueOf(System.currentTimeMillis());

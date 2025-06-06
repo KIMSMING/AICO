@@ -42,9 +42,19 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
-    implementation 'com.oracle.cloud.spring:spring-cloud-oci-starter-storage'
+
+    // 오류뜨는 부분 이유를 모르겠음
+    implementation 'com.oracle.oci.sdk:oci-java-sdk-objectstorage:3.0.0'
+
+    implementation platform("com.oracle.oci.sdk:oci-java-sdk-bom:3.39.2")
+
+    implementation "com.oracle.oci.sdk:oci-java-sdk-objectstorage"
+    implementation "com.oracle.oci.sdk:oci-java-sdk-core"
 
 }
+
+
+
 
 tasks.named('test') {
     useJUnitPlatform()
