@@ -45,7 +45,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
     // OkHttp 라이브러리 의존성 추가
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
 

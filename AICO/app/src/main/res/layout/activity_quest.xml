@@ -9,32 +9,40 @@
 
     <Button
         android:id="@+id/btnRequest"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="32dp"
-        android:layout_marginBottom="276dp"
         android:text="답변하기"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textResponse" />
 
     <EditText
         android:id="@+id/textResponse"
-        android:layout_width="342dp"
-        android:layout_height="259dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="40dp"
-        android:text="답변"
+        android:layout_width="0dp"
+        android:layout_height="208dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="32dp"
+        android:gravity="start"
+        android:hint="답변"
+        android:textSize="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textRequest" />
 
     <TextView
         android:id="@+id/textRequest"
-        android:layout_width="338dp"
-        android:layout_height="53dp"
+        android:layout_width="0dp"
+        android:layout_height="63dp"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="36dp"
+        android:layout_marginEnd="32dp"
         android:ems="10"
-        android:inputType="text"
-        android:text="질문"
+        android:gravity="top|start"
+        android:inputType="textMultiLine"
+        android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.378"
         app:layout_constraintStart_toStartOf="parent"
@@ -42,11 +50,25 @@
 
     <TextView
         android:id="@+id/textFeedback"
-        android:layout_width="353dp"
-        android:layout_height="248dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="76dp"
-        android:text="피드백"
+        android:layout_width="0dp"
+        android:layout_height="220dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="32dp"
+        android:hint="피드백"
+        android:textSize="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textResponse" />
+        app:layout_constraintTop_toBottomOf="@+id/btnRequest" />
+
+    <Button
+        android:id="@+id/btnNextQuestion"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="32dp"
+        android:text="다음문제"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textFeedback" />
 </androidx.constraintlayout.widget.ConstraintLayout>
