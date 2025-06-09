@@ -37,8 +37,7 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_marginEnd="12dp"
-                    app:srcCompat="@drawable/ic_rogo"
-                    app:tint="@color/professional_primary_light" />
+                    app:srcCompat="@drawable/ic_rogo" />
 
                 <TextView
                     android:id="@+id/appLogo2"

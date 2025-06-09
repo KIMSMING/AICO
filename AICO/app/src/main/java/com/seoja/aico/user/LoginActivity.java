@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -34,8 +36,9 @@ import okhttp3.*;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText editTextId, editTextPassword;
-    private Button btnLogin, btnSignUp, btnResetPw;
-    private ImageButton btnGoogleLogin, btnNaverLogin, btnKakaoLogin;
+    private Button btnLogin;
+    private LinearLayout btnGoogleLogin, btnNaverLogin, btnKakaoLogin;
+    private TextView textSignUp, textResetPw;
 
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
@@ -58,11 +61,11 @@ public class LoginActivity extends AppCompatActivity {
         editTextId = (EditText) findViewById(R.id.editTextId);
         editTextPassword = (EditText) findViewById(R.id.editTextPassword);
         btnLogin = (Button) findViewById(R.id.btnLogin);
-        btnSignUp = (Button) findViewById(R.id.btnSignUp);
-        btnResetPw = (Button) findViewById(R.id.btnResetPw);
-        btnGoogleLogin = (ImageButton) findViewById(R.id.btnGoogleLogin);
-        btnNaverLogin = (ImageButton) findViewById(R.id.btnNaverLogin);
-        btnKakaoLogin = (ImageButton) findViewById(R.id.btnKakaoLogin);
+        textSignUp = (TextView) findViewById(R.id.btnSignUp);
+        textResetPw = (TextView) findViewById(R.id.btnResetPw);
+        btnGoogleLogin = (LinearLayout) findViewById(R.id.btnGoogleLogin);
+        btnNaverLogin = (LinearLayout) findViewById(R.id.btnNaverLogin);
+        btnKakaoLogin = (LinearLayout) findViewById(R.id.btnKakaoLogin);
 
         // Google 로그인 초기화
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -97,8 +100,8 @@ public class LoginActivity extends AppCompatActivity {
 
         // 버튼 리스너
         btnLogin.setOnClickListener(v -> signInWithEmail());
-        btnSignUp.setOnClickListener(v -> startActivity(new Intent(this, RegisterActivity.class)));
-        btnResetPw.setOnClickListener(v -> startActivity(new Intent(this, ResetPasswordActivity.class)));
+        textSignUp.setOnClickListener(v -> startActivity(new Intent(this, RegisterActivity.class)));
+        textResetPw.setOnClickListener(v -> startActivity(new Intent(this, ResetPasswordActivity.class)));
         btnGoogleLogin.setOnClickListener(v -> signInWithGoogle());
         btnKakaoLogin.setOnClickListener(v -> signInWithKakao());
         btnNaverLogin.setOnClickListener(v -> signInWithNaver());
