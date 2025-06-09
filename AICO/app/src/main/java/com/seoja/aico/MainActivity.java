@@ -10,6 +10,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,10 +43,10 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btnQuest, btnAddQuestion, btnTestSpeech;
-    ImageButton btnUserView, btnOption;
+    ImageButton btnOption;
     private FirebaseAuth mAuth;
     TextView btnGoBoard;
+    LinearLayout btnUserView, btnTestSpeech, btnAddQuestion, btnQuest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,12 +71,12 @@ public class MainActivity extends AppCompatActivity {
 
         // printKeyHash(); // 해쉬 키 필요할 때만 쓰면 됨
 
-        btnUserView = (ImageButton) findViewById(R.id.btnGoUserView);
+        btnUserView = findViewById(R.id.btnGoUserView);
         btnOption = (ImageButton) findViewById(R.id.btnOption);
-        btnQuest = (Button) findViewById(R.id.btnQuest);
+        btnQuest = findViewById(R.id.btnQuest);
         btnGoBoard = (TextView) findViewById(R.id.btnGoBoard);
-        btnTestSpeech = (Button) findViewById(R.id.btnTestSpeech);
-        btnAddQuestion = (Button) findViewById(R.id.btnAddQuestion);
+        btnTestSpeech = findViewById(R.id.btnTestSpeech);
+        btnAddQuestion = findViewById(R.id.btnAddQuestion);
 
         //질문 추가하기
         btnOption.setOnClickListener(v -> {
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 마이크테스트
         btnTestSpeech.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, MiceTestActivity .class));
+            startActivity(new Intent(MainActivity.this, MiceTestActivity.class));
         });
 
         // 유저정보
@@ -208,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
 
         builder.setPositiveButton("추가", (dialog, which) -> {
             String question = input.getText().toString().trim();
-            if(!question.isEmpty()) {
+            if (!question.isEmpty()) {
                 saveQuestionToFirebase(question);
             } else {
                 Toast.makeText(this, "질문을 입력해주세요", Toast.LENGTH_SHORT).show();
@@ -222,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
     //Firebase에 질문 저장 함수
     private void saveQuestionToFirebase(String question) {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if(currentUser == null) return;
+        if (currentUser == null) return;
 
         String uid = currentUser.getUid();
         DatabaseReference ref = FirebaseDatabase.getInstance()

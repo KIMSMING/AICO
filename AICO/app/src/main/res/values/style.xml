@@ -1,7 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="CircleImageView" parent="ShapeAppearance.MaterialComponents.SmallComponent">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
+    <!-- 전문적인 버튼 스타일 -->
+    <style name="ProfessionalButtonPrimary" parent="Widget.MaterialComponents.Button">
+        <item name="android:background">@drawable/professional_button_primary</item>
+        <item name="android:textColor">@color/professional_text_primary</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:elevation">3dp</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="android:letterSpacing">0.02</item>
+    </style>
+
+    <style name="ProfessionalButtonSecondary" parent="Widget.MaterialComponents.Button">
+        <item name="android:background">@drawable/professional_button_secondary</item>
+        <item name="android:textColor">@color/professional_text_secondary</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:elevation">2dp</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="android:minHeight">40dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+    </style>
+
+    <!-- 전문적인 텍스트 스타일 -->
+    <style name="ProfessionalTextTitle" parent="TextAppearance.MaterialComponents.Headline5">
+        <item name="android:textColor">@color/professional_text_primary</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.01</item>
+    </style>
+
+    <style name="ProfessionalTextSubtitle" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="android:textColor">@color/professional_text_secondary</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:letterSpacing">0.01</item>
+    </style>
+
+    <style name="ProfessionalTextBody" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textColor">@color/professional_text_secondary</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:lineSpacingExtra">2dp</item>
+    </style>
+
+    <style name="ProfessionalTextAccent" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textColor">@color/professional_primary_light</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="ProfessionalTextCaption" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">@color/professional_text_tertiary</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <!-- 전문적인 카드 스타일 -->
+    <style name="ProfessionalCard">
+        <item name="android:background">@drawable/professional_card_bg</item>
+        <item name="android:elevation">3dp</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:padding">16dp</item>
+    </style>
+
+    <style name="ProfessionalCardClickable">
+        <item name="android:background">@drawable/professional_card_clickable</item>
+        <item name="android:elevation">3dp</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <!-- 전문적인 아이콘 버튼 -->
+    <style name="ProfessionalIconButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:tint">@color/professional_text_secondary</item>
+    </style>
+
+    <!-- 전문적인 EditText -->
+    <style name="ProfessionalEditText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:textColor">@color/professional_text_primary</item>
+        <item name="android:textColorHint">@color/professional_text_tertiary</item>
+        <item name="boxStrokeColor">@color/professional_primary</item>
+        <item name="boxStrokeWidth">2dp</item>
+        <item name="boxCornerRadiusTopStart">8dp</item>
+        <item name="boxCornerRadiusTopEnd">8dp</item>
+        <item name="boxCornerRadiusBottomStart">8dp</item>
+        <item name="boxCornerRadiusBottomEnd">8dp</item>
+        <item name="hintTextColor">@color/professional_text_tertiary</item>
+    </style>
+
+    <!-- 성공 상태 버튼 -->
+    <style name="ProfessionalButtonSuccess" parent="ProfessionalButtonPrimary">
+        <item name="android:backgroundTint">@color/professional_success</item>
+    </style>
+
+    <!-- 경고 상태 버튼 -->
+    <style name="ProfessionalButtonWarning" parent="ProfessionalButtonPrimary">
+        <item name="android:backgroundTint">@color/professional_warning</item>
+    </style>
 </resources>
+
