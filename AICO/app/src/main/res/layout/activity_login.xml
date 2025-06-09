@@ -1,284 +1,275 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/professional_bg_primary"
-    android:gravity="center_horizontal"
-    android:orientation="vertical"
-    android:padding="24dp"
+    android:fillViewport="true"
     tools:context=".user.LoginActivity">
 
-    <!-- 상단 여백 -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
-    <!-- 앱 로고 섹션 -->
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <!-- 앱 아이콘 컨테이너 -->
-        <LinearLayout
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginBottom="20dp"
-            android:background="@drawable/professional_card_bg"
-            android:gravity="center">
-
-            <ImageView
-                android:id="@+id/appIcon"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:src="@drawable/ic_rogo" />
-        </LinearLayout>
-
-        <!-- 앱 로고 텍스트 -->
-        <TextView
-            android:id="@+id/appLogo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-medium"
-            android:letterSpacing="0.02"
-            android:text="AICO"
-            android:textColor="@color/professional_text_primary"
-            android:textSize="32sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:fontFamily="sans-serif"
-            android:text="AI Interview Coaching System"
-            android:textColor="@color/professional_text_secondary"
-            android:textSize="14sp" />
-
-    </LinearLayout>
-
-    <!-- 로그인 폼 컨테이너 -->
-    <LinearLayout
+        android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/professional_card_bg"
         android:orientation="vertical"
-        android:padding="28dp">
+        android:padding="24dp"
+        android:gravity="center_horizontal">
 
-        <!-- 로그인 헤더 -->
-        <TextView
+        <!-- 상단 여백 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- 앱 로고 섹션 -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:fontFamily="sans-serif-medium"
-            android:text="로그인"
-            android:textColor="@color/professional_text_primary"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:layout_marginBottom="30dp"
+            android:gravity="center"
+            android:orientation="vertical">
 
-        <!-- ID 입력 -->
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/ProfessionalEditText"
+            <LinearLayout
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/professional_card_bg"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/appIcon"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:src="@drawable/ic_rogo" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/appLogo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:letterSpacing="0.02"
+                android:text="AICO"
+                android:textColor="@color/professional_text_primary"
+                android:textSize="32sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="sans-serif"
+                android:text="AI Interview Coaching System"
+                android:textColor="@color/professional_text_secondary"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- 로그인 폼 컨테이너 -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="이메일 주소">
+            android:background="@drawable/professional_card_bg"
+            android:orientation="vertical"
+            android:padding="28dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextId"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="로그인"
+                android:textColor="@color/professional_text_primary"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <!-- 이메일 입력 -->
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/ProfessionalEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="sans-serif"
-                android:inputType="textEmailAddress"
-                android:textColor="@color/professional_text_primary" />
+                android:hint="이메일 주소">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextId"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif"
+                    android:inputType="textEmailAddress"
+                    android:textColor="@color/professional_text_primary" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- 비밀번호 입력 -->
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/ProfessionalEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="비밀번호"
-            app:passwordToggleEnabled="true"
-            app:passwordToggleTint="@color/professional_text_secondary">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextPassword"
+            <!-- 비밀번호 입력 -->
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/ProfessionalEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="sans-serif"
-                android:inputType="textPassword"
-                android:textColor="@color/professional_text_primary" />
+                android:layout_marginTop="16dp"
+                android:hint="비밀번호"
+                app:passwordToggleEnabled="true"
+                app:passwordToggleTint="@color/professional_text_secondary">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif"
+                    android:inputType="textPassword"
+                    android:textColor="@color/professional_text_primary" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- 로그인 버튼 -->
-        <Button
-            android:id="@+id/btnLogin"
-            style="@style/ProfessionalButtonPrimary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:text="로그인" />
-        <!-- 추가된 아이디/비밀번호 텍스트뷰 -->
-
-        <!-- 아이디가 없으신가요? + 회원가입하기 -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
+            <!-- 로그인 버튼 -->
+            <Button
+                android:id="@+id/btnLogin"
+                style="@style/ProfessionalButtonPrimary"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="아이디가 없으신가요?"
-                android:textColor="@color/professional_text_tertiary"
-                android:textSize="12sp" />
+                android:layout_marginTop="28dp"
+                android:text="로그인" />
 
-            <TextView
-                android:id="@+id/btnSignUp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:clickable="true"
-                android:text="회원가입하기"
-                android:textColor="@color/blue_700"/>
-        </LinearLayout>
-
-        <!-- 비밀번호가 기억나지 않으신가요? + 비밀번호 초기화하기 -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="비밀번호가 기억나지 않으신가요?"
-                android:textColor="@color/professional_text_tertiary"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/btnResetPw"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:text="비밀번호 초기화하기"
-                android:textColor="@color/blue_700"/>
-        </LinearLayout>
-
-
-        <!-- 구분선 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1"
-                android:background="@color/professional_border" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:text="또는"
-                android:textColor="@color/professional_text_tertiary"
-                android:textSize="12sp" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1"
-                android:background="@color/professional_border" />
-
-        </LinearLayout>
-
-        <!-- 소셜 로그인 버튼들 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
-
+            <!-- 아이디/회원가입 텍스트 -->
             <LinearLayout
-                android:id="@+id/btnGoogleLogin"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:layout_marginEnd="12dp"
-                android:background="@drawable/professional_card_clickable"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center">
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:orientation="horizontal">
 
-                <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:src="@drawable/ic_google" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="아이디가 없으신가요?"
+                    android:textColor="@color/professional_text_tertiary"
+                    android:textSize="12sp" />
 
+                <TextView
+                    android:id="@+id/btnSignUp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:clickable="true"
+                    android:text="회원가입하기"
+                    android:textColor="@color/blue_700"/>
             </LinearLayout>
 
+            <!-- 비밀번호 초기화 텍스트 -->
             <LinearLayout
-                android:id="@+id/btnKakaoLogin"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:layout_marginEnd="12dp"
-                android:background="@drawable/professional_card_clickable"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center">
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:orientation="horizontal">
 
-                <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:src="@drawable/ic_kakao" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="비밀번호가 기억나지 않으신가요?"
+                    android:textColor="@color/professional_text_tertiary"
+                    android:textSize="12sp" />
 
+                <TextView
+                    android:id="@+id/btnResetPw"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:text="비밀번호 초기화하기"
+                    android:textColor="@color/blue_700"/>
             </LinearLayout>
 
+            <!-- 구분선 -->
             <LinearLayout
-                android:id="@+id/btnNaverLogin"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:background="@drawable/professional_card_clickable"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-                <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:src="@drawable/ic_naver" />
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="@color/professional_border" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="또는"
+                    android:textColor="@color/professional_text_tertiary"
+                    android:textSize="12sp" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="@color/professional_border" />
             </LinearLayout>
 
+            <!-- 소셜 로그인 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/btnGoogleLogin"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/professional_card_clickable"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_google" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/btnKakaoLogin"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/professional_card_clickable"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_kakao" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/btnNaverLogin"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:background="@drawable/professional_card_clickable"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_naver" />
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
+
+        <!-- 하단 여백 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
     </LinearLayout>
-
-    <!-- 하단 여백 -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
-</LinearLayout>
-
+</ScrollView>
