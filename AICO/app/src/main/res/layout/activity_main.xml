@@ -1,351 +1,339 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/professional_bg_primary"
+    android:fillViewport="true"
     tools:context=".MainActivity">
 
-    <!-- 상단 네비게이션 바 -->
     <LinearLayout
-        android:id="@+id/topNavBar"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="20dp"
-        android:gravity="center_vertical"
-        android:background="@color/professional_bg_secondary"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:orientation="vertical">
 
-        <!-- 로고 아이콘 -->
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginEnd="12dp"
-            app:srcCompat="@drawable/ic_rogo"
-            app:tint="@color/professional_primary_light" />
-
-        <!-- 앱 로고 텍스트 -->
-        <TextView
-            android:id="@+id/appLogo2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="AICO"
-            android:textColor="@color/professional_text_primary"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:fontFamily="sans-serif-medium" />
-
-        <!-- 설정 버튼 -->
-        <ImageButton
-            android:id="@+id/btnOption"
-            style="@style/ProfessionalIconButton"
-            android:src="@drawable/ic_settings"
-            android:contentDescription="설정"
-            app:tint="@color/professional_text_secondary" />
-
-    </LinearLayout>
-
-    <!-- 메인 대시보드 헤더 -->
-    <LinearLayout
-        android:id="@+id/dashboardHeader"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="20dp"
-        android:background="@drawable/professional_main_banner_bg"
-        android:orientation="vertical"
-        android:padding="24dp"
-        android:gravity="start"
-        app:layout_constraintTop_toBottomOf="@id/topNavBar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="AI 면접 준비"
-            android:textColor="@color/professional_text_primary"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:fontFamily="sans-serif-medium" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="체계적인 면접 연습으로 성공적인 취업을 준비하세요"
-            android:textColor="@color/professional_text_primary"
-            android:textSize="14sp"
-            android:alpha="0.9" />
-
-        <!-- 진행률 표시 -->
-        <LinearLayout
+        <!-- 기존 ConstraintLayout 감싸기 -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:background="@color/professional_bg_primary">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="이번 주 연습"
-                android:textColor="@color/professional_text_primary"
-                android:textSize="12sp"
-                android:layout_marginEnd="12dp" />
-
-            <ProgressBar
-                android:layout_width="0dp"
-                android:layout_height="6dp"
-                android:layout_weight="1"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:progress="65"
-                android:progressTint="@color/professional_success"
-                android:progressBackgroundTint="@color/professional_bg_tertiary" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="65%"
-                android:textColor="@color/professional_success"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:layout_marginStart="12dp" />
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <!-- 주요 기능 섹션 -->
-    <TextView
-        android:id="@+id/featuresTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="32dp"
-        android:text="주요 기능"
-        android:textColor="@color/professional_text_primary"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/dashboardHeader"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <!-- 기능 카드 그리드 -->
-    <LinearLayout
-        android:id="@+id/featureGrid"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="20dp"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@id/featuresTitle"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <!-- 첫 번째 행 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="12dp">
-
-            <!-- 면접 보기 카드 -->
             <LinearLayout
-                android:id="@+id/btnQuest"
+                android:id="@+id/topNavBar"
                 android:layout_width="0dp"
-                android:layout_height="120dp"
-                android:layout_weight="2"
-                android:layout_marginEnd="6dp"
-                style="@style/ProfessionalCardClickable"
-                android:orientation="vertical"
-                android:gravity="center">
+                android:layout_height="wrap_content"
+                android:background="@color/professional_bg_secondary"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginBottom="12dp"
-                    android:src="@drawable/ic_mic"
+                    android:id="@+id/imageView3"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="12dp"
+                    app:srcCompat="@drawable/ic_rogo"
                     app:tint="@color/professional_primary_light" />
+
+                <TextView
+                    android:id="@+id/appLogo2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="AICO"
+                    android:textColor="@color/professional_text_primary"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/btnOption"
+                    style="@style/ProfessionalIconButton"
+                    android:contentDescription="설정"
+                    android:src="@drawable/ic_settings"
+                    app:tint="@color/professional_text_secondary" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/dashboardHeader"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/professional_main_banner_bg"
+                android:gravity="start"
+                android:orientation="vertical"
+                android:padding="24dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/topNavBar">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="AI 면접 시작"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="AI 면접 준비"
                     android:textColor="@color/professional_text_primary"
-                    android:textSize="16sp"
+                    android:textSize="28sp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="실전 면접 연습"
-                    android:textColor="@color/professional_text_tertiary"
-                    android:textSize="11sp" />
-
-            </LinearLayout>
-
-            <!-- 질문 추가 카드 -->
-            <LinearLayout
-                android:id="@+id/btnAddQuestion"
-                android:layout_width="0dp"
-                android:layout_height="120dp"
-                android:layout_weight="1"
-                android:layout_marginStart="6dp"
-                style="@style/ProfessionalCardClickable"
-                android:orientation="vertical"
-                android:gravity="center">
-
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginBottom="8dp"
-                    android:src="@drawable/ic_add"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="질문 관리"
+                    android:layout_marginTop="8dp"
+                    android:alpha="0.9"
+                    android:text="체계적인 면접 연습으로 성공적인 취업을 준비하세요"
                     android:textColor="@color/professional_text_primary"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textAlignment="center" />
+                    android:textSize="14sp" />
 
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <!-- 두 번째 행 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <!-- 음성 인식 테스트 카드 -->
-            <LinearLayout
-                android:id="@+id/btnTestSpeech"
-                android:layout_width="0dp"
-                android:layout_height="90dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="6dp"
-                style="@style/ProfessionalCardClickable"
-                android:orientation="vertical"
-                android:gravity="center">
-
-                <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_marginBottom="8dp"
-                    android:src="@drawable/ic_mic_on"
-                    app:tint="@color/professional_warning" />
-
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="음성 테스트"
-                    android:textColor="@color/professional_text_primary"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:textAlignment="center" />
+                    android:layout_marginTop="16dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="12dp"
+                        android:text="이번 주 연습"
+                        android:textColor="@color/professional_text_primary"
+                        android:textSize="12sp" />
+
+                    <ProgressBar
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="6dp"
+                        android:layout_weight="1"
+                        android:progress="65"
+                        android:progressBackgroundTint="@color/professional_bg_tertiary"
+                        android:progressTint="@color/professional_success" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:text="65%"
+                        android:textColor="@color/professional_success"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
             </LinearLayout>
-
-            <!-- 마이페이지 카드 -->
-            <LinearLayout
-                android:id="@+id/btnGoUserView"
-                android:layout_width="0dp"
-                android:layout_height="90dp"
-                android:layout_weight="1"
-                android:layout_marginStart="6dp"
-                style="@style/ProfessionalCardClickable"
-                android:orientation="vertical"
-                android:gravity="center">
-
-                <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_marginBottom="8dp"
-                    android:src="@drawable/ic_user_view"
-                    app:tint="@color/professional_text_secondary" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="내 정보"
-                    android:textColor="@color/professional_text_primary"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:textAlignment="center" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <!-- 최근 활동 섹션 -->
-    <LinearLayout
-        android:id="@+id/recentSection"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="20dp"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@id/featureGrid"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <!-- 섹션 헤더 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="12dp">
 
             <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="면접 후기"
-                android:textColor="@color/professional_text_primary"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/btnGoBoard"
+                android:id="@+id/featuresTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="전체보기"
-                android:textColor="@color/professional_primary_light"
-                android:textSize="13sp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="32dp"
+                android:text="주요 기능"
+                android:textColor="@color/professional_text_primary"
+                android:textSize="18sp"
                 android:textStyle="bold"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="8dp" />
-        </LinearLayout>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/dashboardHeader" />
 
-        <!-- 후기 카드 리스트 -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvMainPreview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp"
-            tools:listitem="@layout/item_board_preview"
-            tools:itemCount="3"/>
+            <LinearLayout
+                android:id="@+id/featureGrid"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="20dp"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/featuresTitle">
 
+                <!-- 첫 번째 행 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:id="@+id/btnQuest"
+                        style="@style/ProfessionalCardClickable"
+                        android:layout_width="0dp"
+                        android:layout_height="120dp"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="2"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_marginBottom="12dp"
+                            android:src="@drawable/ic_mic"
+                            app:tint="@color/professional_primary_light" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="AI 면접 시작"
+                            android:textColor="@color/professional_text_primary"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="실전 면접 연습"
+                            android:textColor="@color/professional_text_tertiary"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btnAddQuestion"
+                        style="@style/ProfessionalCardClickable"
+                        android:layout_width="0dp"
+                        android:layout_height="120dp"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_marginBottom="8dp"
+                            android:src="@drawable/ic_add" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="질문 관리"
+                            android:textAlignment="center"
+                            android:textColor="@color/professional_text_primary"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- 두 번째 행 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:id="@+id/btnTestSpeech"
+                        style="@style/ProfessionalCardClickable"
+                        android:layout_width="0dp"
+                        android:layout_height="90dp"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:layout_marginBottom="8dp"
+                            android:src="@drawable/ic_mic_on"
+                            app:tint="@color/professional_warning" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="음성 테스트"
+                            android:textAlignment="center"
+                            android:textColor="@color/professional_text_primary"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btnGoUserView"
+                        style="@style/ProfessionalCardClickable"
+                        android:layout_width="0dp"
+                        android:layout_height="90dp"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:layout_marginBottom="8dp"
+                            android:src="@drawable/ic_user_view"
+                            app:tint="@color/professional_text_secondary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="내 정보"
+                            android:textAlignment="center"
+                            android:textColor="@color/professional_text_primary"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/recentSection"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="20dp"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/featureGrid">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="면접 후기"
+                        android:textColor="@color/professional_text_primary"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/btnGoBoard"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:padding="8dp"
+                        android:text="전체보기"
+                        android:textColor="@color/professional_primary_light"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvMainPreview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/item_board_preview" />
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
-
+</ScrollView>
