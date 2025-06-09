@@ -6,184 +6,408 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/professional_bg_primary"
     tools:context=".OptionActivity">
 
-    <!-- 뒤로가기 버튼 -->
-    <ImageButton
-        android:id="@+id/btnBack"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginStart="24dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_backarrow"
-        android:contentDescription="뒤로가기 버튼"
-        app:tint="#222"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
-
-    <!-- 설정 항목 전체를 감싸는 LinearLayout -->
+    <!-- 상단 네비게이션 -->
     <LinearLayout
-        android:id="@+id/optionContainer"
+        android:id="@+id/topNavBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingLeft="32dp"
-        android:paddingRight="32dp"
-        android:paddingTop="32dp"
-        android:paddingBottom="32dp"
-        app:layout_constraintTop_toBottomOf="@id/btnBack"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center_vertical"
+        android:background="@color/professional_bg_secondary"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- 소리 조절 -->
+        <ImageButton
+            android:id="@+id/btnBack"
+            style="@style/ProfessionalIconButton"
+            android:src="@drawable/ic_backarrow"
+            android:contentDescription="뒤로가기"
+            app:tint="@color/professional_text_secondary" />
+
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="소리"
-            android:textSize="20sp"
+            android:layout_weight="1"
+            android:text="설정"
+            android:textColor="@color/professional_text_primary"
+            android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="#222"
-            android:layout_marginBottom="12dp"/>
-        <SeekBar
-            android:id="@+id/seekBarVolume"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:max="100"
-            android:progress="50"
-            android:layout_marginBottom="32dp"/>
+            android:gravity="center"
+            android:fontFamily="sans-serif-medium" />
 
-        <!-- 진동 ON/OFF -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="20dp">
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="진동"
-                android:textSize="20sp"
-                android:textColor="#222"
-                android:layout_weight="1"/>
-            <Switch
-                android:id="@+id/switchVibration"
-                android:layout_width="56dp"
-                android:layout_height="32dp"/>
-        </LinearLayout>
+        <View
+            android:layout_width="48dp"
+            android:layout_height="48dp" />
 
-        <!-- 알림 ON/OFF -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="32dp">
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="알림"
-                android:textSize="20sp"
-                android:textColor="#222"
-                android:layout_weight="1"/>
-            <Switch
-                android:id="@+id/switchNotification"
-                android:layout_width="56dp"
-                android:layout_height="32dp"/>
-        </LinearLayout>
-
-        <!-- 개인정보 처리방침 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="개인정보 처리방침"
-                android:textSize="18sp"
-                android:textColor="#222"
-                android:layout_weight="1"/>
-            <TextView
-                android:id="@+id/btnPrivacy"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="자세히 >"
-                android:textSize="16sp"
-                android:textColor="#2196F3"
-                android:padding="8dp"
-                android:clickable="true"
-                android:focusable="true"/>
-        </LinearLayout>
-
-        <!-- 이용약관 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="이용약관"
-                android:textSize="18sp"
-                android:textColor="#222"
-                android:layout_weight="1"/>
-            <TextView
-                android:id="@+id/btnTerms"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="자세히 >"
-                android:textSize="16sp"
-                android:textColor="#2196F3"
-                android:padding="8dp"
-                android:clickable="true"
-                android:focusable="true"/>
-        </LinearLayout>
-
-        <!-- 고객센터 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="48dp">
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="고객센터"
-                android:textSize="18sp"
-                android:textColor="#222"
-                android:layout_weight="1"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="02-123-456"
-                android:textSize="16sp"
-                android:textColor="#666"
-                android:padding="8dp"
-                android:clickable="true"
-                android:focusable="true"/>
-        </LinearLayout>
-
-        <!-- 운영환경 안내 -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="운영환경"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#222"
-            android:layout_marginBottom="8dp"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="• 안드로이드 10.0 이상\n• iOS 13.0 이상\n• 최소 500MB 여유 저장 공간\n• 마이크 권한(음성 인식 및 녹음 기능 사용 시)\n• 저장소 권한(사진/음성 파일 저장 및 불러오기 시)\n• 알림 권한(푸시 알림 수신 시)\n• 네트워크 권한(인터넷 연결 필요 시)"
-            android:textSize="14sp"
-            android:textColor="#666"/>
     </LinearLayout>
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        app:layout_constraintTop_toBottomOf="@id/topNavBar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- 앱 설정 섹션 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/professional_card_bg"
+                android:padding="20dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="앱 설정"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/professional_text_primary"
+                    android:layout_marginBottom="20dp"
+                    android:fontFamily="sans-serif-medium" />
+
+                <!-- 소리 조절 -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="소리"
+                    android:textSize="14sp"
+                    android:textColor="@color/professional_text_secondary"
+                    android:layout_marginBottom="8dp" />
+
+                <SeekBar
+                    android:id="@+id/seekBarVolume"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="100"
+                    android:progress="50"
+                    android:progressTint="@color/professional_primary"
+                    android:thumbTint="@color/professional_primary_light"
+                    android:layout_marginBottom="24dp" />
+
+                <!-- 진동 설정 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="진동"
+                            android:textSize="16sp"
+                            android:textColor="@color/professional_text_primary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="터치 피드백 진동 사용"
+                            android:textSize="12sp"
+                            android:textColor="@color/professional_text_tertiary" />
+
+                    </LinearLayout>
+
+                    <Switch
+                        android:id="@+id/switchVibration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:thumbTint="@color/professional_text_primary"
+                        android:trackTint="@color/professional_primary" />
+
+                </LinearLayout>
+
+                <!-- 알림 설정 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="알림"
+                            android:textSize="16sp"
+                            android:textColor="@color/professional_text_primary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="면접 일정 및 피드백 알림"
+                            android:textSize="12sp"
+                            android:textColor="@color/professional_text_tertiary" />
+
+                    </LinearLayout>
+
+                    <Switch
+                        android:id="@+id/switchNotification"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:thumbTint="@color/professional_text_primary"
+                        android:trackTint="@color/professional_primary" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- 지원 및 정보 섹션 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/professional_card_bg"
+                android:padding="20dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="지원 및 정보"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/professional_text_primary"
+                    android:layout_marginBottom="20dp"
+                    android:fontFamily="sans-serif-medium" />
+
+                <!-- 개인정보 처리방침 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/professional_card_clickable"
+                    android:padding="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="개인정보 처리방침"
+                        android:textSize="16sp"
+                        android:textColor="@color/professional_text_primary"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:id="@+id/btnPrivacy"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="보기"
+                        android:textSize="14sp"
+                        android:textColor="@color/professional_primary_light"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <!-- 이용약관 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/professional_card_clickable"
+                    android:padding="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="이용약관"
+                        android:textSize="16sp"
+                        android:textColor="@color/professional_text_primary"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:id="@+id/btnTerms"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="보기"
+                        android:textSize="14sp"
+                        android:textColor="@color/professional_primary_light"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <!-- 고객센터 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/professional_card_clickable"
+                    android:padding="16dp"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="고객센터"
+                            android:textSize="16sp"
+                            android:textColor="@color/professional_text_primary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="문의사항이 있으시면 연락주세요"
+                            android:textSize="12sp"
+                            android:textColor="@color/professional_text_tertiary" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="02-123-456"
+                        android:textSize="14sp"
+                        android:textColor="@color/professional_secondary"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- 시스템 요구사항 섹션 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/professional_card_bg"
+                android:padding="20dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="시스템 요구사항"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/professional_text_primary"
+                    android:layout_marginBottom="16dp"
+                    android:fontFamily="sans-serif-medium" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="• Android 10.0 이상\n• iOS 13.0 이상\n• 최소 500MB 여유 저장 공간\n• 마이크 권한 (음성 인식 기능)\n• 저장소 권한 (파일 저장/불러오기)\n• 알림 권한 (푸시 알림 수신)\n• 네트워크 연결 (인터넷 필요)"
+                    android:textSize="13sp"
+                    android:textColor="@color/professional_text_secondary"
+                    android:lineSpacingExtra="2dp" />
+
+            </LinearLayout>
+
+            <!-- 앱 정보 섹션 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/professional_card_bg"
+                android:padding="20dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="앱 정보"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/professional_text_primary"
+                    android:layout_marginBottom="16dp"
+                    android:fontFamily="sans-serif-medium" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="버전"
+                        android:textSize="14sp"
+                        android:textColor="@color/professional_text_secondary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1.0.0"
+                        android:textSize="14sp"
+                        android:textColor="@color/professional_text_primary"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="개발사"
+                        android:textSize="14sp"
+                        android:textColor="@color/professional_text_secondary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="AICO Team"
+                        android:textSize="14sp"
+                        android:textColor="@color/professional_text_primary"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
+

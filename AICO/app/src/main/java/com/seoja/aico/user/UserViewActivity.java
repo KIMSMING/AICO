@@ -21,12 +21,13 @@ import com.navercorp.nid.NaverIdLoginSDK; // 네이버 SDK 최신 import
 import com.kakao.sdk.user.UserApiClient;
 
 import com.seoja.aico.MainActivity;
+import com.seoja.aico.OptionActivity;
 import com.seoja.aico.R;
 import com.seoja.aico.QuestActivity;
 
 public class UserViewActivity extends AppCompatActivity {
 
-    private ImageView imageProfile;
+    private ImageView btnOption, imageProfile;
     private TextView textNickname, textEmail, textName, textBirth, textGender, textAddress, textPhone;
     private Button btnChangePassword, btnEdit, btnHistory, btnLogout, btnDeleteAccount;
     private ImageButton btnBack;
@@ -65,6 +66,7 @@ public class UserViewActivity extends AppCompatActivity {
         btnChangePassword = findViewById(R.id.btnChangePassword);
         btnDeleteAccount = findViewById(R.id.btnDeleteAccount);
         btnHistory = findViewById(R.id.btnHistory);
+        btnOption = findViewById(R.id.btnOption);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -77,6 +79,12 @@ public class UserViewActivity extends AppCompatActivity {
 
         // 뒤로가기
         btnBack.setOnClickListener(v -> finish());
+
+        // 내 정보 수정
+        btnOption.setOnClickListener(v -> {
+            Intent intent = new Intent(this, OptionActivity.class);
+            updateUserLauncher.launch(intent);
+        });
 
         // 내 정보 수정
         btnEdit.setOnClickListener(v -> {
@@ -206,18 +214,25 @@ public class UserViewActivity extends AppCompatActivity {
                 String phone = snapshot.child("phone").getValue(String.class);
                 String photoUrl = snapshot.child("photoUrl").getValue(String.class);
 
-                textNickname.setText(nickname != null ? nickname : "-");
-                textEmail.setText(email != null ? email : "-");
-                textName.setText(name != null ? "이름: " + name : "이름: -");
+                textNickname.setText(nickname != null ? nickname : "---");
+                textEmail.setText(email != null ? email : "---");
+                textName.setText(name != null ? name : "---");
                 textBirth.setText(birth != null && !birth.isEmpty()
-                        ? "생년월일: " + formatBirth(birth)
-                        : "생년월일: -");
-                textGender.setText(gender != null ?
-                        ("성별: ".concat(gender.equals("M") ? "남성" : gender.equals("F") ? "여성" : gender)) : "성별: -");
-                textAddress.setText(address != null ? "주소: " + address : "주소: -");
+                        ? formatBirth(birth)
+                        : "---");
+                textGender.setText(
+                        gender != null && !gender.isEmpty()
+                                ? (gender.equals("M") ? "남성" : gender.equals("F") ? "여성" : gender)
+                                : "---"
+                );
+                textAddress.setText(
+                        address != null && !address.isEmpty()
+                                ? address
+                                : "---"
+                );
                 textPhone.setText(phone != null && !phone.isEmpty()
-                        ? "전화번호: " + formatPhone(phone)
-                        : "전화번호: -");
+                        ? formatPhone(phone)
+                        : "---");
 
                 // Glide로 프로필 사진 표시
                 if (photoUrl != null && !photoUrl.isEmpty()) {

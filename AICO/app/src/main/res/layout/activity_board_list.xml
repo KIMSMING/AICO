@@ -5,48 +5,207 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F6FA"
+    android:background="@color/professional_bg_primary"
     tools:context=".reviewBoard.BoardListActivity">
 
-    <!-- 뒤로가기 버튼 -->
-    <ImageButton
-        android:id="@+id/btnBack"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_backarrow"
-        android:contentDescription="뒤로가기 버튼"
-        app:tint="#222"
+    <!-- 상단 네비게이션 -->
+    <LinearLayout
+        android:id="@+id/topNavBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center_vertical"
+        android:background="@color/professional_bg_secondary"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            style="@style/ProfessionalIconButton"
+            android:src="@drawable/ic_backarrow"
+            android:contentDescription="뒤로가기"
+            app:tint="@color/professional_text_secondary" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="면접 후기"
+            android:textColor="@color/professional_text_primary"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:fontFamily="sans-serif-medium" />
+
+        <ImageButton
+            android:id="@+id/btnSearch"
+            style="@style/ProfessionalIconButton"
+            android:src="@drawable/ic_search"
+            android:contentDescription="검색"
+            app:tint="@color/professional_text_secondary" />
+
+    </LinearLayout>
+
+    <!-- 필터 및 정렬 옵션 -->
+    <LinearLayout
+        android:id="@+id/filterBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:background="@color/professional_bg_primary"
+        app:layout_constraintTop_toBottomOf="@id/topNavBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/btnFilterAll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="전체"
+                android:textColor="@color/professional_primary_light"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:background="@drawable/professional_button_secondary"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:layout_marginEnd="8dp"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/btnFilterTech"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="기술면접"
+                android:textColor="@color/professional_text_secondary"
+                android:textSize="14sp"
+                android:background="@drawable/professional_card_clickable"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:layout_marginEnd="8dp"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/btnFilterPersonal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="인성면접"
+                android:textColor="@color/professional_text_secondary"
+                android:textSize="14sp"
+                android:background="@drawable/professional_card_clickable"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:clickable="true"
+                android:focusable="true" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="정렬:"
+                android:textColor="@color/professional_text_tertiary"
+                android:textSize="12sp"
+                android:layout_marginEnd="4dp" />
+
+            <Spinner
+                android:id="@+id/spinnerSort"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/professional_text_secondary" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <!-- 게시글 리스트 -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerBoardList"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
         android:clipToPadding="false"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
         android:paddingBottom="80dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@id/btnBack"
+        app:layout_constraintTop_toBottomOf="@id/filterBar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 빈 상태 표시 -->
+    <LinearLayout
+        android:id="@+id/emptyStateLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/recyclerBoardList"
+        app:layout_constraintBottom_toBottomOf="@id/recyclerBoardList"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@drawable/ic_empty"
+            android:layout_marginBottom="16dp"
+            app:tint="@color/professional_text_tertiary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="아직 작성된 후기가 없습니다"
+            android:textColor="@color/professional_text_secondary"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="첫 번째 면접 후기를 작성해보세요!"
+            android:textColor="@color/professional_text_tertiary"
+            android:textSize="14sp" />
+
+    </LinearLayout>
 
     <!-- 글 작성 버튼 -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnWritePost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_margin="20dp"
         android:contentDescription="글 작성"
         android:src="@drawable/ic_write"
-        app:tint="#FFFFFF"
-        app:backgroundTint="#2196F3"
+        app:tint="@color/professional_text_primary"
+        app:backgroundTint="@color/professional_primary"
+        app:borderWidth="0dp"
+        app:elevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
