@@ -11,7 +11,7 @@
     <color name="professional_bg_elevated">#475569</color>
 
     <!-- 주요 브랜드 색상 (신뢰감 있는 블루) -->
-    <color name="professional_primary">#2563EB</color>
+    <color name="professional_primary">#FFFFFF</color>
     <color name="professional_primary_dark">#1E40AF</color>
     <color name="professional_primary_light">#3B82F6</color>
 

@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         btnTestSpeech = findViewById(R.id.btnTestSpeech);
         btnAddQuestion = findViewById(R.id.btnAddQuestion);
 
-        //질문 추가하기
+        // 설정하기
         btnOption.setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, OptionActivity.class));
         });
