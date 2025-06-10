@@ -1,83 +1,349 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/professional_bg_primary"
+    android:fillViewport="true"
     tools:context=".MiceTestActivity">
 
-    <!-- 뒤로가기 버튼 -->
-    <ImageButton
-        android:id="@+id/btnBack"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_margin="24dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_backarrow"
-        android:contentDescription="뒤로가기 버튼"
-        app:tint="#222"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
-
-    <!-- 화면 중앙에 아주 큰 마이크 아이콘 -->
-    <ImageView
-        android:id="@+id/imgMic"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:contentDescription="마이크"
-        android:src="@drawable/ic_mic"
-        android:layout_marginTop="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnBack"
-        app:layout_constraintWidth_percent="0.7"
-        app:tint="#2196F3" />
-
-    <!-- 초기 안내 텍스트 -->
-    <TextView
-        android:id="@+id/tvHint"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="마이크를 눌러 음성 테스트를 시작해보세요!"
-        android:textSize="18sp"
-        android:textColor="#222"
-        android:paddingLeft="32dp"
-        android:paddingRight="32dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp"
-        android:elevation="4dp"
-        android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@id/imgMic"
-        app:layout_constraintBottom_toTopOf="@id/tvResult"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        android:orientation="vertical">
 
-
-
-    <!-- 인식된 텍스트 표시 -->
-    <ScrollView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imgMic"
-        android:layout_marginBottom="48dp">
-
-        <TextView
-            android:id="@+id/tvResult"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:gravity="center"
-            android:maxLines="20"
-            android:text=""
-            android:textColor="#222"
-            android:textSize="24sp" />
-    </ScrollView>
+            android:background="@color/professional_bg_primary">
 
+            <!-- 상단 네비게이션 바 -->
+            <LinearLayout
+                android:id="@+id/topNavBar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@color/professional_bg_secondary"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    style="@style/ProfessionalIconButton"
+                    android:contentDescription="뒤로가기"
+                    android:src="@drawable/ic_backarrow"
+                    app:tint="@color/professional_text_secondary" />
+
+                <TextView
+                    android:id="@+id/titleMiceTest"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
+                    android:text="마이크 테스트"
+                    android:textColor="@color/professional_text_primary"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/btnSettings"
+                    style="@style/ProfessionalIconButton"
+                    android:contentDescription="설정"
+                    android:src="@drawable/ic_settings"
+                    app:tint="@color/professional_text_secondary" />
+
+            </LinearLayout>
+
+            <!-- 헤더 섹션 -->
+            <LinearLayout
+                android:id="@+id/headerSection"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/professional_main_banner_bg"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="24dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/topNavBar">
+
+                <ImageView
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_marginBottom="16dp"
+                    android:src="@drawable/ic_empty"
+                    app:tint="@color/professional_warning" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="음성 품질을 확인하세요"
+                    android:textColor="@color/professional_text_primary"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:alpha="0.9"
+                    android:gravity="center"
+                    android:text="면접 전 마이크와 음성 품질을 테스트하여\n최적의 면접 환경을 준비하세요"
+                    android:textColor="@color/professional_text_primary"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <!-- 마이크 상태 표시 -->
+            <LinearLayout
+                android:id="@+id/micStatusSection"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/professional_card_bg"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="24dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/headerSection">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="마이크 상태"
+                    android:textColor="@color/professional_text_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <!-- 마이크 아이콘과 상태 -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/micStatusIcon"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_marginEnd="12dp"
+                        android:src="@drawable/ic_mic_on"
+                        app:tint="@color/professional_success" />
+
+                    <TextView
+                        android:id="@+id/tvHint"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="마이크 연결됨"
+                        android:textColor="@color/professional_success"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- 음성 레벨 표시 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="12dp"
+                        android:text="결과"
+                        android:id="@+id/tvResult"
+                        android:textColor="@color/professional_text_secondary"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+                <!-- 테스트 버튼 -->
+                <Button
+                    android:id="@+id/imgMic"
+                    style="@style/ProfessionalButtonPrimary"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="음성 테스트 시작" />
+            </LinearLayout>
+
+            <!-- 테스트 결과 섹션 -->
+            <LinearLayout
+                android:id="@+id/testResultSection"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/professional_card_bg"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/micStatusSection"
+                tools:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="테스트 결과"
+                    android:textColor="@color/professional_text_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <!-- 음질 평가 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="음질 평가"
+                        android:textColor="@color/professional_text_secondary"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/audioQualityResult"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="우수"
+                        android:textColor="@color/professional_success"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- 배경 소음 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="배경 소음"
+                        android:textColor="@color/professional_text_secondary"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/backgroundNoiseResult"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="낮음"
+                        android:textColor="@color/professional_success"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- 음성 명료도 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="음성 명료도"
+                        android:textColor="@color/professional_text_secondary"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/clarityResult"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="매우 좋음"
+                        android:textColor="@color/professional_success"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- 재테스트 버튼 -->
+                <Button
+                    android:id="@+id/btnRetry"
+                    style="@style/ProfessionalButtonSecondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="다시 테스트" />
+            </LinearLayout>
+
+            <!-- 팁 섹션 -->
+            <LinearLayout
+                android:id="@+id/tipsSection"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/professional_card_bg"
+                android:orientation="vertical"
+                android:padding="20dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/testResultSection">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/ic_empty"
+                        app:tint="@color/professional_warning" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="음성 테스트 팁"
+                        android:textColor="@color/professional_text_primary"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="4dp"
+                    android:text="• 조용한 환경에서 테스트하세요\n• 마이크와 입 사이의 거리를 15-20cm 유지하세요\n• 평소 말하는 톤으로 자연스럽게 발음하세요\n• 에어컨이나 선풍기 소음을 줄여주세요"
+                    android:textColor="@color/professional_text_secondary"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+</ScrollView>
+

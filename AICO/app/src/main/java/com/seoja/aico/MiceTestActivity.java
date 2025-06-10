@@ -11,6 +11,7 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.util.TypedValue;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ImageButton;
@@ -24,10 +25,9 @@ import java.util.ArrayList;
 
 public class MiceTestActivity extends AppCompatActivity {
 
-    private TextView tvHint;
+    private TextView tvHint, tvResult;
     private boolean isHintHidden = false;
-    private ImageView imgMic;
-    private TextView tvResult;
+    private Button imgMic;
     private boolean isListening = false;
     private SpeechRecognizer speechRecognizer;
     private Intent recognizerIntent;
@@ -88,8 +88,13 @@ public class MiceTestActivity extends AppCompatActivity {
         }
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
         speechRecognizer.setRecognitionListener(new RecognitionListener() {
-            @Override public void onReadyForSpeech(Bundle params) {}
-            @Override public void onBeginningOfSpeech() {}
+            @Override
+            public void onReadyForSpeech(Bundle params) {
+            }
+
+            @Override
+            public void onBeginningOfSpeech() {
+            }
 
             @Override
             public void onRmsChanged(float rmsdB) {
@@ -101,8 +106,13 @@ public class MiceTestActivity extends AppCompatActivity {
                 resetSilenceTimer();
             }
 
-            @Override public void onBufferReceived(byte[] buffer) {}
-            @Override public void onEndOfSpeech() {}
+            @Override
+            public void onBufferReceived(byte[] buffer) {
+            }
+
+            @Override
+            public void onEndOfSpeech() {
+            }
 
             @Override
             public void onError(int error) {
@@ -126,14 +136,16 @@ public class MiceTestActivity extends AppCompatActivity {
                 }
             }
 
-            @Override public void onEvent(int eventType, Bundle params) {}
+            @Override
+            public void onEvent(int eventType, Bundle params) {
+            }
         });
     }
 
     private void startListening() {
         isListening = true;
         tvResult.setText("");
-        imgMic.setImageResource(R.drawable.ic_mic_on); // 활성화 마이크 아이콘
+//        imgMic.setImageResource(R.drawable.ic_mic_on); // 활성화 마이크 아이콘
         animateMicSize(baseMicSizeDp); // 초기 크기
         createSpeechRecognizer(); // 항상 새로 생성
         speechRecognizer.startListening(recognizerIntent);
@@ -147,8 +159,9 @@ public class MiceTestActivity extends AppCompatActivity {
                 speechRecognizer.stopListening();
                 speechRecognizer.destroy();
             }
-        } catch (Exception ignored) {}
-        imgMic.setImageResource(R.drawable.ic_mic); // 비활성화 마이크 아이콘
+        } catch (Exception ignored) {
+        }
+//        imgMic.setImageResource(R.drawable.ic_mic); // 비활성화 마이크 아이콘
         animateMicSize(baseMicSizeDp);
         clearSilenceTimer();
         createSpeechRecognizer(); // 다음 녹음을 위해 새 인스턴스 준비
