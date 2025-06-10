@@ -117,6 +117,7 @@
 
                 <!-- 인증번호 입력 -->
                 <LinearLayout
+                    android:id="@+id/codeBar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -151,9 +152,9 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_check"
-                            android:tint="@color/professional_success"
                             android:visibility="gone"
-                            android:layout_marginEnd="8dp" />
+                            android:layout_marginEnd="8dp"
+                            app:tint="@color/professional_success" />
 
                         <TextView
                             android:id="@+id/codeTimer"
