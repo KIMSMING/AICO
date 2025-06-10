@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/splash_screen_background"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".SplashActivity">
+
+    <!-- 메인 로고 섹션 -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <!-- AI 브레인 아이콘 -->
+        <ImageView
+            android:id="@+id/ivAIBrain"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginBottom="32dp"
+            app:tint="@color/professional_text_primary"
+            android:alpha="0"
+            android:scaleX="0.8"
+            android:scaleY="0.8" />
+
+        <!-- AICO 로고 텍스트 -->
+        <TextView
+            android:id="@+id/tvAICO"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="AICO"
+            android:textColor="@color/professional_text_primary"
+            android:textSize="48sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.1"
+            android:alpha="0"
+            android:translationY="20dp" />
+
+        <!-- 서브타이틀 -->
+        <TextView
+            android:id="@+id/tvSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="48dp"
+            android:fontFamily="sans-serif"
+            android:text="AI INTERVIEW COACH"
+            android:textColor="@color/professional_text_secondary"
+            android:textSize="16sp"
+            android:letterSpacing="0.15"
+            android:alpha="0"
+            android:translationY="20dp" />
+
+        <!-- 로딩 인디케이터 -->
+        <LinearLayout
+            android:id="@+id/loadingSection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:alpha="0">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginBottom="16dp"
+                android:indeterminateTint="@color/professional_primary_light" />
+
+            <TextView
+                android:id="@+id/tvLoadingText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="AI 면접 코치를 준비하고 있습니다..."
+                android:textColor="@color/professional_text_tertiary"
+                android:textSize="14sp"
+                android:gravity="center" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- 하단 정보 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_gravity="bottom">
+
+        <!-- 버전 정보 -->
+        <TextView
+            android:id="@+id/tvVersion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Version 1.0.0"
+            android:textColor="@color/professional_text_muted"
+            android:textSize="12sp"
+            android:alpha="0" />
+
+        <!-- 저작권 정보 -->
+        <TextView
+            android:id="@+id/tvCopyright"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="© 2025 AICO Team. All rights reserved."
+            android:textColor="@color/professional_text_muted"
+            android:textSize="11sp"
+            android:alpha="0" />
+    </LinearLayout>
+
+</LinearLayout>
+
