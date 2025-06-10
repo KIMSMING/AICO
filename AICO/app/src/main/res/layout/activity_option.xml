@@ -396,7 +396,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="AICO Team"
+                        android:text="Seoja"
                         android:textSize="14sp"
                         android:textColor="@color/professional_text_primary"
                         android:textStyle="bold" />

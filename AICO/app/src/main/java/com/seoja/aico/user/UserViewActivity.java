@@ -181,8 +181,14 @@ public class UserViewActivity extends AppCompatActivity {
                 redirect.run();
                 break;
             default:
-                FirebaseAuth.getInstance().signOut();
-                redirect.run();
+                googleSignInClient.signOut().addOnCompleteListener(task1 -> {
+                    UserApiClient.getInstance().logout(error -> {
+                        NaverIdLoginSDK.INSTANCE.logout();
+                        FirebaseAuth.getInstance().signOut();
+                        redirect.run();
+                        return null;
+                    });
+                });
                 break;
         }
     }

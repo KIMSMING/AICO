@@ -28,10 +28,11 @@ public class UpdateUserActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
 
-    private ImageView imageProfile;
-    private Button btnChangeProfile, btnUpdate, btnCancel;
+    private ImageView imageProfile, btnBack;
+    private Button btnChangeProfile;
     private EditText editTextNickname, editTextEmail, editTextName, editTextBirth, editTextAddress, editTextPhone;
     private RadioGroup radioGroupGender;
+    private TextView btnUpdate;
 
     private Uri imageUri;
     private String photoUrl;
@@ -52,7 +53,7 @@ public class UpdateUserActivity extends AppCompatActivity {
         imageProfile = findViewById(R.id.imageProfile);
         btnChangeProfile = findViewById(R.id.btnChangeProfile);
         btnUpdate = findViewById(R.id.btnUpdate);
-        btnCancel = findViewById(R.id.btnCancel);
+        btnBack = findViewById(R.id.btnBack);
         editTextNickname = findViewById(R.id.editTextNickname);
         editTextEmail = findViewById(R.id.editTextEmail);
         editTextName = findViewById(R.id.editTextName);
@@ -80,7 +81,7 @@ public class UpdateUserActivity extends AppCompatActivity {
         btnUpdate.setOnClickListener(v -> updateUserInfo());
 
         // 취소 버튼
-        btnCancel.setOnClickListener(v -> finish());
+        btnBack.setOnClickListener(v -> finish());
 
         // 처음엔 비활성화
         btnUpdate.setEnabled(false);

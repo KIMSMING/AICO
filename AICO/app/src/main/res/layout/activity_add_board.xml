@@ -263,6 +263,7 @@
                     android:layout_height="wrap_content"
                     style="@style/ProfessionalButtonSecondary"
                     android:text="이미지 선택"
+                    android:enabled="false"
                     android:drawableStart="@drawable/ic_image"
                     android:drawableTint="@color/professional_text_secondary" />
 
