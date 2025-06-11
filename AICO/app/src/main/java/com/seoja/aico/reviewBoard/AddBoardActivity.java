@@ -65,8 +65,8 @@ public class AddBoardActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         editPostTitle = findViewById(R.id.editPostTitle);
         editPostContent = findViewById(R.id.editPostContent);
-        btnAddImage = findViewById(R.id.btnAddImage);
-        imagePreview = findViewById(R.id.imagePreview);
+//        btnAddImage = findViewById(R.id.btnAddImage);
+//        imagePreview = findViewById(R.id.imagePreview);
         btnUpload = findViewById(R.id.btnUpload);
 
         // Firebase 참조

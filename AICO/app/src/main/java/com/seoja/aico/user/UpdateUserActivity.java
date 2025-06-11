@@ -50,7 +50,7 @@ public class UpdateUserActivity extends AppCompatActivity {
         setContentView(R.layout.activity_update_user);
 
         imageProfile = findViewById(R.id.imageProfile);
-        btnChangeProfile = findViewById(R.id.btnChangeProfile);
+//        btnChangeProfile = findViewById(R.id.btnChangeProfile);
         btnUpdate = findViewById(R.id.btnUpdate);
         btnCancel = findViewById(R.id.btnCancel);
         editTextNickname = findViewById(R.id.editTextNickname);

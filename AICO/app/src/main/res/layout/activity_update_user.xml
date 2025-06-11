@@ -89,16 +89,16 @@
                     app:strokeWidth="2dp"
                     app:shapeAppearanceOverlay="@style/CircleImageView" />
 
-                <Button
-                    android:id="@+id/btnChangeProfile"
-                    android:layout_width="wrap_content"
-                    android:layout_height="36dp"
-                    android:text="프로필 사진 변경"
-                    android:textColor="@color/professional_primary"
-                    android:textSize="14sp"
-                    android:backgroundTint="@color/professional_bg_tertiary"
-                    android:layout_marginTop="12dp"
-                    style="@style/ProfessionalButtonSecondary"/>
+<!--                <Button-->
+<!--                    android:id="@+id/btnChangeProfile"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="36dp"-->
+<!--                    android:text="프로필 사진 변경"-->
+<!--                    android:textColor="@color/professional_primary"-->
+<!--                    android:textSize="14sp"-->
+<!--                    android:backgroundTint="@color/professional_bg_tertiary"-->
+<!--                    android:layout_marginTop="12dp"-->
+<!--                    style="@style/ProfessionalButtonSecondary"/>-->
             </LinearLayout>
 
             <!-- 기본 정보 카드 -->
