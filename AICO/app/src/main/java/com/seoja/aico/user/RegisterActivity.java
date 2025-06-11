@@ -12,6 +12,7 @@ import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.*;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,12 +20,14 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.*;
+
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.seoja.aico.R;
+
 import okhttp3.*;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -34,7 +37,7 @@ public class RegisterActivity extends AppCompatActivity {
     private RadioGroup radioGroupGender;
     private Button btnSignUp, btnSendEmail, btnCancle;
     private TextView codeTimer, passwordRule1, passwordRule2, passwordRule3;
-    private ImageView ivCodeCheck, ivPwCheck;
+    private ImageView ivCodeCheck, ivPwCheck, btnBack;
     private LinearLayout codeBar;
 
     private boolean isEmailVerified = false;
@@ -73,6 +76,7 @@ public class RegisterActivity extends AppCompatActivity {
         passwordRule1 = findViewById(R.id.passwordRule1);
         passwordRule2 = findViewById(R.id.passwordRule2);
         passwordRule3 = findViewById(R.id.passwordRule3);
+        btnBack = findViewById(R.id.btnBack);
 
         database = FirebaseDatabase.getInstance().getReference("users");
 
@@ -87,6 +91,8 @@ public class RegisterActivity extends AppCompatActivity {
             isGenderValid = checkedId != -1;
             updateSignUpButton();
         });
+
+        btnBack.setOnClickListener(v -> finish());
 
         // 이메일 인증번호 전송
         btnSendEmail.setOnClickListener(v -> {
@@ -111,8 +117,14 @@ public class RegisterActivity extends AppCompatActivity {
                     setCodeValidation(false);
                 }
             }
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
         });
 
         // 비밀번호 실시간 검증
@@ -123,8 +135,14 @@ public class RegisterActivity extends AppCompatActivity {
                 checkPasswordsMatch();
                 updateSignUpButton();
             }
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
         });
 
         editTextPasswordConfirm.addTextChangedListener(new TextWatcher() {
@@ -133,8 +151,14 @@ public class RegisterActivity extends AppCompatActivity {
                 checkPasswordsMatch();
                 updateSignUpButton();
             }
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
         });
 
         // 가입 버튼 클릭
@@ -154,6 +178,7 @@ public class RegisterActivity extends AppCompatActivity {
                     startResendCooldown();
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 showToast("DB 오류: " + error.getMessage());
@@ -175,6 +200,7 @@ public class RegisterActivity extends AppCompatActivity {
             public void onFailure(Call call, IOException e) {
                 runOnUiThread(() -> showToast("인증번호 요청 실패: " + e.getMessage()));
             }
+
             @Override
             public void onResponse(Call call, Response response) {
                 runOnUiThread(() -> {
@@ -210,6 +236,7 @@ public class RegisterActivity extends AppCompatActivity {
                         setCodeValidation(false);
                     });
                 }
+
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     boolean isValid = response.isSuccessful() && response.body().string().equals("true");
@@ -238,6 +265,7 @@ public class RegisterActivity extends AppCompatActivity {
                 codeTimer.setText(String.format("%02d:%02d",
                         millisUntilFinished / 60000, (millisUntilFinished % 60000) / 1000));
             }
+
             public void onFinish() {
                 isTimerRunning = false;
                 btnSendEmail.setEnabled(true);
@@ -288,8 +316,14 @@ public class RegisterActivity extends AppCompatActivity {
                 validationCheck.run();
                 updateSignUpButton();
             }
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
         });
     }
 

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -14,31 +13,32 @@
         android:id="@+id/topNavBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="@color/professional_bg_secondary"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="16dp"
-        android:gravity="center_vertical"
-        android:background="@color/professional_bg_secondary"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
             android:id="@+id/btnBack"
             style="@style/ProfessionalIconButton"
-            android:src="@drawable/ic_backarrow"
+            android:layout_width="47dp"
             android:contentDescription="뒤로가기"
-            android:tint="@color/professional_text_secondary" />
+            android:src="@drawable/ic_backarrow"
+            app:tint="@color/professional_text_secondary" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
             android:text="회원가입"
             android:textColor="@color/professional_text_primary"
             android:textSize="18sp"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:fontFamily="sans-serif-medium" />
+            android:textStyle="bold" />
 
         <View
             android:layout_width="48dp"
@@ -50,13 +50,13 @@
         android:layout_height="0dp"
         android:fillViewport="true"
         android:paddingStart="24dp"
-        android:paddingEnd="24dp"
         android:paddingTop="16dp"
+        android:paddingEnd="24dp"
         android:paddingBottom="16dp"
-        app:layout_constraintTop_toBottomOf="@id/topNavBar"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/topNavBar">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -67,33 +67,33 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:layout_marginBottom="16dp"
                 android:background="@drawable/professional_card_bg"
-                android:padding="24dp"
-                android:layout_marginBottom="16dp">
+                android:orientation="vertical"
+                android:padding="24dp">
 
                 <!-- 이메일 인증 -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
                     android:text="이메일 인증"
                     android:textColor="@color/professional_text_primary"
                     android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="12dp" />
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="12dp">
+                    android:layout_marginBottom="12dp"
+                    android:orientation="horizontal">
 
                     <com.google.android.material.textfield.TextInputLayout
+                        style="@style/ProfessionalEditText"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:layout_marginEnd="8dp"
-                        style="@style/ProfessionalEditText"
+                        android:layout_weight="1"
                         android:hint="이메일 주소">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -107,9 +107,9 @@
 
                     <Button
                         android:id="@+id/btnSendEmail"
+                        style="@style/ProfessionalButtonSecondary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        style="@style/ProfessionalButtonSecondary"
                         android:text="전송"
                         android:textSize="12sp" />
 
@@ -120,16 +120,16 @@
                     android:id="@+id/codeBar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
                     android:orientation="horizontal"
-                    android:visibility="gone"
-                    android:layout_marginBottom="16dp">
+                    android:visibility="gone">
 
                     <com.google.android.material.textfield.TextInputLayout
+                        style="@style/ProfessionalEditText"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:layout_marginEnd="8dp"
-                        style="@style/ProfessionalEditText"
+                        android:layout_weight="1"
                         android:hint="인증번호">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -144,16 +144,16 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
                         <ImageView
                             android:id="@+id/ivCodeCheck"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
+                            android:layout_marginEnd="8dp"
                             android:src="@drawable/ic_check"
                             android:visibility="gone"
-                            android:layout_marginEnd="8dp"
                             app:tint="@color/professional_success" />
 
                         <TextView
@@ -172,25 +172,25 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/professional_divider"
                     android:layout_marginTop="8dp"
-                    android:layout_marginBottom="20dp" />
+                    android:layout_marginBottom="20dp"
+                    android:background="@color/professional_divider" />
 
                 <!-- 비밀번호 설정 -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
                     android:text="비밀번호 설정"
                     android:textColor="@color/professional_text_primary"
                     android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="12dp" />
+                    android:textStyle="bold" />
 
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/ProfessionalEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    style="@style/ProfessionalEditText"
                     android:hint="비밀번호"
                     app:passwordToggleEnabled="true"
                     app:passwordToggleTint="@color/professional_text_secondary">
@@ -207,8 +207,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginBottom="12dp">
+                    android:layout_marginBottom="12dp"
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/passwordRule1"
@@ -241,15 +241,15 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="16dp">
+                    android:layout_marginBottom="16dp"
+                    android:orientation="horizontal">
 
                     <com.google.android.material.textfield.TextInputLayout
+                        style="@style/ProfessionalEditText"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:layout_marginEnd="8dp"
-                        style="@style/ProfessionalEditText"
+                        android:layout_weight="1"
                         android:hint="비밀번호 확인"
                         app:passwordToggleEnabled="true"
                         app:passwordToggleTint="@color/professional_text_secondary">
@@ -266,34 +266,34 @@
                         android:id="@+id/ivPwCheck"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
                         android:src="@drawable/ic_not"
-                        android:tint="@color/professional_error"
                         android:visibility="gone"
-                        android:layout_gravity="center_vertical" />
+                        app:tint="@color/professional_error" />
                 </LinearLayout>
 
                 <!-- 구분선 -->
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/professional_divider"
-                    android:layout_marginBottom="20dp" />
+                    android:layout_marginBottom="20dp"
+                    android:background="@color/professional_divider" />
 
                 <!-- 개인정보 -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
                     android:text="개인정보"
                     android:textColor="@color/professional_text_primary"
                     android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="12dp" />
+                    android:textStyle="bold" />
 
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/ProfessionalEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
-                    style="@style/ProfessionalEditText"
                     android:hint="이름">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -304,10 +304,10 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/ProfessionalEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
-                    style="@style/ProfessionalEditText"
                     android:hint="생년월일 (YYYYMMDD)">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -322,41 +322,41 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
                     android:text="성별"
                     android:textColor="@color/professional_text_secondary"
-                    android:textSize="12sp"
-                    android:layout_marginBottom="8dp" />
+                    android:textSize="12sp" />
 
                 <RadioGroup
                     android:id="@+id/radioGroupGender"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="12dp">
+                    android:layout_marginBottom="12dp"
+                    android:orientation="horizontal">
 
                     <RadioButton
                         android:id="@+id/radioMale"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:buttonTint="@color/professional_primary"
                         android:text="남성"
-                        android:textColor="@color/professional_text_secondary"
-                        android:buttonTint="@color/professional_primary" />
+                        android:textColor="@color/professional_text_secondary" />
 
                     <RadioButton
                         android:id="@+id/radioFemale"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
+                        android:buttonTint="@color/professional_primary"
                         android:text="여성"
-                        android:textColor="@color/professional_text_secondary"
-                        android:buttonTint="@color/professional_primary" />
+                        android:textColor="@color/professional_text_secondary" />
                 </RadioGroup>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/ProfessionalEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
-                    style="@style/ProfessionalEditText"
                     android:hint="주소">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -367,9 +367,9 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/ProfessionalEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/ProfessionalEditText"
                     android:hint="전화번호">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -386,25 +386,25 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="16dp"
+                android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/btnCancle"
+                    style="@style/ProfessionalButtonSecondary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:layout_marginEnd="8dp"
-                    style="@style/ProfessionalButtonSecondary"
+                    android:layout_weight="1"
                     android:text="취소" />
 
                 <Button
                     android:id="@+id/btnSignUp"
+                    style="@style/ProfessionalButtonPrimary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:layout_marginStart="8dp"
-                    style="@style/ProfessionalButtonPrimary"
+                    android:layout_weight="1"
                     android:text="가입하기" />
             </LinearLayout>
         </LinearLayout>
