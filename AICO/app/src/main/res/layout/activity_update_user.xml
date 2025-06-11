@@ -37,7 +37,7 @@
             android:fontFamily="sans-serif-medium" />
 
         <TextView
-            android:id="@+id/btnSave"
+            android:id="@+id/btnUpdate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="저장"
@@ -247,33 +247,6 @@
                         android:inputType="phone"
                         android:textColor="@color/professional_text_primary" />
                 </com.google.android.material.textfield.TextInputLayout>
-            </LinearLayout>
-
-            <!-- 하단 버튼 카드 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
-
-                <Button
-                    android:id="@+id/btnCancel"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
-                    style="@style/ProfessionalButtonSecondary"
-                    android:text="취소" />
-
-                <Button
-                    android:id="@+id/btnUpdate"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    style="@style/ProfessionalButtonPrimary"
-                    android:text="수정 완료"
-                    android:enabled="false"/>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

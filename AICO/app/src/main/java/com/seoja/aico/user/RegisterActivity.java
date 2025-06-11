@@ -35,6 +35,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Button btnSignUp, btnSendEmail, btnCancle;
     private TextView codeTimer, passwordRule1, passwordRule2, passwordRule3;
     private ImageView ivCodeCheck, ivPwCheck;
+    private LinearLayout codeBar;
 
     private boolean isEmailVerified = false;
     private boolean isTimerRunning = false;
@@ -54,6 +55,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         // 뷰 바인딩
         editTextEmail = findViewById(R.id.editTextEmail);
+        codeBar = findViewById(R.id.codeBar);
         editTextVerificationCode = findViewById(R.id.editTextVerificationCode);
         editTextPassword = findViewById(R.id.editTextPassword);
         editTextPasswordConfirm = findViewById(R.id.editTextPasswordConfirm);
@@ -177,7 +179,7 @@ public class RegisterActivity extends AppCompatActivity {
             public void onResponse(Call call, Response response) {
                 runOnUiThread(() -> {
                     if (response.isSuccessful()) {
-                        editTextVerificationCode.setVisibility(View.VISIBLE);
+                        codeBar.setVisibility(View.VISIBLE);
                         showToast("이메일로 인증번호를 전송했습니다.");
                     } else {
                         showToast("인증번호 전송 실패");

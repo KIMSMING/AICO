@@ -31,7 +31,7 @@
         android:id="@+id/tvTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="제목"
+        android:text=""
         android:textSize="15sp"
         android:textStyle="bold"
         android:textColor="@color/professional_text_primary"
@@ -53,22 +53,22 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="닉네임"
+            android:text=""
             android:textSize="12sp"
             android:textColor="@color/professional_primary_light"
             android:textStyle="bold"/>
 
-        <TextView
-            android:id="@+id/tvDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="2025-06-05"
-            android:textSize="11sp"
-            android:textColor="@color/professional_text_tertiary"/>
-
     </LinearLayout>
 
     <!-- 하단 정보 영역 -->
+    <TextView
+        android:id="@+id/tvDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="@color/professional_text_tertiary"
+        android:textSize="11sp" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -93,25 +93,6 @@
             android:textColor="@color/professional_text_secondary"
             android:textSize="12sp"
             android:layout_marginStart="6dp" />
-
-        <!-- 구분선 -->
-        <View
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1" />
-
-        <!-- 카테고리 태그 -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="면접 후기"
-            android:textSize="10sp"
-            android:textColor="@color/professional_text_primary"
-            android:background="@drawable/professional_button_secondary"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:paddingTop="3dp"
-            android:paddingBottom="3dp" />
 
     </LinearLayout>
 

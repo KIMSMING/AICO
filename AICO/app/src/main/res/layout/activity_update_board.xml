@@ -112,6 +112,7 @@
                 android:textColor="#000000"
                 app:layout_constraintTop_toBottomOf="@id/rvImages"
                 app:layout_constraintStart_toStartOf="parent"
+                android:enabled="false"
                 android:layout_marginStart="24dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
