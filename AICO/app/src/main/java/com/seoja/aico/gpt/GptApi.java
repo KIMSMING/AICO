@@ -11,5 +11,8 @@ public interface GptApi {
 
     @GET("/") // 루트 엔드포인트 - 서버 연결 테스트용
     Call<Object> testConnection();
+
+    @POST("/save_history")
+    Call<Void> saveHistory(@Body HistoryItem item);
 }
 

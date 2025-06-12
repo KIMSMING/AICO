@@ -17,6 +17,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,6 +26,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.seoja.aico.gpt.GptApi;
 import com.seoja.aico.gpt.GptRequest;
 import com.seoja.aico.gpt.GptResponse;
+import com.seoja.aico.gpt.HistoryItem;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,6 +62,10 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
 
     private String selectedFirst = "";
     private String selectedSecond = "";
+
+    private Retrofit retrofit;
+    private OkHttpClient client;
+    private HttpLoggingInterceptor logging;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,28 +103,29 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
 
         // 서버 연결 테스트
         testServerConnection();
-    }
 
-    // 서버 연결 테스트
-    private void testServerConnection() {
-        // 로깅 인터셉터 추가
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        // Retrofit 설정
+        retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build();
 
         // OkHttpClient 설정
-        OkHttpClient client = new OkHttpClient.Builder()
+        client = new OkHttpClient.Builder()
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .writeTimeout(10, TimeUnit.SECONDS)
                 .addInterceptor(logging)
                 .build();
 
-        // Retrofit 설정
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(client)
-                .build();
+        // 로깅 인터셉터 추가
+        logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+    }
+
+    // 서버 연결 테스트
+    private void testServerConnection() {
 
         // 루트 엔드포인트 호출
         retrofit.create(GptApi.class).testConnection().enqueue(new Callback<Object>() {
@@ -255,6 +262,14 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                             String content = response.body().content;
                             Log.d(TAG, "응답 바디 있음: " + (content != null ? content.substring(0, Math.min(content.length(), 100)) : "null"));
                             textFeedback.setText(content);
+
+                            //히스토리 저장
+                            saveHistoryToServer(
+                                    textRequest.getText().toString(),
+                                    textResponse.getText().toString(),
+                                    content
+                            );
+
                         } else {
                             Log.e(TAG, "응답 바디가 null임");
                             textFeedback.setText("응답을 받았으나 내용이 없습니다.");
@@ -304,6 +319,31 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         if (v.getId() == R.id.btnNextQuestion){
             loadNewQuestion();
         }
+    }
+    //히스토리 저장 함수
+    private void saveHistoryToServer(String question, String answer, String feedback) {
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        HistoryItem item = new HistoryItem(userId, question, answer, feedback);
+
+        GptApi api = retrofit.create(GptApi.class);
+        Call<Void> call = api.saveHistory(item);
+
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Log.d("HISTORY_SAVE", "히스토리 저장 성공");
+                } else {
+                    Log.e("HISTORY_SAVE", "저장 실패 : " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.e("HISTORY_SAVE_ERR", "저장 실패 : " + t.getMessage());
+            }
+        });
     }
 }
 

@@ -94,7 +94,7 @@ public class UserViewActivity extends AppCompatActivity {
 
         // 히스토리 조회
         btnHistory.setOnClickListener(v -> {
-            Intent intent = new Intent(this, QuestActivity.class);
+            Intent intent = new Intent(this, HistoryActivity.class);
             startActivity(intent);
         });
 
