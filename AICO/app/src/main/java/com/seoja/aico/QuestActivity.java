@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,6 +53,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     private EditText textResponse;
     private Button btnRequest;
     private Button btnNextQuestion;
+    private LinearLayout feedbackSection;
 
     private List<String> questionList = new ArrayList<>();
 
@@ -77,6 +79,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         btnRequest = findViewById(R.id.btnRequest);
         textFeedback = findViewById(R.id.textFeedback);
         btnNextQuestion = findViewById(R.id.btnNextQuestion);
+        feedbackSection = findViewById(R.id.feedbackSection);
 
         selectedFirst = getIntent().getStringExtra("selectedFirst");
         selectedSecond = getIntent().getStringExtra("selectedSecond");
@@ -196,6 +199,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         String question = questionList.get(currentQuestion);
         textRequest.setText(question);
         textResponse.setText(""); // 답변 필드 초기화
+        feedbackSection.setVisibility(View.GONE);
         textFeedback.setText("답변 후 피드백이 여기에 표시됩니다."); // 피드백 필드 초기화
         currentQuestion++;
     }
@@ -204,6 +208,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         // 질문과 답변 가져오기
         String quest = textRequest.getText().toString();
         String answer = textResponse.getText().toString();
+        feedbackSection.setVisibility(View.VISIBLE);
 
         // 질문과 답변 하나의 문자열로 만들기
         String requestMessage = "면접 질문 : " + quest + "\n사용자 답변 : " + answer;
@@ -301,7 +306,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
             sendGptRequest();
         }
 
-        if (v.getId() == R.id.btnNextQuestion){
+        if (v.getId() == R.id.btnNextQuestion) {
             loadNewQuestion();
         }
     }
