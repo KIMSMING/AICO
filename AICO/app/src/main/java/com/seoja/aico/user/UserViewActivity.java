@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Patterns;
 import android.view.View;
 import android.widget.*;
 
@@ -20,10 +19,9 @@ import com.google.firebase.database.*;
 import com.navercorp.nid.NaverIdLoginSDK; // 네이버 SDK 최신 import
 import com.kakao.sdk.user.UserApiClient;
 
-import com.seoja.aico.MainActivity;
 import com.seoja.aico.OptionActivity;
 import com.seoja.aico.R;
-import com.seoja.aico.QuestActivity;
+import com.seoja.aico.quest.QuestActivity;
 
 public class UserViewActivity extends AppCompatActivity {
 

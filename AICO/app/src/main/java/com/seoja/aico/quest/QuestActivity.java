@@ -1,4 +1,4 @@
-package com.seoja.aico;
+package com.seoja.aico.quest;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,6 +23,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.seoja.aico.R;
 import com.seoja.aico.gpt.GptApi;
 import com.seoja.aico.gpt.GptRequest;
 import com.seoja.aico.gpt.GptResponse;
