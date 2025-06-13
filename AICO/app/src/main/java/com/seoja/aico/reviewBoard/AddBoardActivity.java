@@ -38,7 +38,7 @@ public class AddBoardActivity extends AppCompatActivity {
     private EditText editPostTitle, editPostContent;
     private Button btnUpload, btnAddImage;
     private ImageButton btnBack;
-    private ImageView imagePreview;
+//    private ImageView imagePreview;
 
     private Uri selectedImageUri = null;
 
@@ -77,7 +77,7 @@ public class AddBoardActivity extends AppCompatActivity {
         btnBack.setOnClickListener(v -> finish());
 
         // 이미지 첨부 버튼
-        btnAddImage.setOnClickListener(v -> openImagePicker());
+//        btnAddImage.setOnClickListener(v -> openImagePicker());
 
         // 업로드 버튼
         btnUpload.setOnClickListener(v -> uploadPost());
@@ -91,16 +91,16 @@ public class AddBoardActivity extends AppCompatActivity {
 
     private void showImagePreview(Uri imageUri) {
         if (imageUri != null) {
-            imagePreview.setVisibility(View.VISIBLE);
+//            imagePreview.setVisibility(View.VISIBLE);
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-                imagePreview.setImageBitmap(bitmap);
+//                imagePreview.setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
                 Toast.makeText(this, "이미지 로드 실패", Toast.LENGTH_SHORT).show();
             }
         } else {
-            imagePreview.setVisibility(View.GONE);
+//            imagePreview.setVisibility(View.GONE);
         }
     }
 
