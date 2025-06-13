@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,8 +53,8 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
 
     private TextView textRequest, textFeedback;
     private EditText textResponse;
-    private Button btnRequest;
-    private Button btnNextQuestion;
+    private Button btnRequest, btnNextQuestion;
+    private ImageButton btnBack;
     private LinearLayout feedbackSection;
 
     private List<String> questionList = new ArrayList<>();
@@ -81,8 +82,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         textFeedback = findViewById(R.id.textFeedback);
         btnNextQuestion = findViewById(R.id.btnNextQuestion);
         feedbackSection = findViewById(R.id.feedbackSection);
-
-        selectedFirst = getIntent().getStringExtra("selectedFirst");
+        btnBack = findViewById(R.id.btnBack);selectedFirst = getIntent().getStringExtra("selectedFirst");
         selectedSecond = getIntent().getStringExtra("selectedSecond");
 
         if (selectedSecond == null || selectedSecond.isEmpty()) {
@@ -95,6 +95,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
 
         btnRequest.setOnClickListener(this);
         btnNextQuestion.setOnClickListener(v -> loadNewQuestion());
+        btnBack.setOnClickListener(V -> finish());
 
         // 초기 상태 설정
         textFeedback.setText("답변 후 피드백이 여기에 표시됩니다.");
