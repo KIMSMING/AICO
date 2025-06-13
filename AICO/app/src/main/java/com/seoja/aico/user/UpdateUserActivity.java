@@ -29,7 +29,7 @@ public class UpdateUserActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
 
     private ImageView imageProfile, btnBack;
-    private Button btnChangeProfile;
+    //private Button btnChangeProfile;
     private EditText editTextNickname, editTextEmail, editTextName, editTextBirth, editTextAddress, editTextPhone;
     private RadioGroup radioGroupGender;
     private TextView btnUpdate;
@@ -75,7 +75,7 @@ public class UpdateUserActivity extends AppCompatActivity {
         loadUserInfo(currentUser.getUid());
 
         // 프로필 사진 변경
-        btnChangeProfile.setOnClickListener(v -> openImagePicker());
+        //btnChangeProfile.setOnClickListener(v -> openImagePicker());
 
         // 수정 완료
         btnUpdate.setOnClickListener(v -> updateUserInfo());
@@ -146,10 +146,10 @@ public class UpdateUserActivity extends AppCompatActivity {
 
         radioGroupGender.setOnCheckedChangeListener((group, checkedId) -> checkIfChanged());
         // 프로필 이미지 변경 시에도 checkIfChanged() 호출
-        btnChangeProfile.setOnClickListener(v -> {
-            openImagePicker();
-            // openImagePicker 이후 onActivityResult에서 checkIfChanged() 호출
-        });
+//        btnChangeProfile.setOnClickListener(v -> {
+//            openImagePicker();
+//            // openImagePicker 이후 onActivityResult에서 checkIfChanged() 호출
+//        });
     }
 
     private void checkIfChanged() {

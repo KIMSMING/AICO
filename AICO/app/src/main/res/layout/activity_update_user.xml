@@ -84,7 +84,6 @@
                     android:layout_height="90dp"
                     android:src="@drawable/ic_person"
                     android:scaleType="centerCrop"
-                    android:tint="@color/professional_text_secondary"
                     app:strokeColor="@color/professional_border"
                     app:strokeWidth="2dp"
                     app:shapeAppearanceOverlay="@style/CircleImageView" />

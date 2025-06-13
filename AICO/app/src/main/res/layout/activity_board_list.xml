@@ -83,37 +83,6 @@
                 android:clickable="true"
                 android:focusable="true" />
 
-            <TextView
-                android:id="@+id/btnFilterTech"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="기술면접"
-                android:textColor="@color/professional_text_secondary"
-                android:textSize="14sp"
-                android:background="@drawable/professional_card_clickable"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:layout_marginEnd="8dp"
-                android:clickable="true"
-                android:focusable="true" />
-
-            <TextView
-                android:id="@+id/btnFilterPersonal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="인성면접"
-                android:textColor="@color/professional_text_secondary"
-                android:textSize="14sp"
-                android:background="@drawable/professional_card_clickable"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:clickable="true"
-                android:focusable="true" />
-
         </LinearLayout>
 
         <LinearLayout
@@ -200,7 +169,6 @@
         android:layout_margin="20dp"
         android:contentDescription="글 작성"
         android:src="@drawable/ic_write"
-        app:tint="@color/professional_text_primary"
         app:backgroundTint="@color/professional_primary"
         app:borderWidth="0dp"
         app:elevation="8dp"

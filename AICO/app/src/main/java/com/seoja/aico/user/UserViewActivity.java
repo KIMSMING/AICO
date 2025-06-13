@@ -21,6 +21,7 @@ import com.kakao.sdk.user.UserApiClient;
 
 import com.seoja.aico.OptionActivity;
 import com.seoja.aico.R;
+import com.seoja.aico.quest.QuestActivity;
 
 public class UserViewActivity extends AppCompatActivity {
 

@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,8 +62,8 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
 
     private TextView textRequest, textFeedback;
     private EditText textResponse;
-    private Button btnRequest;
-    private Button btnNextQuestion;
+    private Button btnRequest, btnNextQuestion;
+    private ImageButton btnBack;
     private LinearLayout feedbackSection;
 
     private List<String> questionList = new ArrayList<>();
@@ -95,8 +96,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         textFeedback = findViewById(R.id.textFeedback);
         btnNextQuestion = findViewById(R.id.btnNextQuestion);
         feedbackSection = findViewById(R.id.feedbackSection);
-
-        selectedFirst = getIntent().getStringExtra("selectedFirst");
+        btnBack = findViewById(R.id.btnBack);selectedFirst = getIntent().getStringExtra("selectedFirst");
         selectedSecond = getIntent().getStringExtra("selectedSecond");
 
         if (selectedSecond == null || selectedSecond.isEmpty()) {
@@ -109,6 +109,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
 
         btnRequest.setOnClickListener(this);
         btnNextQuestion.setOnClickListener(v -> loadNewQuestion());
+        btnBack.setOnClickListener(V -> finish());
 
         // 초기 상태 설정
         textFeedback.setText("답변 후 피드백이 여기에 표시됩니다.");
@@ -219,6 +220,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         String question = questionList.get(currentQuestion);
         textRequest.setText(question);
         textResponse.setText(""); // 답변 필드 초기화
+        feedbackSection.setVisibility(View.GONE);
         textFeedback.setText("답변 후 피드백이 여기에 표시됩니다."); // 피드백 필드 초기화
         currentQuestion++;
     }
@@ -227,6 +229,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         // 질문과 답변 가져오기
         String quest = textRequest.getText().toString();
         String answer = textResponse.getText().toString();
+        feedbackSection.setVisibility(View.VISIBLE);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
@@ -271,6 +274,9 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         gptApi.askGpt(request).enqueue(new Callback<GptResponse>() {
             @Override
             public void onResponse(@NonNull Call<GptResponse> call, @NonNull Response<GptResponse> response) {
+                Log.d(TAG, "onResponse 호출됨, HTTP 코드: " + response.code());  // 콜백 진입 확인
+
+                // UI 업데이트는 반드시 메인 스레드에서 실행
                 mainHandler.post(() -> {
                     btnRequest.setEnabled(true);
 
@@ -307,6 +313,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                     } else {
                         String errorMsg = "응답 실패: " + response.code();
                         try {
+                            // 에러 바디가 있으면 읽어서 출력
                             if (response.errorBody() != null) {
                                 errorMsg += "\n" + response.errorBody().string();
                             }
