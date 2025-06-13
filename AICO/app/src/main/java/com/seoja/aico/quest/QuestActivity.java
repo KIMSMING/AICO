@@ -1,4 +1,4 @@
-package com.seoja.aico;
+package com.seoja.aico.quest;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,19 +19,27 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.seoja.aico.R;
 import com.seoja.aico.gpt.GptApi;
 import com.seoja.aico.gpt.GptRequest;
 import com.seoja.aico.gpt.GptResponse;
 import com.seoja.aico.gpt.HistoryItem;
+import com.seoja.aico.gpt.SummaryRequest;
+import com.seoja.aico.gpt.SummaryResponse;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -54,6 +63,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     private EditText textResponse;
     private Button btnRequest;
     private Button btnNextQuestion;
+    private LinearLayout feedbackSection;
 
     private List<String> questionList = new ArrayList<>();
 
@@ -66,6 +76,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     private Retrofit retrofit;
     private OkHttpClient client;
     private HttpLoggingInterceptor logging;
+    private Gson gson;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +94,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         btnRequest = findViewById(R.id.btnRequest);
         textFeedback = findViewById(R.id.textFeedback);
         btnNextQuestion = findViewById(R.id.btnNextQuestion);
+        feedbackSection = findViewById(R.id.feedbackSection);
 
         selectedFirst = getIntent().getStringExtra("selectedFirst");
         selectedSecond = getIntent().getStringExtra("selectedSecond");
@@ -101,27 +113,31 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         // 초기 상태 설정
         textFeedback.setText("답변 후 피드백이 여기에 표시됩니다.");
 
-        // 서버 연결 테스트
-        testServerConnection();
+        // 로깅 인터셉터 추가
+        logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+        // OkHttpClient 설정
+        client = new OkHttpClient.Builder()
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .writeTimeout(60, TimeUnit.SECONDS)
+                .addInterceptor(logging)
+                .build();
+        //Gson 커스터마이즈
+        gson = new GsonBuilder()
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .create();
 
         // Retrofit 설정
         retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(client)
                 .build();
 
-        // OkHttpClient 설정
-        client = new OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(10, TimeUnit.SECONDS)
-                .addInterceptor(logging)
-                .build();
-
-        // 로깅 인터셉터 추가
-        logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        // 서버 연결 테스트
+        testServerConnection();
     }
 
     // 서버 연결 테스트
@@ -212,98 +228,166 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         String quest = textRequest.getText().toString();
         String answer = textResponse.getText().toString();
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            textFeedback.setText("로그인 정보 없음 : 서버 요청 실패");
+            return;
+        }
+
+        String userId = user.getUid();
         // 질문과 답변 하나의 문자열로 만들기
         String requestMessage = "면접 질문 : " + quest + "\n사용자 답변 : " + answer;
 
+        // 요청 객체 만들기
+        GptRequest request = new GptRequest(userId, requestMessage);
+
         // 요청 중임을 표시
         textFeedback.setText("피드백을 요청 중입니다...");
-        btnRequest.setEnabled(false); // 버튼 비활성화
+//        btnRequest.setEnabled(false); // 버튼 비활성화
 
         // 로깅 인터셉터 추가
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+//        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+//        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
         // OkHttpClient 설정
-        OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(60, TimeUnit.SECONDS)  // 연결 타임아웃 증가
-                .readTimeout(60, TimeUnit.SECONDS)     // 읽기 타임아웃 증가
-                .writeTimeout(60, TimeUnit.SECONDS)    // 쓰기 타임아웃 증가
-                .addInterceptor(logging)               // 로깅 추가
-                .build();
+//        OkHttpClient client = new OkHttpClient.Builder()
+//                .connectTimeout(60, TimeUnit.SECONDS)  // 연결 타임아웃 증가
+//                .readTimeout(60, TimeUnit.SECONDS)     // 읽기 타임아웃 증가
+//                .writeTimeout(60, TimeUnit.SECONDS)    // 쓰기 타임아웃 증가
+//                .addInterceptor(logging)               // 로깅 추가
+//                .build();
 
         // Retrofit 설정
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(client)  // OkHttpClient 설정 추가
-                .build();
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .baseUrl(BASE_URL)
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .client(client)  // OkHttpClient 설정 추가
+//                .build();
 
         GptApi gptApi = retrofit.create(GptApi.class);
 
-        // 요청 객체 만들기
-        GptRequest request = new GptRequest(requestMessage);
-
         Log.d(TAG, "요청 시작: " + requestMessage);
 
-        Call<GptResponse> call = gptApi.askGpt(request);
-        call.enqueue(new Callback<GptResponse>() {
+        gptApi.askGpt(request).enqueue(new Callback<GptResponse>() {
             @Override
             public void onResponse(@NonNull Call<GptResponse> call, @NonNull Response<GptResponse> response) {
-                Log.d(TAG, "onResponse 호출됨, HTTP 코드: " + response.code());  // 콜백 진입 확인
-
-                // UI 업데이트는 반드시 메인 스레드에서 실행
                 mainHandler.post(() -> {
-                    btnRequest.setEnabled(true); // 버튼 다시 활성화
+                    btnRequest.setEnabled(true);
 
-                    if (response.isSuccessful()) {
-                        Log.d(TAG, "응답 성공, HTTP 코드: " + response.code());
+                    if (response.isSuccessful() && response.body() != null) {
+                        String content = response.body().content;
+                        textFeedback.setText(content);
 
-                        if (response.body() != null) {
-                            String content = response.body().content;
-                            Log.d(TAG, "응답 바디 있음: " + (content != null ? content.substring(0, Math.min(content.length(), 100)) : "null"));
-                            textFeedback.setText(content);
+                        //요약 요청 보내기
+                        SummaryRequest summaryReq = new SummaryRequest(content);
+                        gptApi.summarize(summaryReq).enqueue(new Callback<SummaryResponse>() {
+                            @Override
+                            public void onResponse(Call<SummaryResponse> call, Response<SummaryResponse> response) {
+                                if (response.isSuccessful() && response.body() != null) {
+                                    String summary = response.body().summary;
+                                    Log.d("SUMMARY", "요약 성공: " + summary);
 
-                            //히스토리 저장
-                            saveHistoryToServer(
-                                    textRequest.getText().toString(),
-                                    textResponse.getText().toString(),
-                                    content
-                            );
+                                    saveHistoryToServer(
+                                            quest,
+                                            answer,
+                                            summary
+                                    );
+                                } else {
+                                    Log.e("SUMMARY", "요약 실패, 원문 저장");
+                                    saveHistoryToServer(quest, answer, content);
+                                }
+                            }
 
-                        } else {
-                            Log.e(TAG, "응답 바디가 null임");
-                            textFeedback.setText("응답을 받았으나 내용이 없습니다.");
-                        }
+                            @Override
+                            public void onFailure(Call<SummaryResponse> call, Throwable t) {
+                                Log.e("SUMMARY_ERR", "요약 실패: " + t.getMessage());
+                                saveHistoryToServer(quest, answer, content);
+                            }
+                        });
                     } else {
-                        Log.e(TAG, "응답 실패, HTTP 코드: " + response.code());
+                        String errorMsg = "응답 실패: " + response.code();
                         try {
-                            // 에러 바디가 있으면 읽어서 출력
                             if (response.errorBody() != null) {
-                                String errorBody = response.errorBody().string();
-                                Log.e(TAG, "에러 바디: " + errorBody);
-                                textFeedback.setText("오류 발생: " + response.code() + "\n" + errorBody);
-                            } else {
-                                textFeedback.setText("오류 발생: " + response.code());
+                                errorMsg += "\n" + response.errorBody().string();
                             }
                         } catch (Exception e) {
-                            Log.e(TAG, "에러 바디 읽기 실패: " + e.getMessage());
-                            textFeedback.setText("오류 발생: " + response.code() + "\n" + e.getMessage());
+                            errorMsg += "\n" + e.getMessage();
                         }
+                        Log.e(TAG, errorMsg);
+                        textFeedback.setText(errorMsg);
                     }
                 });
             }
 
             @Override
             public void onFailure(Call<GptResponse> call, Throwable t) {
-                Log.e(TAG, "onFailure 호출됨, 서버 연결 실패: " + t.getMessage(), t);
-
-                // UI 업데이트는 반드시 메인 스레드에서 실행
+                Log.e(TAG, "서버 연결 실패: " + t.getMessage());
                 mainHandler.post(() -> {
-                    btnRequest.setEnabled(true); // 버튼 다시 활성화
+                    btnRequest.setEnabled(true);
                     textFeedback.setText("서버 연결 실패: " + t.getMessage());
                 });
             }
         });
+
+//        Call<GptResponse> call = gptApi.askGpt(request);
+//        call.enqueue(new Callback<GptResponse>() {
+//            @Override
+//            public void onResponse(@NonNull Call<GptResponse> call, @NonNull Response<GptResponse> response) {
+//                Log.d(TAG, "onResponse 호출됨, HTTP 코드: " + response.code());  // 콜백 진입 확인
+//
+//                // UI 업데이트는 반드시 메인 스레드에서 실행
+//                mainHandler.post(() -> {
+//                    btnRequest.setEnabled(true); // 버튼 다시 활성화
+//
+//                    if (response.isSuccessful()) {
+//                        Log.d(TAG, "응답 성공, HTTP 코드: " + response.code());
+//
+//                        if (response.body() != null) {
+//                            String content = response.body().content;
+//                            Log.d(TAG, "응답 바디 있음: " + (content != null ? content.substring(0, Math.min(content.length(), 100)) : "null"));
+//                            textFeedback.setText(content);
+//
+//                            //히스토리 저장
+//                            saveHistoryToServer(
+//                                    textRequest.getText().toString(),
+//                                    textResponse.getText().toString(),
+//                                    content
+//                            );
+//
+//                        } else {
+//                            Log.e(TAG, "응답 바디가 null임");
+//                            textFeedback.setText("응답을 받았으나 내용이 없습니다.");
+//                        }
+//                    } else {
+//                        Log.e(TAG, "응답 실패, HTTP 코드: " + response.code());
+//                        try {
+//                            // 에러 바디가 있으면 읽어서 출력
+//                            if (response.errorBody() != null) {
+//                                String errorBody = response.errorBody().string();
+//                                Log.e(TAG, "에러 바디: " + errorBody);
+//                                textFeedback.setText("오류 발생: " + response.code() + "\n" + errorBody);
+//                            } else {
+//                                textFeedback.setText("오류 발생: " + response.code());
+//                            }
+//                        } catch (Exception e) {
+//                            Log.e(TAG, "에러 바디 읽기 실패: " + e.getMessage());
+//                            textFeedback.setText("오류 발생: " + response.code() + "\n" + e.getMessage());
+//                        }
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void onFailure(Call<GptResponse> call, Throwable t) {
+//                Log.e(TAG, "onFailure 호출됨, 서버 연결 실패: " + t.getMessage(), t);
+//
+//                // UI 업데이트는 반드시 메인 스레드에서 실행
+//                mainHandler.post(() -> {
+//                    btnRequest.setEnabled(true); // 버튼 다시 활성화
+//                    textFeedback.setText("서버 연결 실패: " + t.getMessage());
+//                });
+//            }
+//        });
     }
 
     @Override
@@ -322,12 +406,22 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     }
     //히스토리 저장 함수
     private void saveHistoryToServer(String question, String answer, String feedback) {
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user == null) {
+            Log.e("HISTORY_SAVE", "Firebase 사용자 정보 없음 (로그인 필요)");
+            return;
+        }
 
-        HistoryItem item = new HistoryItem(userId, question, answer, feedback);
+        String userId = user.getUid();
+        Log.d("HISTORY_SAVE", "저장 시도 : userId = " + userId);
+
+        String generatedId = UUID.randomUUID().toString(); //고유 ID 생성
+        HistoryItem item = new HistoryItem  (generatedId, userId, question, answer, feedback);
 
         GptApi api = retrofit.create(GptApi.class);
         Call<Void> call = api.saveHistory(item);
+
+        Log.d("HISTORY_JSON", gson.toJson(item));
 
         call.enqueue(new Callback<Void>() {
             @Override
@@ -336,12 +430,17 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                     Log.d("HISTORY_SAVE", "히스토리 저장 성공");
                 } else {
                     Log.e("HISTORY_SAVE", "저장 실패 : " + response.code());
+                    try {
+                        Log.e("HISTORY_SAVE", "에러 바디: " + response.errorBody().string());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Log.e("HISTORY_SAVE_ERR", "저장 실패 : " + t.getMessage());
+                Log.e("HISTORY_SAVE", "저장 실패 : " + t.getMessage());
             }
         });
     }

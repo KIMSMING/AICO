@@ -54,7 +54,7 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".FieldActivity"
+            android:name=".quest.FieldActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
@@ -70,7 +70,7 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".QuestActivity"
+            android:name=".quest.QuestActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
