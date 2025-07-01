@@ -51,16 +51,18 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     // 메인 UI 스레드에서 작업하기 위한 핸들러 추가
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
-    private TextView textRequest, textFeedback;
+    private TextView textRequest, textFeedback, textTip;
     private EditText textResponse;
     private Button btnRequest, btnNextQuestion;
     private ImageButton btnBack;
     private LinearLayout feedbackSection;
 
     private List<String> questionList = new ArrayList<>();
+    private List<String> tipList = new ArrayList<>();
 
     // 셔플된 리스트에서 문제출력을 위한 인덱스
     private int currentQuestion = 0;
+    private int currentTip = 0;
 
     private String selectedFirst = "";
     private String selectedSecond = "";
@@ -78,11 +80,13 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
 
         textRequest = findViewById(R.id.textRequest);
         textResponse = findViewById(R.id.textResponse);
+        textTip = findViewById(R.id.textTip);
         btnRequest = findViewById(R.id.btnRequest);
         textFeedback = findViewById(R.id.textFeedback);
         btnNextQuestion = findViewById(R.id.btnNextQuestion);
         feedbackSection = findViewById(R.id.feedbackSection);
-        btnBack = findViewById(R.id.btnBack);selectedFirst = getIntent().getStringExtra("selectedFirst");
+        btnBack = findViewById(R.id.btnBack);
+        selectedFirst = getIntent().getStringExtra("selectedFirst");
         selectedSecond = getIntent().getStringExtra("selectedSecond");
 
         if (selectedSecond == null || selectedSecond.isEmpty()) {
@@ -142,6 +146,10 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     // Firebase에서 데이터 가져오기
     private void fetchJobQeustion() {
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference("면접질문");
+        DatabaseReference rootRef2 = FirebaseDatabase.getInstance().getReference("면접팁");
+
+        final boolean[] isQuestionListLoaded = {false};
+        final boolean[] isTipListLoaded = {false};
 
         rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -176,19 +184,53 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                 }
 
                 // 리스트 셔플 후 첫 질문 출력
-                if (!questionList.isEmpty()) {
-                    Collections.shuffle(questionList);
-                    currentQuestion = 0;
-                    loadNewQuestion();
-                } else {
-                    Toast.makeText(QuestActivity.this, "질문이 없습니다.", Toast.LENGTH_SHORT).show();
-                    finish();
+                isQuestionListLoaded[0] = true;
+                if (isTipListLoaded[0]) {
+                    // 질문과 팁 모두 로드 완료
+                    if (!questionList.isEmpty()) {
+                        Collections.shuffle(questionList);
+                        currentQuestion = 0;
+                        loadNewQuestion();
+                    } else {
+                        Toast.makeText(QuestActivity.this, "질문이 없습니다.", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(QuestActivity.this, "데이터 로딩 실패", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        rootRef2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot tipSnap : snapshot.getChildren()) {
+                    String tip = tipSnap.getValue(String.class);
+                    if (tip != null && !tip.isEmpty()) {
+                        tipList.add(tip);
+                    }
+                }
+
+                isTipListLoaded[0] = true;
+                if (isQuestionListLoaded[0]) {
+                    // 질문과 팁 모두 로드 완료
+                    if (!questionList.isEmpty()) {
+                        Collections.shuffle(questionList);
+                        currentQuestion = 0;
+                        loadNewQuestion();
+                    } else {
+                        Toast.makeText(QuestActivity.this, "질문이 없습니다.", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(QuestActivity.this, "면접 팁 로딩 실패", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -198,12 +240,17 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
             Toast.makeText(this, "더이상 낼 문제가 없습니다.", Toast.LENGTH_SHORT).show();
             return;
         }
+        textTip.setText("");
+        Collections.shuffle(tipList);
+        String tip = tipList.get(currentTip);
+        textTip.setText(tip);
         String question = questionList.get(currentQuestion);
         textRequest.setText(question);
         textResponse.setText(""); // 답변 필드 초기화
         feedbackSection.setVisibility(View.GONE);
         textFeedback.setText("답변 후 피드백이 여기에 표시됩니다."); // 피드백 필드 초기화
-        currentQuestion++;
+        currentQuestion = (currentQuestion + 1) % questionList.size();
+        currentTip = (currentTip + 1) % tipList.size();
     }
 
     public void sendGptRequest() {
