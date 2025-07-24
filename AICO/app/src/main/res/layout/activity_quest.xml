@@ -104,6 +104,20 @@
                         android:textColor="@color/professional_text_primary"
                         android:textSize="16sp"
                         android:textStyle="bold" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
+                    <ImageButton
+                        android:id="@+id/btnSoundplay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="6dp"
+                        android:background="@null"
+                        android:contentDescription="음성 재생"
+                        android:src="@drawable/ic_sound"
+                        app:tint="@color/professional_text_muted" />
                 </LinearLayout>
 
                 <TextView
