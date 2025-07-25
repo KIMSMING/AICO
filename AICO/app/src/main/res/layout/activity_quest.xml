@@ -31,6 +31,7 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginRight="40dp"
             android:layout_weight="1"
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
@@ -39,12 +40,6 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <ImageButton
-            android:id="@+id/btnMenu"
-            style="@style/ProfessionalIconButton"
-            android:contentDescription="메뉴"
-            android:src="@drawable/ic_settings"
-            app:tint="@color/professional_text_secondary" />
     </LinearLayout>
 
     <!-- 진행률 표시 -->
