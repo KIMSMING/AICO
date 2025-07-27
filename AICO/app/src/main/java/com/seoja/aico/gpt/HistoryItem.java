@@ -41,4 +41,11 @@ public class HistoryItem {
     public String getFeedback() {
         return feedback;
     }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
+    }
 }

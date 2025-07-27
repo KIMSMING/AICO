@@ -13,6 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.seoja.aico.R;
 import com.seoja.aico.gpt.DeleteRequest;
 import com.seoja.aico.gpt.GptApi;
@@ -26,6 +29,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder> {
 
@@ -43,9 +47,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
                 .addInterceptor(logging)
                 .build();
 
+        Gson gson = new GsonBuilder()
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .create();
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://10.0.2.2:8000/") // 주소는 환경에 맞게 수정
-                .addConverterFactory(retrofit2.converter.gson.GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(client)
                 .build();
 
@@ -93,6 +101,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
 //                }).addOnFailureListener(e -> {
 //                    Log.e("DELETE_FAIL", "히스토리 삭제 실패: " + e.getMessage());
 //                });
+
+            DeleteRequest deleteRequest = new DeleteRequest(userId, historyId);
+//            Log.d("DELETE_BODY", new Gson().toJson(deleteRequest));
+            Log.d("DELETE_BODY", "보낼 user_id: " + userId + ", history_id: " + historyId);
 
             api.deleteHistory(new DeleteRequest(userId, historyId)).enqueue(new Callback<Void>() {
                 @Override

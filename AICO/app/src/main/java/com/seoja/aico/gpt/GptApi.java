@@ -18,7 +18,7 @@ public interface GptApi {
     @POST("/summarize")      //히스토리 요약
     Call<SummaryResponse> summarize(@Body SummaryRequest request);
 
-    @POST("/delete_history")
+    @POST("/delete_history")  //히스토리 삭제
     Call<Void> deleteHistory(@Body DeleteRequest request);
 }
 

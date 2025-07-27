@@ -51,7 +51,11 @@ public class HistoryActivity extends AppCompatActivity {
                 historyList.clear();
                 for (DataSnapshot itemSnap : snapshot.getChildren()) {
                     HistoryItem item = itemSnap.getValue(HistoryItem.class);
-                    if (item != null) historyList.add(item);
+                    if (item != null) {
+                        item.setId(itemSnap.getKey());
+                        item.setUser_id(userId);
+                        historyList.add(item);
+                    }
                 }
                 adapter.notifyDataSetChanged();
             }
