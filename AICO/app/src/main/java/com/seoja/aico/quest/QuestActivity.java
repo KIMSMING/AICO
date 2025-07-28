@@ -36,6 +36,7 @@ import com.seoja.aico.gpt.GptRequest;
 import com.seoja.aico.gpt.GptResponse;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -69,17 +70,13 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     private boolean isMicMode = false;
     private boolean isMicRecording = false;
 
-    private SpeechRecognizer speechRecognizer;
-    private Intent recognizerIntent;
-    private boolean isListening = false;
-
-    private MediaRecorder recorder;
-    private boolean isRecording = false;
-    private File audioFile;
+//    private SpeechRecognizer speechRecognizer;
+//    private Intent recognizerIntent;
+//    private boolean isListening = false;
 
     private MediaRecorder mediaRecorder;
     private String audioFilePath;
-
+    private boolean isRecording = false;
 
     private List<String> questionList = new ArrayList<>();
     private List<String> tipList = new ArrayList<>();
@@ -133,155 +130,88 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         textFeedback.setText("답변 후 피드백이 여기에 표시됩니다.");
 
         // 마이크 연결
-        initSpeechRecognizer();
-        micIcon.setOnClickListener(v -> toggleMicRecording());
+//        initSpeechRecognizer();
+        micIcon.setOnClickListener(v -> {
+            if (!isMicMode) return;
+            try {
+                toggleRecording();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
         // 서버 연결 테스트
         testServerConnection();
     }
 
     private void toggleInputMode() {
-        isMicMode = !isMicMode;
-        micIcon.setImageResource(R.drawable.ic_mic_on);
+        if (isRecording) stopRecording();
 
+        isMicMode = !isMicMode;
         if (isMicMode) {
             textResponse.setVisibility(View.GONE);
-            textResponse.setHint("");
             micIcon.setVisibility(View.VISIBLE);
             btnChangeMic.setText("텍스트 전환");
-
-            startListening();
+            micIcon.setImageResource(R.drawable.ic_mic);
         } else {
             textResponse.setVisibility(View.VISIBLE);
-            textResponse.setHint("답변을 입력해주세요");
             micIcon.setVisibility(View.GONE);
             btnChangeMic.setText("음성 전환");
-        }
-    }
-
-    private void toggleMicRecording() {
-        if (isMicRecording) {
-            stopListening();
             micIcon.setImageResource(R.drawable.ic_mic);
-            isMicRecording = false;
+        }
+    }
+
+    // 3. 녹음 토글
+    private void toggleRecording() throws IOException {
+        if (isRecording) {
+            stopRecording();
+            micIcon.setImageResource(R.drawable.ic_mic); // 대기 상태
         } else {
-            startListening();
-            micIcon.setImageResource(R.drawable.ic_mic_on);
-            isMicRecording = true;
+            startRecording();
+            micIcon.setImageResource(R.drawable.ic_mic_on); // 녹음중
         }
     }
 
-    // STT 및 녹음 객체 초기화
-    private void initSpeechRecognizer() {
-        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
-        recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
-        recognizerIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
-
-        speechRecognizer.setRecognitionListener(new RecognitionListener() {
-            @Override public void onReadyForSpeech(Bundle params) { }
-            @Override public void onBeginningOfSpeech() { }
-            @Override public void onRmsChanged(float rmsdB) { }
-            @Override public void onBufferReceived(byte[] buffer) { }
-            @Override public void onEndOfSpeech() { }
-            @Override public void onError(int error) {
-                stopListening();
-            }
-
-            @Override
-            public void onResults(Bundle results) {
-                ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-                if (matches != null && !matches.isEmpty()) {
-                    textResponse.setText(matches.get(0)); // 결과를 EditText에 삽입
-                }
-                stopListening();
-            }
-
-            @Override
-            public void onPartialResults(Bundle partialResults) {
-                ArrayList<String> partial = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-                if (partial != null && !partial.isEmpty()) {
-                    textResponse.setText(partial.get(0));
-                }
-            }
-
-            @Override public void onEvent(int eventType, Bundle params) { }
-        });
-    }
-
-    // STT 시작
-    private void startListening() {
-        if (speechRecognizer == null) {
-            initSpeechRecognizer();
+    // 4. 녹음 시작
+    private void startRecording() throws IOException {
+        if (mediaRecorder != null) {
+            mediaRecorder.release();
+            mediaRecorder = null;
         }
-        isListening = true;
+        String fileName = "recorded_" + System.currentTimeMillis() + ".m4a";
+        File outputDir = getExternalFilesDir(Environment.DIRECTORY_MUSIC);
+        File audioFile = new File(outputDir, fileName);
+        audioFilePath = audioFile.getAbsolutePath();
 
-        // 음성 파일 저장
-        startRecording();
-        // STT
-        speechRecognizer.startListening(recognizerIntent);
+        mediaRecorder = new MediaRecorder();
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        mediaRecorder.setOutputFile(audioFilePath);
+        mediaRecorder.prepare();
+        mediaRecorder.start();
+        isRecording = true;
     }
 
-    // STT 중지
-    private void stopListening() {
-        if (speechRecognizer != null && isListening) {
-            speechRecognizer.stopListening();
-            speechRecognizer.cancel();
-            speechRecognizer.destroy();
-            speechRecognizer = null;
-        }
-        isListening = false;
-        // 상태 초기화
-        // 녹음 정지
-        stopRecording();
-        micIcon.setImageResource(R.drawable.ic_mic);
-        isMicRecording = false;
-    }
-
-    // 녹음
-    private void startRecording() {
-        try {
-            String fileName = "recorded_" + System.currentTimeMillis() + ".m4a";
-            File outputDir = getExternalFilesDir(Environment.DIRECTORY_MUSIC); // /storage/emulated/0/Android/data/패키지명/files/Music/
-            if (outputDir != null) {
-                File audioFile = new File(outputDir, fileName);
-                audioFilePath = audioFile.getAbsolutePath();
-            } else {
-                Toast.makeText(this, "오디오 파일 디렉토리를 찾을 수 없습니다", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            mediaRecorder = new MediaRecorder();
-            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-            mediaRecorder.setOutputFile(audioFilePath);
-            mediaRecorder.prepare();
-            mediaRecorder.start();
-            Log.d(TAG, "녹음 시작됨: " + audioFilePath);
-        } catch (Exception e) {
-            Log.e(TAG, "녹음 실패: " + e.getMessage(), e);
-            Toast.makeText(this, "녹음 시작에 실패했습니다", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    // 녹음 정지
     private void stopRecording() {
-        try {
-            if (mediaRecorder != null) {
-                mediaRecorder.stop();
-                mediaRecorder.release();
-                mediaRecorder = null;
-                Log.d(TAG, "녹음 저장됨: " + audioFilePath);
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "녹음 정지 실패: " + e.getMessage(), e);
+        if (mediaRecorder != null && isRecording) {
+            mediaRecorder.stop();
+            mediaRecorder.release();
+            mediaRecorder = null;
+            isRecording = false;
         }
     }
 
+
+    // 6. onDestroy
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopListening();
+        if (isRecording) stopRecording();
+        if (mediaRecorder != null) {
+            mediaRecorder.release();
+            mediaRecorder = null;
+        }
     }
 
     // 서버 연결 테스트
