@@ -1,5 +1,6 @@
 package com.seoja.aico.quest;
 
+import android.content.Context;
 import android.content.Intent;
 import android.media.MediaRecorder;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.os.Looper;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.text.Layout;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -42,13 +44,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
+
 
 public class QuestActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -60,12 +67,13 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     private TextView textRequest, textFeedback, textTip;
+    private View textInputLayout;
     private EditText textResponse;
     private Button btnRequest, btnNextQuestion;
     private ImageButton btnBack;
     private LinearLayout feedbackSection;
 
-    private Button btnChangeMic;
+    private Button btnChangeMic, btnGoAnother;
     private ImageButton micIcon;
     private boolean isMicMode = false;
     private boolean isMicRecording = false;
@@ -100,6 +108,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         });
 
         textRequest = findViewById(R.id.textRequest);
+        textInputLayout = findViewById(R.id.textInputLayout);
         textResponse = findViewById(R.id.textResponse);
         textTip = findViewById(R.id.textTip);
         btnRequest = findViewById(R.id.btnRequest);
@@ -111,6 +120,8 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         selectedSecond = getIntent().getStringExtra("selectedSecond");
         btnChangeMic = findViewById(R.id.btnChangeMic);
         micIcon = findViewById(R.id.micIcon);
+
+        btnGoAnother = findViewById(R.id.btnGoAnother);
 
         btnChangeMic.setOnClickListener(v -> toggleInputMode());
 
@@ -140,6 +151,11 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
             }
         });
 
+        btnGoAnother.setOnClickListener(v -> {
+            Intent intent = new Intent(QuestActivity.this, RecordingListActivity.class);
+            startActivity(intent);
+        });
+
         // 서버 연결 테스트
         testServerConnection();
     }
@@ -149,19 +165,19 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
 
         isMicMode = !isMicMode;
         if (isMicMode) {
-            textResponse.setVisibility(View.GONE);
+            textInputLayout.setVisibility(View.GONE);
             micIcon.setVisibility(View.VISIBLE);
             btnChangeMic.setText("텍스트 전환");
             micIcon.setImageResource(R.drawable.ic_mic);
         } else {
-            textResponse.setVisibility(View.VISIBLE);
+            textInputLayout.setVisibility(View.VISIBLE);
             micIcon.setVisibility(View.GONE);
             btnChangeMic.setText("음성 전환");
             micIcon.setImageResource(R.drawable.ic_mic);
         }
     }
 
-    // 3. 녹음 토글
+    // 녹음 토글
     private void toggleRecording() throws IOException {
         if (isRecording) {
             stopRecording();
@@ -172,14 +188,20 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    // 4. 녹음 시작
+    // 녹음 시작
     private void startRecording() throws IOException {
         if (mediaRecorder != null) {
             mediaRecorder.release();
             mediaRecorder = null;
         }
+
+        // 디렉토리 저장
+        File outputDir = new File(getExternalFilesDir(Environment.DIRECTORY_MUSIC), "recordings");
+        if (!outputDir.exists()) {
+            outputDir.mkdirs();
+        }
+
         String fileName = "recorded_" + System.currentTimeMillis() + ".m4a";
-        File outputDir = getExternalFilesDir(Environment.DIRECTORY_MUSIC);
         File audioFile = new File(outputDir, fileName);
         audioFilePath = audioFile.getAbsolutePath();
 
@@ -193,6 +215,8 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         isRecording = true;
     }
 
+
+    // 녹음 중지
     private void stopRecording() {
         if (mediaRecorder != null && isRecording) {
             mediaRecorder.stop();
@@ -200,10 +224,56 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
             mediaRecorder = null;
             isRecording = false;
         }
+
+        File audioFile = new File(audioFilePath);
+        RequestBody requestFile = RequestBody.create(
+                MediaType.parse("audio/m4a"),
+                audioFile
+        );
+        MultipartBody.Part body = MultipartBody.Part.createFormData(
+                "file",
+                audioFile.getName(),
+                requestFile
+        );
+
+        uploadAudioToServer(body);
+    }
+
+    // Retrofit 서버 업로드
+    private void uploadAudioToServer(MultipartBody.Part body) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://" + getString(R.string.server_url)) // 서버 주소
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .build();
+
+        SttApi service = retrofit.create(SttApi.class);
+        Call<String> call = service.uploadAudio(body);
+        Context context = QuestActivity.this;
+
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful()) {
+                    String textResult = response.body();
+                    Toast.makeText(context, "STT 결과: " + textResult, Toast.LENGTH_LONG).show();
+
+                    runOnUiThread(() -> {
+                        textResponse.setText(textResult);
+                    });
+
+                } else {
+                    Toast.makeText(context, "서버 응답 오류", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Toast.makeText(context, "서버 전송 실패: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 
-    // 6. onDestroy
     @Override
     protected void onDestroy() {
         super.onDestroy();

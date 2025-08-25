@@ -241,6 +241,12 @@
                         android:textStyle="bold" />
 
                 </LinearLayout>
+                <Button
+                    android:id="@+id/btnGoAnother"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="음성 확인"
+                    android:layout_marginTop="20dp" />
             </LinearLayout>
 
             <!-- 피드백 카드 -->
