@@ -1,7 +1,11 @@
 package com.seoja.aico.quest;
 
+import android.content.Context;
+import android.content.Intent;
 import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.speech.RecognitionListener;
@@ -306,17 +310,6 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         });
     }
 
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (isRecording) stopRecording();
-        if (mediaRecorder != null) {
-            mediaRecorder.release();
-            mediaRecorder = null;
-        }
-    }
-
     // 서버 연결 테스트
     private void testServerConnection() {
         // 로깅 인터셉터 추가
@@ -344,23 +337,6 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
 
         // 서버 연결 테스트
         testServerConnection();
-    }
-
-    // 서버 연결 테스트
-    private void testServerConnection() {
-
-        // 루트 엔드포인트 호출
-        retrofit.create(GptApi.class).testConnection().enqueue(new Callback<Object>() {
-            @Override
-            public void onResponse(Call<Object> call, Response<Object> response) {
-                Log.d(TAG, "서버 연결 테스트 성공: " + response.code());
-            }
-
-            @Override
-            public void onFailure(Call<Object> call, Throwable t) {
-                Log.e(TAG, "서버 연결 테스트 실패: " + t.getMessage());
-            }
-        });
     }
 
     // Firebase에서 데이터 가져오기
@@ -679,6 +655,11 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     protected void onDestroy() {
         if (mediaPlayer != null) {
             mediaPlayer.release(); // 앱 종료 시 재생기 해제
+        }
+        if (isRecording) stopRecording();
+        if (mediaRecorder != null) {
+            mediaRecorder.release();
+            mediaRecorder = null;
         }
         super.onDestroy();
     }
