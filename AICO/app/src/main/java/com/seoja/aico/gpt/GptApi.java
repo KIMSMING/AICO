@@ -20,5 +20,8 @@ public interface GptApi {
 
     @POST("/delete_history")  //히스토리 삭제
     Call<Void> deleteHistory(@Body DeleteRequest request);
+
+    @POST("/share_history")  //히스토리 공유
+    Call<Void> shareHistory(@Body ShareRequest request);
 }
 

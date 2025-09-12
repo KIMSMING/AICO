@@ -28,3 +28,5 @@ replay_pid*
 *.iml
 aicoServer/src/main/resources/aico-1853c-firebase-adminsdk-fbsvc-3b763ae0b9.json
 aicoServer/src/main/resources/serviceAccountKey.json
+설계서/파이썬 코드_강준서/serviceAccountKey.json
+aicoServer/src/main/resources/stt-service.json
