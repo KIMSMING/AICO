@@ -82,8 +82,7 @@
             android:layout_height="20dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="좋아요 버튼"
-            android:src="@drawable/ic_heart"
-            app:tint="@color/professional_error" />
+            android:src="@drawable/ic_heart" />
 
         <TextView
             android:id="@+id/tvLikes"
