@@ -80,4 +80,6 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.6.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
 
+    implementation("androidx.media3:media3-transformer:1.3.1")
+
 }
