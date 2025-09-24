@@ -59,6 +59,18 @@ dependencies {
 
     implementation("com.google.android.material:material:1.11.0") // 레이아웃 머터리얼
 
+    // ML Kit Face Detection
+    implementation ("com.google.mlkit:face-detection:16.1.5")
+
+    // CameraX
+    implementation ("androidx.camera:camera-core:1.3.1")
+    implementation ("androidx.camera:camera-camera2:1.3.1")
+    implementation ("androidx.camera:camera-lifecycle:1.3.1")
+    implementation ("androidx.camera:camera-video:1.3.1")
+    implementation ("androidx.camera:camera-view:1.3.1")
+    implementation ("androidx.camera:camera-extensions:1.3.1")
+
+
     // 사용자 정보 조회 수정
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")

@@ -1,5 +1,7 @@
 package com.seoja.aico.quest;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +19,8 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -31,6 +35,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.seoja.aico.PresentationAnalyzer;
+import com.seoja.aico.PresentationScores;
 import com.seoja.aico.R;
 import com.seoja.aico.gpt.GptApi;
 import com.seoja.aico.gpt.GptRequest;
@@ -67,7 +73,12 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
 
     // Android 에뮬레이터에서 PC(호스트)의 localhost(127.0.0.1)를 가리키는 특수 주소
     public static final String BASE_URL = "http://10.0.2.2:8000/";
-    private static final String TAG = "QuestActivity"; // 로그 태그 추가
+    private static final String TAG = "QuestActivity";
+    private static final int CAMERA_PERMISSION_REQUEST_CODE = 1001;
+
+    // 파이썬 프로세스 실행용
+    private Process pythonProcess;
+
 
     // 메인 UI 스레드에서 작업하기 위한 핸들러 추가
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -77,6 +88,18 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     private Button btnRequest, btnNextQuestion;
     private ImageButton btnBack, btnSoundplay;
     private LinearLayout feedbackSection;
+
+    // 자기소개 분석 관련
+    private Button introCameraBtn, introCameraStopBtn;
+    private TextView introText;
+    private PresentationAnalyzer introAnalyzer;
+    private boolean isIntroAnalyzing = false;
+
+    // 질문답변 분석 관련
+    private Button btnStartCamera, btnStopCamera;
+    private TextView presentationScoreText;
+    private PresentationAnalyzer presentationAnalyzer;
+    private boolean isCameraAnalyzing = false;
 
     private List<String> questionList = new ArrayList<>();
     private List<String> tipList = new ArrayList<>();
@@ -107,15 +130,27 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
             return insets;
         });
 
-        textRequest = findViewById(R.id.textRequest);
-        textResponse = findViewById(R.id.textResponse);
-        textTip = findViewById(R.id.textTip);
-        btnRequest = findViewById(R.id.btnRequest);
-        textFeedback = findViewById(R.id.textFeedback);
-        btnNextQuestion = findViewById(R.id.btnNextQuestion);
-        feedbackSection = findViewById(R.id.feedbackSection);
-        btnBack = findViewById(R.id.btnBack);
-        btnSoundplay = findViewById(R.id.btnSoundplay);
+
+        introCameraBtn = findViewById(R.id.introCameraBtn);
+        introCameraStopBtn = findViewById(R.id.introCameraStopBtn);
+        btnStartCamera = findViewById(R.id.btnStartCamera);
+        btnStopCamera = findViewById(R.id.btnStopCamera);
+        introText = findViewById(R.id.introText);
+        presentationScoreText = findViewById(R.id.presentationScoreText);
+
+        // 자기소개 분석 버튼
+        introCameraBtn.setOnClickListener(v -> runPythonScript("intro"));
+
+        // 질문답변 분석 버튼
+        btnStartCamera.setOnClickListener(v -> runPythonScript("question"));
+
+        // 중지 버튼
+        introCameraStopBtn.setOnClickListener(v -> stopPythonScript());
+        btnStopCamera.setOnClickListener(v -> stopPythonScript());
+
+        initializeViews();
+        initializePresentationAnalyzers();
+        initializeNetworking();
 
         selectedFirst = getIntent().getStringExtra("selectedFirst");
         selectedSecond = getIntent().getStringExtra("selectedSecond");
@@ -126,22 +161,48 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
             return;
         }
 
-        fetchJobQeustion();
+        fetchJobQuestion();
+        setupClickListeners();
+        checkCameraPermissions();
+        testServerConnection();
 
-        btnRequest.setOnClickListener(this);
-        btnNextQuestion.setOnClickListener(v -> loadNewQuestion());
-        btnBack.setOnClickListener(V -> finish());
-        btnSoundplay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendTextToServer(question);
-            }
-        });
+    }
+
+    private void initializeViews() {
+        textRequest = findViewById(R.id.textRequest);
+        textResponse = findViewById(R.id.textResponse);
+        textTip = findViewById(R.id.textTip);
+        btnRequest = findViewById(R.id.btnRequest);
+        textFeedback = findViewById(R.id.textFeedback);
+        btnNextQuestion = findViewById(R.id.btnNextQuestion);
+        feedbackSection = findViewById(R.id.feedbackSection);
+        btnBack = findViewById(R.id.btnBack);
+        btnSoundplay = findViewById(R.id.btnSoundplay);
+
+        // 자기소개 분석 관련
+        introCameraBtn = findViewById(R.id.introCameraBtn);
+        introCameraStopBtn = findViewById(R.id.introCameraStopBtn);
+        introText = findViewById(R.id.introText);
+
+        // 질문답변 분석 관련
+        btnStartCamera = findViewById(R.id.btnStartCamera);
+        btnStopCamera = findViewById(R.id.btnStopCamera);
+        presentationScoreText = findViewById(R.id.presentationScoreText);
 
         // 초기 상태 설정
         textFeedback.setText("답변 후 피드백이 여기에 표시됩니다.");
+        introCameraStopBtn.setEnabled(false);
+        introText.setText("자기소개 분석을 시작해주세요");
+        btnStopCamera.setEnabled(false);
+        presentationScoreText.setText("카메라 분석을 시작해주세요");
+    }
 
-        // 로깅 인터셉터 추가
+    private void initializePresentationAnalyzers() {
+        introAnalyzer = new PresentationAnalyzer();
+        presentationAnalyzer = new PresentationAnalyzer();
+    }
+
+    private void initializeNetworking() {
         logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
@@ -163,12 +224,46 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(client)
                 .build();
-
-        // 서버 연결 테스트
-        testServerConnection();
     }
 
-    // 서버 연결 테스트
+    private void setupClickListeners() {
+        btnRequest.setOnClickListener(this);
+        btnNextQuestion.setOnClickListener(v -> loadNewQuestion());
+        btnBack.setOnClickListener(v -> finish());
+        btnSoundplay.setOnClickListener(v -> sendTextToServer(question));
+
+        // 자기소개 분석 버튼
+        introCameraBtn.setOnClickListener(this);
+        introCameraStopBtn.setOnClickListener(this);
+
+        // 질문답변 분석 버튼
+        btnStartCamera.setOnClickListener(this);
+        btnStopCamera.setOnClickListener(this);
+    }
+
+    private void checkCameraPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA},
+                    CAMERA_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d(TAG, "카메라 권한 승인됨");
+            } else {
+                Toast.makeText(this, "카메라 권한이 필요합니다.", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
     private void testServerConnection() {
 
         // 루트 엔드포인트 호출
@@ -186,7 +281,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     }
 
     // Firebase에서 데이터 가져오기
-    private void fetchJobQeustion() {
+    private void fetchJobQuestion() {
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference("면접질문");
         DatabaseReference rootRef2 = FirebaseDatabase.getInstance().getReference("면접팁");
 
@@ -228,15 +323,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                 // 리스트 셔플 후 첫 질문 출력
                 isQuestionListLoaded[0] = true;
                 if (isTipListLoaded[0]) {
-                    // 질문과 팁 모두 로드 완료
-                    if (!questionList.isEmpty()) {
-                        Collections.shuffle(questionList);
-                        currentQuestion = 0;
-                        loadNewQuestion();
-                    } else {
-                        Toast.makeText(QuestActivity.this, "질문이 없습니다.", Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
+                    initializeQuestions();
                 }
             }
 
@@ -258,15 +345,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
 
                 isTipListLoaded[0] = true;
                 if (isQuestionListLoaded[0]) {
-                    // 질문과 팁 모두 로드 완료
-                    if (!questionList.isEmpty()) {
-                        Collections.shuffle(questionList);
-                        currentQuestion = 0;
-                        loadNewQuestion();
-                    } else {
-                        Toast.makeText(QuestActivity.this, "질문이 없습니다.", Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
+                    initializeQuestions();
                 }
             }
 
@@ -275,6 +354,17 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                 Toast.makeText(QuestActivity.this, "면접 팁 로딩 실패", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void initializeQuestions() {
+        if (!questionList.isEmpty()) {
+            Collections.shuffle(questionList);
+            currentQuestion = 0;
+            loadNewQuestion();
+        } else {
+            Toast.makeText(this, "질문이 없습니다.", Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
 
     private void loadNewQuestion() {
@@ -293,6 +383,235 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         textFeedback.setText("답변 후 피드백이 여기에 표시됩니다."); // 피드백 필드 초기화
         currentQuestion = (currentQuestion + 1) % questionList.size();
         currentTip = (currentTip + 1) % tipList.size();
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.btnRequest) {
+            if (textResponse.getText().toString().isEmpty()) {
+                textFeedback.setText("답변을 입력해주세요");
+                return;
+            }
+            sendGptRequest();
+        }
+
+        // 자기소개 분석 버튼들
+        if (v.getId() == R.id.introCameraBtn) {
+            startIntroAnalysis();
+        }
+        if (v.getId() == R.id.introCameraStopBtn) {
+            stopIntroAnalysis();
+        }
+
+        // 질문답변 분석 버튼들
+        if (v.getId() == R.id.btnStartCamera) {
+            startQuestionAnalysis();
+        }
+        if (v.getId() == R.id.btnStopCamera) {
+            stopQuestionAnalysis();
+        }
+    }
+
+    // 자기소개 분석 시작
+    private void startIntroAnalysis() {
+        if (!isIntroAnalyzing) {
+            isIntroAnalyzing = true;
+            introCameraBtn.setEnabled(false);
+            introCameraStopBtn.setEnabled(true);
+
+            introText.setText("자기소개 분석 중... 카메라를 바라보며 자기소개를 해주세요");
+
+            introAnalyzer.startAnalysis(this, "INTRO", new PresentationAnalyzer.AnalysisCallback() {
+                @Override
+                public void onScoreUpdate(PresentationScores scores) {
+                    runOnUiThread(() -> updateIntroScores(scores));
+                }
+
+                @Override
+                public void onError(String error) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(QuestActivity.this, "자기소개 분석 오류: " + error, Toast.LENGTH_SHORT).show();
+                        stopIntroAnalysis();
+                    });
+                }
+            });
+        }
+    }
+
+    // 자기소개 분석 중지
+    private void stopIntroAnalysis() {
+        if (isIntroAnalyzing) {
+            isIntroAnalyzing = false;
+            introCameraBtn.setEnabled(true);
+            introCameraStopBtn.setEnabled(false);
+
+            PresentationScores finalScores = introAnalyzer.stopAnalysis();
+            showIntroResults(finalScores);
+        }
+    }
+
+    // 질문답변 분석 시작
+    private void startQuestionAnalysis() {
+        if (!isCameraAnalyzing) {
+            isCameraAnalyzing = true;
+            btnStartCamera.setEnabled(false);
+            btnStopCamera.setEnabled(true);
+
+            presentationScoreText.setText("질문답변 분석 중... 카메라를 바라보며 답변해주세요");
+
+            presentationAnalyzer.startAnalysis(this, "QUESTION", new PresentationAnalyzer.AnalysisCallback() {
+                @Override
+                public void onScoreUpdate(PresentationScores scores) {
+                    runOnUiThread(() -> updatePresentationScores(scores));
+                }
+
+                @Override
+                public void onError(String error) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(QuestActivity.this, "질문답변 분석 오류: " + error, Toast.LENGTH_SHORT).show();
+                        stopQuestionAnalysis();
+                    });
+                }
+            });
+        }
+    }
+
+    // 질문답변 분석 중지
+    private void stopQuestionAnalysis() {
+        if (isCameraAnalyzing) {
+            isCameraAnalyzing = false;
+            btnStartCamera.setEnabled(true);
+            btnStopCamera.setEnabled(false);
+
+            PresentationScores finalScores = presentationAnalyzer.stopAnalysis();
+            showQuestionResults(finalScores);
+        }
+    }
+
+    // 자기소개 점수 업데이트
+    private void updateIntroScores(PresentationScores scores) {
+        String scoreText = String.format(
+                "자기소개 분석\n\n" +
+                        "👁️ 시선 접촉: %.0f점\n" +
+                        "😊 표정 다양성: %.0f점\n" +
+                        "🎤 음성 일관성: %.0f점\n" +
+                        "✨ 자연스러움: %.0f점\n\n" +
+                        "총점: %.0f점",
+                scores.eyeContact,
+                scores.expressionVariety,
+                scores.voiceConsistency,
+                scores.naturalness,
+                scores.getTotalScore()
+        );
+
+        introText.setText(scoreText);
+    }
+
+    // 질문답변 점수 업데이트
+    private void updatePresentationScores(PresentationScores scores) {
+        String scoreText = String.format(
+                "질문답변 분석\n\n" +
+                        "👁️ 시선 접촉: %.0f점\n" +
+                        "😊 표정 다양성: %.0f점\n" +
+                        "🎤 음성 일관성: %.0f점\n" +
+                        "✨ 자연스러움: %.0f점\n\n" +
+                        "총점: %.0f점",
+                scores.eyeContact,
+                scores.expressionVariety,
+                scores.voiceConsistency,
+                scores.naturalness,
+                scores.getTotalScore()
+        );
+
+        presentationScoreText.setText(scoreText);
+    }
+
+    // 자기소개 결과 표시
+    private void showIntroResults(PresentationScores scores) {
+        String grade = getGrade(scores.getTotalScore());
+        String suggestions = generateSuggestions(scores);
+
+        String message = String.format(
+                "자기소개 분석 완료!\n\n" +
+                        "총점: %.0f점 (%s)\n\n" +
+                        "세부 점수:\n" +
+                        "• 시선 접촉: %.0f점\n" +
+                        "• 표정 다양성: %.0f점\n" +
+                        "• 음성 일관성: %.0f점\n" +
+                        "• 자연스러움: %.0f점\n\n" +
+                        "개선 제안:\n%s",
+                scores.getTotalScore(), grade,
+                scores.eyeContact, scores.expressionVariety,
+                scores.voiceConsistency, scores.naturalness,
+                suggestions
+        );
+
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("자기소개 분석 결과")
+                .setMessage(message)
+                .setPositiveButton("확인", null)
+                .show();
+
+        introText.setText("자기소개 분석 완료. 다시 시작하려면 분석 시작을 눌러주세요");
+    }
+
+    // 질문답변 결과 표시
+    private void showQuestionResults(PresentationScores scores) {
+        String grade = getGrade(scores.getTotalScore());
+        String suggestions = generateSuggestions(scores);
+
+        String message = String.format(
+                "질문답변 분석 완료!\n\n" +
+                        "총점: %.0f점 (%s)\n\n" +
+                        "세부 점수:\n" +
+                        "• 시선 접촉: %.0f점\n" +
+                        "• 표정 다양성: %.0f점\n" +
+                        "• 음성 일관성: %.0f점\n" +
+                        "• 자연스러움: %.0f점\n\n" +
+                        "개선 제안:\n%s",
+                scores.getTotalScore(), grade,
+                scores.eyeContact, scores.expressionVariety,
+                scores.voiceConsistency, scores.naturalness,
+                suggestions
+        );
+
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("질문답변 분석 결과")
+                .setMessage(message)
+                .setPositiveButton("확인", null)
+                .show();
+
+        presentationScoreText.setText("질문답변 분석 완료. 다시 시작하려면 분석 시작을 눌러주세요");
+    }
+
+    private String getGrade(float score) {
+        if (score >= 80) return "우수";
+        else if (score >= 60) return "보통";
+        else if (score >= 40) return "개선 필요";
+        else return "많은 연습 필요";
+    }
+
+    private String generateSuggestions(PresentationScores scores) {
+        StringBuilder suggestions = new StringBuilder();
+
+        if (scores.eyeContact < 60) {
+            suggestions.append("• 카메라(청중)를 더 자주 바라보세요\n");
+        }
+        if (scores.expressionVariety < 60) {
+            suggestions.append("• 더 다양한 표정으로 감정을 표현해보세요\n");
+        }
+        if (scores.voiceConsistency < 60) {
+            suggestions.append("• 목소리 톤과 속도를 일정하게 유지하세요\n");
+        }
+        if (scores.naturalness < 60) {
+            suggestions.append("• 자연스러운 제스처를 더 많이 사용하세요\n");
+        }
+
+        if (suggestions.length() == 0) {
+            suggestions.append("• 전반적으로 훌륭한 프레젠테이션입니다!");
+        }
+
+        return suggestions.toString();
     }
 
     public void sendGptRequest() {
@@ -316,26 +635,6 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
 
         // 요청 중임을 표시
         textFeedback.setText("피드백을 요청 중입니다...");
-//        btnRequest.setEnabled(false); // 버튼 비활성화
-
-        // 로깅 인터셉터 추가
-//        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-//        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-        // OkHttpClient 설정
-//        OkHttpClient client = new OkHttpClient.Builder()
-//                .connectTimeout(60, TimeUnit.SECONDS)  // 연결 타임아웃 증가
-//                .readTimeout(60, TimeUnit.SECONDS)     // 읽기 타임아웃 증가
-//                .writeTimeout(60, TimeUnit.SECONDS)    // 쓰기 타임아웃 증가
-//                .addInterceptor(logging)               // 로깅 추가
-//                .build();
-
-        // Retrofit 설정
-//        Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl(BASE_URL)
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .client(client)  // OkHttpClient 설정 추가
-//                .build();
 
         GptApi gptApi = retrofit.create(GptApi.class);
 
@@ -362,12 +661,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                                 if (response.isSuccessful() && response.body() != null) {
                                     String summary = response.body().summary;
                                     Log.d("SUMMARY", "요약 성공: " + summary);
-
-                                    saveHistoryToServer(
-                                            quest,
-                                            answer,
-                                            summary
-                                    );
+                                    saveHistoryToServer(quest, answer, summary);
                                 } else {
                                     Log.e("SUMMARY", "요약 실패, 원문 저장");
                                     saveHistoryToServer(quest, answer, content);
@@ -407,22 +701,6 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         });
     }
 
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.btnRequest) {
-            if (textResponse.getText().toString().isEmpty()) {
-                textFeedback.setText("답변을 입력해주세요");
-                return;
-            }
-            sendGptRequest();
-        }
-
-        if (v.getId() == R.id.btnNextQuestion) {
-            loadNewQuestion();
-        }
-    }
-
-    // 질문 텍스트를 백엔드 서버에 전송하고, 응답받은 Base64 음성을 재생하는 함수
     private void sendTextToServer(String questionText) {
         new Thread(() -> {
             try {
@@ -497,17 +775,9 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         }).start();
     }
 
-    @Override
-    protected void onDestroy() {
-        if (mediaPlayer != null) {
-            mediaPlayer.release(); // 앱 종료 시 재생기 해제
-        }
-        super.onDestroy();
-    }
-    //히스토리 저장 함수
     private void saveHistoryToServer(String question, String answer, String feedback) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user == null) {
+        if (user == null) {
             Log.e("HISTORY_SAVE", "Firebase 사용자 정보 없음 (로그인 필요)");
             return;
         }
@@ -516,7 +786,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         Log.d("HISTORY_SAVE", "저장 시도 : userId = " + userId);
 
         String generatedId = UUID.randomUUID().toString(); //고유 ID 생성
-        HistoryItem item = new HistoryItem  (generatedId, userId, question, answer, feedback);
+        HistoryItem item = new HistoryItem(generatedId, userId, question, answer, feedback);
 
         GptApi api = retrofit.create(GptApi.class);
         Call<Void> call = api.saveHistory(item);
@@ -544,5 +814,74 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
             }
         });
     }
-}
 
+    @Override
+    protected void onDestroy() {
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+        }
+
+        if (introAnalyzer != null) {
+            introAnalyzer.cleanup();
+        }
+
+        if (presentationAnalyzer != null) {
+            presentationAnalyzer.cleanup();
+        }
+
+        super.onDestroy();
+    }
+
+    private void runPythonScript(String mode) {
+        try {
+            // pythonExample.py 실행 (가상환경 or python 경로 직접 지정 필요)
+            String pythonPath = "/usr/bin/python3"; // 또는 C:\Python312\python.exe
+            String scriptPath = getFilesDir().getAbsolutePath() + "/pythonExample.py";
+
+            // intro / question 모드 전달
+            ProcessBuilder pb = new ProcessBuilder(
+                    pythonPath, scriptPath, mode
+            );
+            pb.redirectErrorStream(true);
+            pythonProcess = pb.start();
+
+            // 실행 결과 읽기
+            new Thread(() -> {
+                try (BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(pythonProcess.getInputStream()))) {
+                    String line;
+                    StringBuilder output = new StringBuilder();
+                    while ((line = reader.readLine()) != null) {
+                        output.append(line).append("\n");
+                        Log.d("PythonOutput", line);
+                    }
+
+                    String finalOutput = output.toString();
+                    runOnUiThread(() -> {
+                        if (mode.equals("intro")) {
+                            introText.setText(finalOutput);
+                        } else {
+                            presentationScoreText.setText(finalOutput);
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
+            Toast.makeText(this, "분석을 시작합니다 (" + mode + ")", Toast.LENGTH_SHORT).show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Python 실행 실패", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void stopPythonScript() {
+        if (pythonProcess != null) {
+            pythonProcess.destroy();
+            pythonProcess = null;
+            Toast.makeText(this, "분석이 중지되었습니다", Toast.LENGTH_SHORT).show();
+        }
+    }
+}
