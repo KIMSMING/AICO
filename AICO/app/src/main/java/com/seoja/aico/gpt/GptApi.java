@@ -23,5 +23,11 @@ public interface GptApi {
 
     @POST("/share_history")  //히스토리 공유
     Call<Void> shareHistory(@Body ShareRequest request);
+
+    @POST("/interview/start") //연관질문 세션 시작
+    Call<StartInterviewResponse> startInterview(@Body StartInterviewRequest request);
+
+    @POST("/interview/next") //연관질문 요청
+    Call<NextInterviewResponse> nextInterview(@Body NextInterviewRequest request);
 }
 
