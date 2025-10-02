@@ -246,6 +246,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        mediaRecorder.setAudioSamplingRate(16000);
         mediaRecorder.setOutputFile(audioFilePath);
         mediaRecorder.prepare();
         mediaRecorder.start();
@@ -334,9 +335,6 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(client)
                 .build();
-
-        // 서버 연결 테스트
-        testServerConnection();
     }
 
     // Firebase에서 데이터 가져오기

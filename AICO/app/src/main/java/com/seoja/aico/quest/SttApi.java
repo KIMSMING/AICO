@@ -8,6 +8,6 @@ import retrofit2.http.Part;
 
 public interface SttApi {
     @Multipart
-    @POST("api/stt/stt")
+    @POST("stt/trans")
     Call<String> uploadAudio(@Part MultipartBody.Part file);
 }

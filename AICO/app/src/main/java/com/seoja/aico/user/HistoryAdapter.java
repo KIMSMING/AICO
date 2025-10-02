@@ -1,10 +1,12 @@
 package com.seoja.aico.user;
 
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -81,6 +83,42 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         }
         holder.textFeedback.setText(feedback);
 
+        // HistoryAdapter.java 파일의 onBindViewHolder 메서드 안에서...
+
+        holder.btnShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String historyId = item.getId();
+                String userId = item.getUser_id();
+                String question = item.getQuestion();
+
+                // 정보가 없는 경우를 대비한 방어 코드
+                if (userId == null || historyId == null || question == null) {
+                    Toast.makeText(v.getContext(), "공유에 필요한 정보가 부족합니다.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // 공유할 딥링크 URL
+                String deepLink = "https://aico.kro.kr/history/" + userId + "/" + historyId;
+
+
+                // 보낼 텍스트
+                String shareMessage = "AICO 면접 기록을 확인해보세요!\n\n" +
+                        "Q. " + question + "\n\n" +
+                        "아래 링크를 클릭해 전체 내용을 확인하세요:\n" +
+                        deepLink;
+                Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
+                sendIntent.setType("text/plain");
+
+                // Chooser
+                Intent shareIntent = Intent.createChooser(sendIntent, "면접 기록 공유하기");
+
+                // 공유창
+                v.getContext().startActivity(shareIntent);
+            }
+        });
+
         //삭제 버튼 클릭 리스너
         holder.btnDelete.setOnClickListener(v -> {
             int currentPos = holder.getAdapterPosition();
@@ -137,6 +175,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         TextView textAnswer;
         TextView textFeedback;
         Button btnDelete;
+        ImageButton btnShare;
 
         public HistoryViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -144,6 +183,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
             textAnswer = itemView.findViewById(R.id.textAnswer);
             textFeedback = itemView.findViewById(R.id.textFeedback);
             btnDelete = itemView.findViewById(R.id.btnDelete);
+            btnShare = itemView.findViewById(R.id.btnShare);
         }
     }
 }

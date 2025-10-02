@@ -115,6 +115,20 @@
                     android:scheme="kakao8c33170088d1275581c9464e2c8ef71b" />
             </intent-filter>
         </activity> <!-- 네이버 -->
+
+        <activity android:name=".user.PostDetailActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="myapp"
+                    android:host="history"
+                    android:pathPattern="/.*/.*" />
+            </intent-filter>
+        </activity>
+
+
         <meta-data
             android:name="com.naver.sdk.clientId"
             android:value="@string/naver_client_id" />

@@ -46,6 +46,9 @@ dependencies {
 
     implementation 'com.google.cloud:google-cloud-speech:4.31.0'
     implementation 'net.bramp.ffmpeg:ffmpeg:0.6.2'
+
+    implementation 'ws.schild:jave-core:3.5.0'
+    implementation 'ws.schild:jave-nativebin-win64:3.5.0'
 }
 
 tasks.named('test') {
