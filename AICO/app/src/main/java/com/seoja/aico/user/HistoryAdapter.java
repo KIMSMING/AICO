@@ -174,8 +174,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         TextView textQuestion;
         TextView textAnswer;
         TextView textFeedback;
-        Button btnDelete;
-        ImageButton btnShare;
+        ImageButton btnDelete, btnShare;
 
         public HistoryViewHolder(@NonNull View itemView) {
             super(itemView);

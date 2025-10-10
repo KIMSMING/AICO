@@ -1,8 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.AICO" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- 라이트모드 색상 정의 -->
+        <item name="colorPrimary">@color/professional_primary</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/professional_primary_light</item>
+        <item name="colorOnPrimaryContainer">@color/white</item>
+        
+        <item name="colorSecondary">@color/professional_secondary</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondaryContainer">@color/professional_secondary_light</item>
+        <item name="colorOnSecondaryContainer">@color/white</item>
+        
+        <item name="colorSurface">@color/professional_bg_light_secondary</item>
+        <item name="colorOnSurface">@color/professional_text_primary</item>
+        <item name="colorSurfaceVariant">@color/professional_bg_light_tertiary</item>
+        <item name="colorOnSurfaceVariant">@color/professional_text_secondary</item>
+        
+        <item name="colorError">@color/professional_error</item>
+        <item name="colorOnError">@color/white</item>
+        
+        <item name="colorOutline">@color/professional_border</item>
+        <item name="colorOutlineVariant">@color/professional_border_light</item>
+        
+        <!-- 상태바 색상 -->
+        <item name="android:statusBarColor">@color/professional_header_light</item>
+        <item name="android:windowLightStatusBar">true</item>
+        
+        <!-- 배경 색상 -->
+        <item name="android:colorBackground">@color/professional_bg_light</item>
+        
+        <!-- 스위치 색상 -->
+        <item name="colorControlActivated">@color/professional_primary</item>
+        <item name="colorControlNormal">@color/professional_border</item>
     </style>
 
     <style name="Theme.AICO" parent="Base.Theme.AICO" />

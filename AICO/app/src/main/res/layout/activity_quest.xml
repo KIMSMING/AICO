@@ -5,42 +5,12 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/professional_bg_primary"
+    android:background="?android:colorBackground"
     tools:context=".quest.QuestActivity">
 
-    <!-- 상단 네비게이션 바 -->
-    <LinearLayout
+    <include
         android:id="@+id/topNavBar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/professional_bg_secondary"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageButton
-            android:id="@+id/btnBack"
-            style="@style/ProfessionalIconButton"
-            android:contentDescription="뒤로가기"
-            android:src="@drawable/ic_backarrow"
-            app:tint="@color/professional_text_secondary" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="40dp"
-            android:layout_weight="1"
-            android:fontFamily="sans-serif-medium"
-            android:gravity="center"
-            android:text="AI 면접"
-            android:textColor="@color/professional_text_primary"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-    </LinearLayout>
+        layout="@layout/header_toolbar" />
 
     <!-- 진행률 표시 -->
     <ProgressBar
@@ -48,8 +18,8 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="0dp"
         android:layout_height="4dp"
-        android:progressBackgroundTint="@color/professional_bg_tertiary"
-        android:progressTint="@color/professional_primary"
+        android:progressBackgroundTint="?attr/colorOutlineVariant"
+        android:progressTint="?attr/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/topNavBar" />
@@ -90,13 +60,13 @@
                         android:layout_height="24dp"
                         android:layout_marginEnd="8dp"
                         android:src="@drawable/ic_mic"
-                        app:tint="@color/professional_primary_light" />
+                        app:tint="?attr/colorPrimary" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="면접 질문"
-                        android:textColor="@color/professional_text_primary"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -112,7 +82,7 @@
                         android:background="@null"
                         android:contentDescription="음성 재생"
                         android:src="@drawable/ic_sound"
-                        app:tint="@color/professional_text_muted" />
+                        app:tint="?attr/colorOnSurfaceVariant" />
                 </LinearLayout>
 
                 <TextView
@@ -120,7 +90,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:lineSpacingExtra="4dp"
-                    android:textColor="@color/professional_text_primary"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="18sp" />
             </LinearLayout>
 
@@ -145,13 +115,13 @@
                         android:layout_height="24dp"
                         android:layout_marginEnd="8dp"
                         android:src="@drawable/ic_person"
-                        app:tint="@color/professional_secondary" />
+                        app:tint="?attr/colorSecondary" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="답변 작성"
-                        android:textColor="@color/professional_text_primary"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -186,7 +156,7 @@
                             android:gravity="top|start"
                             android:inputType="textMultiLine"
                             android:maxLength="500"
-                            android:textColor="@color/professional_text_primary" />
+                            android:textColor="?attr/colorOnSurface" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <!-- 마이크 아이콘 -->
@@ -199,7 +169,7 @@
                         android:visibility="gone"
                         android:contentDescription="음성 입력 모드"
                         android:background="@android:color/transparent"
-                        app:tint="@color/professional_text_secondary"
+                        app:tint="?attr/colorOnSurfaceVariant"
                         android:scaleType="centerInside" />
                 </FrameLayout>
 
@@ -245,17 +215,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
-                        android:textColor="@color/professional_text_muted"
+                        android:textColor="?attr/colorOnSurfaceVariant"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
                 </LinearLayout>
-                <Button
-                    android:id="@+id/btnGoAnother"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="음성 확인"
-                    android:layout_marginTop="20dp" />
             </LinearLayout>
 
             <!-- 피드백 카드 -->
@@ -279,13 +243,13 @@
                         android:layout_height="24dp"
                         android:layout_marginEnd="8dp"
                         android:src="@drawable/ic_check"
-                        app:tint="@color/professional_success" />
+                        app:tint="?attr/colorPrimary" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="AI 피드백"
-                        android:textColor="@color/professional_text_primary"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -295,7 +259,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:lineSpacingExtra="2dp"
-                    android:textColor="@color/professional_text_secondary"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp" />
             </LinearLayout>
         </LinearLayout>

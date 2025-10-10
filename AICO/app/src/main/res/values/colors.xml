@@ -4,21 +4,53 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <!-- 전문적 다크 테마 배경 색상 -->
-    <color name="professional_bg_primary">#0F172A</color>
-    <color name="professional_bg_secondary">#1E293B</color>
-    <color name="professional_bg_tertiary">#334155</color>
-    <color name="professional_bg_elevated">#475569</color>
+    <!-- 라이트모드 배경 색상 -->
+    <color name="professional_bg_light">#FFFFFF</color>
+    <color name="professional_bg_light_secondary">#F8FAFC</color>
+    <color name="professional_bg_light_tertiary">#F1F5F9</color>
+    <color name="professional_bg_light_elevated">#E2E8F0</color>
 
-    <!-- 주요 브랜드 색상 (신뢰감 있는 블루) -->
-    <color name="professional_primary">#FFFFFF</color>
+    <!-- 라이트모드 주요 색상 -->
+    <color name="professional_primary">#3B82F6</color>
     <color name="professional_primary_dark">#1E40AF</color>
-    <color name="professional_primary_light">#3B82F6</color>
+    <color name="professional_primary_light">#60A5FA</color>
 
-    <!-- 보조 색상 (차분한 청록색) -->
-    <color name="professional_secondary">#0891B2</color>
-    <color name="professional_secondary_dark">#0E7490</color>
-    <color name="professional_secondary_light">#06B6D4</color>
+    <!-- 라이트모드 보조 색상 -->
+    <color name="professional_secondary">#06B6D4</color>
+    <color name="professional_secondary_dark">#0891B2</color>
+    <color name="professional_secondary_light">#22D3EE</color>
+
+    <!-- 라이트모드 텍스트 색상 -->
+    <color name="professional_text_primary">#0F172A</color>
+    <color name="professional_text_secondary">#475569</color>
+    <color name="professional_text_tertiary">#64748B</color>
+    <color name="professional_text_muted">#94A3B8</color>
+
+    <!-- 라이트모드 카드 색상 -->
+    <color name="professional_card_bg">#FFFFFF</color>
+    <color name="professional_card_border">#E2E8F0</color>
+    <color name="professional_button_bg">#F1F5F9</color>
+    <color name="professional_button_hover">#E2E8F0</color>
+
+    <!-- 라이트모드 구분선 색상 -->
+    <color name="professional_border">#E2E8F0</color>
+    <color name="professional_border_light">#CBD5E1</color>
+    <color name="professional_divider">#F1F5F9</color>
+
+    <!-- 라이트모드 헤더 색상 -->
+    <color name="professional_header_light">#3B82F6</color>
+    <color name="professional_header_light_secondary">#60A5FA</color>
+
+    <!-- 라이트모드 액센트 색상 -->
+    <color name="professional_accent_light">#3B82F6</color>
+    <color name="professional_accent_light_soft">#60A5FA</color>
+
+    <!-- 라이트모드 보드 색상 -->
+    <color name="board_card_bg_light">#FFFFFF</color>
+    <color name="board_card_shadow_light">#E2E8F0</color>
+    <color name="board_filter_active_light">#3B82F6</color>
+    <color name="board_filter_inactive_light">#F1F5F9</color>
+    <color name="board_fab_light">#3B82F6</color>
 
     <!-- 성공/긍정 색상 -->
     <color name="professional_success">#059669</color>
@@ -35,23 +67,6 @@
     <color name="professional_error_dark">#B91C1C</color>
     <color name="professional_error_light">#EF4444</color>
 
-    <!-- 텍스트 색상 -->
-    <color name="professional_text_primary">#F8FAFC</color>
-    <color name="professional_text_secondary">#CBD5E1</color>
-    <color name="professional_text_tertiary">#94A3B8</color>
-    <color name="professional_text_muted">#64748B</color>
-
-    <!-- 카드 및 컴포넌트 색상 -->
-    <color name="professional_card_bg">#1E293B</color>
-    <color name="professional_card_border">#475569</color>
-    <color name="professional_button_bg">#334155</color>
-    <color name="professional_button_hover">#475569</color>
-
-    <!-- 구분선 및 테두리 -->
-    <color name="professional_border">#475569</color>
-    <color name="professional_border_light">#64748B</color>
-    <color name="professional_divider">#334155</color>
-
     <!-- 투명도 색상 -->
     <color name="professional_overlay">#80000000</color>
     <color name="professional_shadow">#40000000</color>
@@ -62,5 +77,7 @@
     <color name="professional_success_bg">#064E3B</color>
     <color name="professional_warning_bg">#92400E</color>
     <color name="professional_error_bg">#991B1B</color>
-</resources>
 
+    <!-- 히스토리 관련 색상 -->
+    <color name="blue_700">#1D4ED8</color>
+</resources>

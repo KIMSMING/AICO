@@ -4,9 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/professional_bg_primary"
+    android:background="?android:colorBackground"
     android:fillViewport="true"
-    tools:context=".MiceTestActivity">
+    tools:context=".MiceTestActivity"
+    android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,48 +17,11 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/professional_bg_primary">
+            android:background="?android:colorBackground">
 
-            <!-- 상단 네비게이션 바 -->
-            <LinearLayout
+            <include
                 android:id="@+id/topNavBar"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:background="@color/professional_bg_secondary"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="20dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageButton
-                    android:id="@+id/btnBack"
-                    style="@style/ProfessionalIconButton"
-                    android:contentDescription="뒤로가기"
-                    android:src="@drawable/ic_backarrow"
-                    app:tint="@color/professional_text_secondary" />
-
-                <TextView
-                    android:id="@+id/titleMiceTest"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:fontFamily="sans-serif-medium"
-                    android:gravity="center"
-                    android:text="마이크 테스트"
-                    android:textColor="@color/professional_text_primary"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <ImageButton
-                    android:id="@+id/btnSettings"
-                    style="@style/ProfessionalIconButton"
-                    android:contentDescription="설정"
-                    android:src="@drawable/ic_settings"
-                    app:tint="@color/professional_text_secondary" />
-
-            </LinearLayout>
+                layout="@layout/header_toolbar" />
 
             <!-- 헤더 섹션 -->
             <LinearLayout
@@ -87,7 +51,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
                     android:text="음성 품질을 확인하세요"
-                    android:textColor="@color/professional_text_primary"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="24sp"
                     android:textStyle="bold" />
 
@@ -98,7 +62,7 @@
                     android:alpha="0.9"
                     android:gravity="center"
                     android:text="면접 전 마이크와 음성 품질을 테스트하여\n최적의 면접 환경을 준비하세요"
-                    android:textColor="@color/professional_text_primary"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -123,7 +87,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:text="마이크 상태"
-                    android:textColor="@color/professional_text_primary"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -203,7 +167,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:text="테스트 결과"
-                    android:textColor="@color/professional_text_primary"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -329,7 +293,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="음성 테스트 팁"
-                        android:textColor="@color/professional_text_primary"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>

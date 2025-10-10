@@ -87,14 +87,14 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     // 메인 UI 스레드에서 작업하기 위한 핸들러 추가
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private String question;
-    private TextView textRequest, textFeedback, textTip;
+    private TextView textRequest, textFeedback, textTip, titleTextView;
     private View textInputLayout;
     private EditText textResponse;
     private Button btnRequest, btnNextQuestion;
     private ImageButton btnBack, btnSoundplay;
     private LinearLayout feedbackSection;
 
-    private Button btnChangeMic, btnGoAnother;
+    private Button btnChangeMic;
     private ImageButton micIcon;
     private boolean isMicMode = false;
     private boolean isMicRecording = false;
@@ -151,8 +151,8 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         selectedSecond = getIntent().getStringExtra("selectedSecond");
         btnChangeMic = findViewById(R.id.btnChangeMic);
         micIcon = findViewById(R.id.micIcon);
-
-        btnGoAnother = findViewById(R.id.btnGoAnother);
+        titleTextView = findViewById(R.id.header_title);
+        titleTextView.setText("면접 연습");
 
         btnChangeMic.setOnClickListener(v -> toggleInputMode());
 
@@ -186,11 +186,6 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        });
-
-        btnGoAnother.setOnClickListener(v -> {
-            Intent intent = new Intent(QuestActivity.this, RecordingListActivity.class);
-            startActivity(intent);
         });
 
         // 서버 연결 테스트

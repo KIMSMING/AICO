@@ -2,16 +2,16 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
-            <solid android:color="@color/professional_button_hover" />
+            <solid android:color="?attr/colorSecondaryContainer" />
             <corners android:radius="12dp" />
-            <stroke android:width="2dp" android:color="@color/professional_primary_light" />
+            <stroke android:width="2dp" android:color="?attr/colorPrimary" />
         </shape>
     </item>
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="@color/professional_card_bg" />
+            <solid android:color="?attr/colorSurfaceVariant" />
             <corners android:radius="12dp" />
-            <stroke android:width="1dp" android:color="@color/professional_card_border" />
+            <stroke android:width="1dp" android:color="?attr/colorOutline" />
         </shape>
     </item>
 </selector>
