@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -31,6 +33,7 @@ import java.util.List;
 
 public class UpdateBoardActivity extends AppCompatActivity {
 
+    private TextView titleTextView;
     private ImageButton btnBack;
     private EditText editTitle, editContent;
     private Button btnAddImage, btnUpdate, btnCancel;
@@ -72,6 +75,10 @@ public class UpdateBoardActivity extends AppCompatActivity {
         btnUpdate = findViewById(R.id.btnUpdate);
         btnCancel = findViewById(R.id.btnCancel);
         rvImages = findViewById(R.id.rvImages);
+        titleTextView = findViewById(R.id.header_title);
+
+        titleTextView.setText("후기 수정");
+        btnUpdate.setVisibility(View.VISIBLE);
 
         // Firebase 참조
         boardRef = FirebaseDatabase.getInstance().getReference("board");

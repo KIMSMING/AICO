@@ -56,6 +56,7 @@ dependencies {
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")       // Retrofit 본체
     implementation("com.squareup.retrofit2:converter-gson:2.9.0") // JSON 응답을 객체로 변환하는 Gson 컨버터
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0") // Retrofit에서 문자열(String) 응답을 처리하는 컨버터
 
     implementation("com.google.android.material:material:1.11.0") // 레이아웃 머터리얼
 
@@ -78,5 +79,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+
+    implementation("androidx.media3:media3-transformer:1.3.1")
 
 }

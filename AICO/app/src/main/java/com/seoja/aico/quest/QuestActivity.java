@@ -1,9 +1,17 @@
 package com.seoja.aico.quest;
 
+import android.content.Context;
+import android.content.Intent;
 import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.text.Layout;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -43,6 +51,8 @@ import com.seoja.aico.gpt.StartInterviewResponse;
 import com.seoja.aico.gpt.SummaryRequest;
 import com.seoja.aico.gpt.SummaryResponse;
 
+import java.io.File;
+import java.io.IOException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -59,13 +69,18 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
+
 
 public class QuestActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -82,10 +97,25 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     private String lastQuestion = null;
 
     private TextView textRequest, textFeedback, textTip;
+    private TextView textRequest, textFeedback, textTip, titleTextView;
+    private View textInputLayout;
     private EditText textResponse;
     private Button btnRequest, btnNextQuestion, btnFollowup;
     private ImageButton btnBack, btnSoundplay;
     private LinearLayout feedbackSection;
+
+    private Button btnChangeMic;
+    private ImageButton micIcon;
+    private boolean isMicMode = false;
+    private boolean isMicRecording = false;
+
+//    private SpeechRecognizer speechRecognizer;
+//    private Intent recognizerIntent;
+//    private boolean isListening = false;
+
+    private MediaRecorder mediaRecorder;
+    private String audioFilePath;
+    private boolean isRecording = false;
 
     private List<String> questionList = new ArrayList<>();
     private List<String> tipList = new ArrayList<>();
@@ -117,6 +147,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         });
 
         textRequest = findViewById(R.id.textRequest);
+        textInputLayout = findViewById(R.id.textInputLayout);
         textResponse = findViewById(R.id.textResponse);
         textTip = findViewById(R.id.textTip);
         btnRequest = findViewById(R.id.btnRequest);
@@ -139,6 +170,13 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
 
         selectedFirst = getIntent().getStringExtra("selectedFirst");
         selectedSecond = getIntent().getStringExtra("selectedSecond");
+        btnChangeMic = findViewById(R.id.btnChangeMic);
+        micIcon = findViewById(R.id.micIcon);
+        titleTextView = findViewById(R.id.header_title);
+        titleTextView.setText("면접 연습");
+
+        btnChangeMic.setOnClickListener(v -> toggleInputMode());
+
         if (selectedSecond == null || selectedSecond.isEmpty()) {
             Toast.makeText(this, "소분류 정보가 없습니다", Toast.LENGTH_SHORT).show();
             finish();
@@ -167,6 +205,137 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         // 초기 상태 설정
         textFeedback.setText("답변 후 피드백이 여기에 표시됩니다.");
 
+        // 마이크 연결
+//        initSpeechRecognizer();
+        micIcon.setOnClickListener(v -> {
+            if (!isMicMode) return;
+            try {
+                toggleRecording();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        // 서버 연결 테스트
+        testServerConnection();
+    }
+
+    private void toggleInputMode() {
+        if (isRecording) stopRecording();
+
+        isMicMode = !isMicMode;
+        if (isMicMode) {
+            textInputLayout.setVisibility(View.GONE);
+            micIcon.setVisibility(View.VISIBLE);
+            btnChangeMic.setText("텍스트 전환");
+            micIcon.setImageResource(R.drawable.ic_mic);
+        } else {
+            textInputLayout.setVisibility(View.VISIBLE);
+            micIcon.setVisibility(View.GONE);
+            btnChangeMic.setText("음성 전환");
+            micIcon.setImageResource(R.drawable.ic_mic);
+        }
+    }
+
+    // 녹음 토글
+    private void toggleRecording() throws IOException {
+        if (isRecording) {
+            stopRecording();
+            micIcon.setImageResource(R.drawable.ic_mic); // 대기 상태
+        } else {
+            startRecording();
+            micIcon.setImageResource(R.drawable.ic_mic_on); // 녹음중
+        }
+    }
+
+    // 녹음 시작
+    private void startRecording() throws IOException {
+        if (mediaRecorder != null) {
+            mediaRecorder.release();
+            mediaRecorder = null;
+        }
+
+        // 디렉토리 저장
+        File outputDir = new File(getExternalFilesDir(Environment.DIRECTORY_MUSIC), "recordings");
+        if (!outputDir.exists()) {
+            outputDir.mkdirs();
+        }
+
+        String fileName = "recorded_" + System.currentTimeMillis() + ".m4a";
+        File audioFile = new File(outputDir, fileName);
+        audioFilePath = audioFile.getAbsolutePath();
+
+        mediaRecorder = new MediaRecorder();
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        mediaRecorder.setAudioSamplingRate(16000);
+        mediaRecorder.setOutputFile(audioFilePath);
+        mediaRecorder.prepare();
+        mediaRecorder.start();
+        isRecording = true;
+    }
+
+
+    // 녹음 중지
+    private void stopRecording() {
+        if (mediaRecorder != null && isRecording) {
+            mediaRecorder.stop();
+            mediaRecorder.release();
+            mediaRecorder = null;
+            isRecording = false;
+        }
+
+        File audioFile = new File(audioFilePath);
+        RequestBody requestFile = RequestBody.create(
+                MediaType.parse("audio/m4a"),
+                audioFile
+        );
+        MultipartBody.Part body = MultipartBody.Part.createFormData(
+                "file",
+                audioFile.getName(),
+                requestFile
+        );
+
+        uploadAudioToServer(body);
+    }
+
+    // Retrofit 서버 업로드
+    private void uploadAudioToServer(MultipartBody.Part body) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://" + getString(R.string.server_url)) // 서버 주소
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .build();
+
+        SttApi service = retrofit.create(SttApi.class);
+        Call<String> call = service.uploadAudio(body);
+        Context context = QuestActivity.this;
+
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful()) {
+                    String textResult = response.body();
+                    Toast.makeText(context, "STT 결과: " + textResult, Toast.LENGTH_LONG).show();
+
+                    runOnUiThread(() -> {
+                        textResponse.setText(textResult);
+                    });
+
+                } else {
+                    Toast.makeText(context, "서버 응답 오류", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Toast.makeText(context, "서버 전송 실패: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // 서버 연결 테스트
+    private void testServerConnection() {
         // 로깅 인터셉터 추가
         logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -522,6 +691,11 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     protected void onDestroy() {
         if (mediaPlayer != null) {
             mediaPlayer.release(); // 앱 종료 시 재생기 해제
+        }
+        if (isRecording) stopRecording();
+        if (mediaRecorder != null) {
+            mediaRecorder.release();
+            mediaRecorder = null;
         }
         super.onDestroy();
     }

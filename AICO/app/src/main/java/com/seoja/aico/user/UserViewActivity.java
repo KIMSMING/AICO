@@ -25,9 +25,10 @@ import com.seoja.aico.quest.QuestActivity;
 
 public class UserViewActivity extends AppCompatActivity {
 
-    private ImageView btnOption, imageProfile;
-    private TextView textNickname, textEmail, textName, textBirth, textGender, textAddress, textPhone;
-    private Button btnChangePassword, btnEdit, btnHistory, btnLogout, btnDeleteAccount;
+    private ImageView imageProfile;
+    private TextView textNickname, textEmail, textName, textBirth, textGender, textAddress, textPhone, titleTextView;
+    private Button btnChangePassword;
+    private LinearLayout btnEdit, btnHistory, btnLogout, btnDeleteAccount;
     private ImageButton btnBack;
 
     private DatabaseReference database;
@@ -64,7 +65,9 @@ public class UserViewActivity extends AppCompatActivity {
         btnChangePassword = findViewById(R.id.btnChangePassword);
         btnDeleteAccount = findViewById(R.id.btnDeleteAccount);
         btnHistory = findViewById(R.id.btnHistory);
-        btnOption = findViewById(R.id.btnOption);
+        titleTextView = findViewById(R.id.header_title);
+
+        titleTextView.setText("내 프로필");
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -77,12 +80,6 @@ public class UserViewActivity extends AppCompatActivity {
 
         // 뒤로가기
         btnBack.setOnClickListener(v -> finish());
-
-        // 내 정보 수정
-        btnOption.setOnClickListener(v -> {
-            Intent intent = new Intent(this, OptionActivity.class);
-            updateUserLauncher.launch(intent);
-        });
 
         // 내 정보 수정
         btnEdit.setOnClickListener(v -> {

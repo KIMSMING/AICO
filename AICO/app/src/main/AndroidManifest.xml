@@ -5,7 +5,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
 
     <application
         android:allowBackup="true"
@@ -19,6 +22,13 @@
         android:theme="@style/Theme.AICO"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+
+        <activity
+            android:name=".MainActivity2"
+            android:exported="false" />
+        <activity
+            android:name=".quest.RecordingListActivity"
+            android:exported="false" />
         <activity
             android:name=".SplashActivity"
             android:exported="true"
@@ -85,9 +95,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:screenOrientation="portrait" />
-
-        <activity
-            android:name=".user.HistoryActivity" />
+        <activity android:name=".user.HistoryActivity" />
 
         <meta-data
             android:name="com.kakao.sdk.AppKey"
@@ -108,6 +116,22 @@
                     android:scheme="kakao8c33170088d1275581c9464e2c8ef71b" />
             </intent-filter>
         </activity> <!-- 네이버 -->
+        <activity
+            android:name=".user.PostDetailActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="history"
+                    android:pathPattern="/.*/.*"
+                    android:scheme="myapp" />
+            </intent-filter>
+        </activity>
+
         <meta-data
             android:name="com.naver.sdk.clientId"
             android:value="@string/naver_client_id" />

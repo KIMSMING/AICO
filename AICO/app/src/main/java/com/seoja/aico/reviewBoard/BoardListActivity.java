@@ -2,7 +2,9 @@ package com.seoja.aico.reviewBoard;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -25,9 +27,10 @@ import java.util.List;
 
 public class BoardListActivity extends AppCompatActivity {
 
-    private ImageButton btnBack;
+    private ImageButton btnBack, btnSearsh;
     private RecyclerView recyclerBoardList;
     private FloatingActionButton btnWritePost;
+    private TextView titleTextView;
 
     private BoardListAdapter adapter;
     private List<BoardPost> postList = new ArrayList<>();
@@ -42,6 +45,11 @@ public class BoardListActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         recyclerBoardList = findViewById(R.id.recyclerBoardList);
         btnWritePost = findViewById(R.id.btnWritePost);
+        titleTextView = findViewById(R.id.header_title);
+        btnSearsh = findViewById(R.id.btnSearch);
+
+        titleTextView.setText("면접 후기");
+        btnSearsh.setVisibility(View.VISIBLE);
 
         // 뒤로가기
         btnBack.setOnClickListener(v -> finish());

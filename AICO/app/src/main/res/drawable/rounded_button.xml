@@ -3,11 +3,11 @@
     android:shape="rectangle">
 
     <!-- 배경색 -->
-    <solid android:color="#FF6200EE" /> <!-- 보라색 계열 (원하는 색으로 바꿔도 됩니다) -->
+    <solid android:color="?attr/colorPrimary" />
 
     <!-- 테두리 둥글게 -->
     <corners android:radius="24dp" />
 
     <!-- 테두리 선 (필요 시) -->
-    <stroke android:width="2dp" android:color="#FF3700B3" />
+    <stroke android:width="2dp" android:color="?attr/colorPrimary" />
 </shape>
