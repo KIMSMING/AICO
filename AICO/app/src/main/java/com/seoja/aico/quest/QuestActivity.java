@@ -96,7 +96,6 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     private String userId = null;
     private String lastQuestion = null;
 
-    private TextView textRequest, textFeedback, textTip;
     private TextView textRequest, textFeedback, textTip, titleTextView;
     private View textInputLayout;
     private EditText textResponse;
@@ -332,35 +331,6 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                 Toast.makeText(context, "서버 전송 실패: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    // 서버 연결 테스트
-    private void testServerConnection() {
-        // 로깅 인터셉터 추가
-        logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-        // OkHttpClient 설정
-        client = new OkHttpClient.Builder()
-                .connectTimeout(60, TimeUnit.SECONDS)
-                .readTimeout(60, TimeUnit.SECONDS)
-                .writeTimeout(60, TimeUnit.SECONDS)
-                .addInterceptor(logging)
-                .build();
-        //Gson 커스터마이즈
-        gson = new GsonBuilder()
-                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                .create();
-
-        // Retrofit 설정
-        retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .client(client)
-                .build();
-
-        // 서버 연결 테스트
-        testServerConnection();
     }
 
     // 서버 연결 테스트
