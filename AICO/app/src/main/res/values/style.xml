@@ -8,7 +8,7 @@
     <!-- 전문적인 버튼 스타일 -->
     <style name="ProfessionalButtonPrimary" parent="Widget.MaterialComponents.Button">
         <item name="android:background">@drawable/professional_button_primary</item>
-        <item name="android:textColor">@color/professional_text_primary</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:fontFamily">sans-serif-medium</item>
@@ -22,7 +22,7 @@
 
     <style name="ProfessionalButtonSecondary" parent="Widget.MaterialComponents.Button">
         <item name="android:background">@drawable/professional_button_secondary</item>
-        <item name="android:textColor">@color/professional_text_secondary</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textStyle">normal</item>
         <item name="android:fontFamily">sans-serif</item>
@@ -35,7 +35,7 @@
 
     <!-- 전문적인 텍스트 스타일 -->
     <style name="ProfessionalTextTitle" parent="TextAppearance.MaterialComponents.Headline5">
-        <item name="android:textColor">@color/professional_text_primary</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="android:textSize">24sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:fontFamily">sans-serif-medium</item>
@@ -43,7 +43,7 @@
     </style>
 
     <style name="ProfessionalTextSubtitle" parent="TextAppearance.MaterialComponents.Headline6">
-        <item name="android:textColor">@color/professional_text_secondary</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
         <item name="android:textSize">18sp</item>
         <item name="android:textStyle">normal</item>
         <item name="android:fontFamily">sans-serif</item>
@@ -51,21 +51,21 @@
     </style>
 
     <style name="ProfessionalTextBody" parent="TextAppearance.MaterialComponents.Body1">
-        <item name="android:textColor">@color/professional_text_secondary</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
         <item name="android:textSize">14sp</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:lineSpacingExtra">2dp</item>
     </style>
 
     <style name="ProfessionalTextAccent" parent="TextAppearance.MaterialComponents.Body1">
-        <item name="android:textColor">@color/professional_primary_light</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
     <style name="ProfessionalTextCaption" parent="TextAppearance.MaterialComponents.Caption">
-        <item name="android:textColor">@color/professional_text_tertiary</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
         <item name="android:textSize">12sp</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>
@@ -93,20 +93,20 @@
         <item name="android:layout_width">48dp</item>
         <item name="android:layout_height">48dp</item>
         <item name="android:padding">12dp</item>
-        <item name="android:tint">@color/professional_text_secondary</item>
+        <item name="android:tint">?attr/colorOnSurfaceVariant</item>
     </style>
 
     <!-- 전문적인 EditText -->
     <style name="ProfessionalEditText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="android:textColor">@color/professional_text_primary</item>
-        <item name="android:textColorHint">@color/professional_text_tertiary</item>
-        <item name="boxStrokeColor">@color/professional_primary</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textColorHint">?attr/colorOnSurfaceVariant</item>
+        <item name="boxStrokeColor">?attr/colorPrimary</item>
         <item name="boxStrokeWidth">2dp</item>
         <item name="boxCornerRadiusTopStart">8dp</item>
         <item name="boxCornerRadiusTopEnd">8dp</item>
         <item name="boxCornerRadiusBottomStart">8dp</item>
         <item name="boxCornerRadiusBottomEnd">8dp</item>
-        <item name="hintTextColor">@color/professional_text_tertiary</item>
+        <item name="hintTextColor">?attr/colorOnSurfaceVariant</item>
     </style>
 
     <!-- 성공 상태 버튼 -->

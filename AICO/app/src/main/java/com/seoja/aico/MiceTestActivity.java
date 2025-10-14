@@ -25,7 +25,7 @@ import java.util.ArrayList;
 
 public class MiceTestActivity extends AppCompatActivity {
 
-    private TextView tvHint, tvResult;
+    private TextView tvHint, tvResult, titleTextView;
     private boolean isHintHidden = false;
     private Button imgMic;
     private boolean isListening = false;
@@ -44,6 +44,9 @@ public class MiceTestActivity extends AppCompatActivity {
         imgMic = findViewById(R.id.imgMic);
         tvResult = findViewById(R.id.tvResult);
         tvHint = findViewById(R.id.tvHint);
+        titleTextView = findViewById(R.id.header_title);
+
+        titleTextView.setText("마이크 테스트");
 
         // 뒤로가기
         ImageButton btnBack = findViewById(R.id.btnBack);

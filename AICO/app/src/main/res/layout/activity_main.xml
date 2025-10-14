@@ -4,27 +4,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/professional_bg_primary"
+    android:background="?android:colorBackground"
     android:fillViewport="true"
     tools:context=".MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingBottom="32dp">
 
-        <!-- 기존 ConstraintLayout 감싸기 -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/professional_bg_primary">
+            android:background="?android:colorBackground">
 
             <LinearLayout
                 android:id="@+id/topNavBar"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:background="@color/professional_bg_secondary"
+                android:background="?android:colorBackground"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:padding="20dp"
@@ -46,7 +46,7 @@
                     android:layout_weight="1"
                     android:fontFamily="sans-serif-medium"
                     android:text="AICO"
-                    android:textColor="@color/professional_text_primary"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="24sp"
                     android:textStyle="bold" />
 
@@ -55,7 +55,7 @@
                     style="@style/ProfessionalIconButton"
                     android:contentDescription="설정"
                     android:src="@drawable/ic_settings"
-                    app:tint="@color/professional_text_secondary" />
+                    app:tint="?attr/colorOnSurfaceVariant" />
 
             </LinearLayout>
 
@@ -79,7 +79,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
                     android:text="AI 면접 준비"
-                    android:textColor="@color/professional_text_primary"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="28sp"
                     android:textStyle="bold" />
 
@@ -89,7 +89,7 @@
                     android:layout_marginTop="8dp"
                     android:alpha="0.9"
                     android:text="체계적인 면접 연습으로 성공적인 취업을 준비하세요"
-                    android:textColor="@color/professional_text_primary"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="14sp" />
 
                 <LinearLayout
@@ -104,7 +104,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="12dp"
                         android:text="이번 주 연습"
-                        android:textColor="@color/professional_text_primary"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="12sp" />
 
                     <ProgressBar
@@ -113,7 +113,7 @@
                         android:layout_height="6dp"
                         android:layout_weight="1"
                         android:progress="65"
-                        android:progressBackgroundTint="@color/professional_bg_tertiary"
+                        android:progressBackgroundTint="?attr/colorOutlineVariant"
                         android:progressTint="@color/professional_success" />
 
                     <TextView
@@ -132,9 +132,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="48dp"
                 android:text="주요 기능"
-                android:textColor="@color/professional_text_primary"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -145,14 +145,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="24dp"
                 android:layout_marginEnd="20dp"
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/featuresTitle">
 
-                <!-- 첫 번째 행 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -163,7 +162,7 @@
                         android:id="@+id/btnQuest"
                         style="@style/ProfessionalCardClickable"
                         android:layout_width="0dp"
-                        android:layout_height="120dp"
+                        android:layout_height="140dp"
                         android:layout_marginEnd="6dp"
                         android:layout_weight="2"
                         android:gravity="center"
@@ -174,13 +173,13 @@
                             android:layout_height="40dp"
                             android:layout_marginBottom="12dp"
                             android:src="@drawable/ic_mic"
-                            app:tint="@color/professional_primary_light" />
+                            app:tint="@color/professional_secondary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="AI 면접"
-                            android:textColor="@color/professional_text_primary"
+                            android:textColor="?attr/colorOnSurface"
                             android:textSize="16sp"
                             android:textStyle="bold" />
 
@@ -189,7 +188,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:text="실전 면접 연습"
-                            android:textColor="@color/professional_text_tertiary"
+                            android:textColor="?attr/colorOnSurfaceVariant"
                             android:textSize="11sp" />
                     </LinearLayout>
 
@@ -197,7 +196,7 @@
                         android:id="@+id/btnAddQuestion"
                         style="@style/ProfessionalCardClickable"
                         android:layout_width="0dp"
-                        android:layout_height="120dp"
+                        android:layout_height="140dp"
                         android:layout_marginStart="6dp"
                         android:layout_weight="1"
                         android:gravity="center"
@@ -214,13 +213,12 @@
                             android:layout_height="wrap_content"
                             android:text="질문 추가"
                             android:textAlignment="center"
-                            android:textColor="@color/professional_text_primary"
+                            android:textColor="?attr/colorOnSurface"
                             android:textSize="14sp"
                             android:textStyle="bold" />
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- 두 번째 행 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -248,7 +246,7 @@
                             android:layout_height="wrap_content"
                             android:text="음성 테스트"
                             android:textAlignment="center"
-                            android:textColor="@color/professional_text_primary"
+                            android:textColor="?attr/colorOnSurface"
                             android:textSize="13sp"
                             android:textStyle="bold" />
                     </LinearLayout>
@@ -268,14 +266,14 @@
                             android:layout_height="28dp"
                             android:layout_marginBottom="8dp"
                             android:src="@drawable/ic_user_view"
-                            app:tint="@color/professional_text_secondary" />
+                            app:tint="?attr/colorOnSurfaceVariant" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="내 정보"
                             android:textAlignment="center"
-                            android:textColor="@color/professional_text_primary"
+                            android:textColor="?attr/colorOnSurface"
                             android:textSize="13sp"
                             android:textStyle="bold" />
                     </LinearLayout>
@@ -287,7 +285,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="48dp"
                 android:layout_marginEnd="20dp"
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -306,7 +304,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="면접 후기"
-                        android:textColor="@color/professional_text_primary"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
@@ -318,7 +316,7 @@
                         android:focusable="true"
                         android:padding="8dp"
                         android:text="전체보기"
-                        android:textColor="@color/professional_primary_light"
+                        android:textColor="?attr/colorPrimary"
                         android:textSize="13sp"
                         android:textStyle="bold" />
                 </LinearLayout>

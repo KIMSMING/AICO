@@ -1,6 +1,7 @@
 package com.seoja.aico.user;
 
 import android.os.Bundle;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,6 +23,7 @@ import java.util.List;
 
 public class HistoryActivity extends AppCompatActivity {
 
+    private TextView titleTextView;
     private RecyclerView recyclerView;
     private HistoryAdapter adapter;
     private List<HistoryItem> historyList = new ArrayList<>();
@@ -34,12 +36,22 @@ public class HistoryActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerHistory);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new HistoryAdapter(historyList);
+        titleTextView = findViewById(R.id.header_title);
+
+        titleTextView.setText("히스토리");
+
         recyclerView.setAdapter(adapter);
 
         loadHistoryFromFirebase();
     }
 
     private void loadHistoryFromFirebase() {
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            Toast.makeText(this, "로그인이 필요합니다", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+        
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference ref = FirebaseDatabase.getInstance()
                 .getReference("history")

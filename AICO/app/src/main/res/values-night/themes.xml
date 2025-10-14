@@ -1,7 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.AICO" parent="Theme.Material3.Light.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+    <style name="Base.Theme.AICO" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- 다크모드 색상 정의 -->
+        <item name="colorPrimary">@color/professional_primary</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/professional_primary_dark</item>
+        <item name="colorOnPrimaryContainer">@color/white</item>
+        
+        <item name="colorSecondary">@color/professional_secondary</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondaryContainer">@color/professional_secondary_dark</item>
+        <item name="colorOnSecondaryContainer">@color/white</item>
+        
+        <item name="colorSurface">@color/professional_bg_secondary</item>
+        <item name="colorOnSurface">@color/professional_text_primary</item>
+        <item name="colorSurfaceVariant">@color/professional_bg_tertiary</item>
+        <item name="colorOnSurfaceVariant">@color/professional_text_secondary</item>
+        
+        <item name="colorError">@color/professional_error</item>
+        <item name="colorOnError">@color/white</item>
+        
+        <item name="colorOutline">@color/professional_border</item>
+        <item name="colorOutlineVariant">@color/professional_border_dark</item>
+        
+        <!-- 상태바 색상 -->
+        <item name="android:statusBarColor">@color/professional_header_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
+        
+        <!-- 배경 색상 -->
+        <item name="android:colorBackground">@color/professional_bg_primary</item>
+        
+        <!-- 스위치 색상 -->
+        <item name="colorControlActivated">@color/professional_primary</item>
+        <item name="colorControlNormal">@color/professional_border</item>
     </style>
+
+    <style name="Theme.AICO" parent="Base.Theme.AICO" />
 </resources>

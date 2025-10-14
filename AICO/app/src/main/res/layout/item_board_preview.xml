@@ -34,7 +34,7 @@
         android:text=""
         android:textSize="15sp"
         android:textStyle="bold"
-        android:textColor="@color/professional_text_primary"
+        android:textColor="?attr/colorOnSurface"
         android:layout_marginTop="12dp"
         android:maxLines="2"
         android:ellipsize="end"
@@ -55,7 +55,7 @@
             android:layout_weight="1"
             android:text=""
             android:textSize="12sp"
-            android:textColor="@color/professional_primary_light"
+            android:textColor="?attr/colorPrimary"
             android:textStyle="bold"/>
 
     </LinearLayout>
@@ -66,7 +66,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=""
-        android:textColor="@color/professional_text_tertiary"
+        android:textColor="?attr/colorOnSurfaceVariant"
         android:textSize="11sp" />
 
     <LinearLayout
@@ -82,15 +82,14 @@
             android:layout_height="20dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="좋아요 버튼"
-            android:src="@drawable/ic_heart"
-            app:tint="@color/professional_error" />
+            android:src="@drawable/ic_heart" />
 
         <TextView
             android:id="@+id/tvLikes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0"
-            android:textColor="@color/professional_text_secondary"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="12sp"
             android:layout_marginStart="6dp" />
 

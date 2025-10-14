@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -35,6 +36,7 @@ import java.util.HashMap;
 
 public class AddBoardActivity extends AppCompatActivity {
 
+    private TextView titleTextView;
     private EditText editPostTitle, editPostContent;
     private Button btnUpload, btnAddImage;
     private ImageButton btnBack;
@@ -68,6 +70,9 @@ public class AddBoardActivity extends AppCompatActivity {
 //        btnAddImage = findViewById(R.id.btnAddImage);
 //        imagePreview = findViewById(R.id.imagePreview);
         btnUpload = findViewById(R.id.btnUpload);
+        titleTextView = findViewById(R.id.header_title);
+
+        titleTextView.setText("후기 추가");
 
         // Firebase 참조
         boardRef = FirebaseDatabase.getInstance().getReference("board");

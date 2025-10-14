@@ -56,8 +56,23 @@ dependencies {
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")       // Retrofit 본체
     implementation("com.squareup.retrofit2:converter-gson:2.9.0") // JSON 응답을 객체로 변환하는 Gson 컨버터
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0") // Retrofit에서 문자열(String) 응답을 처리하는 컨버터
 
     implementation("com.google.android.material:material:1.11.0") // 레이아웃 머터리얼
+
+    // ML Kit Face Detection
+    implementation ("com.google.mlkit:face-detection:16.1.5")
+
+    // CameraX
+    implementation ("androidx.camera:camera-core:1.3.1")
+    implementation ("androidx.camera:camera-camera2:1.3.1")
+    implementation ("androidx.camera:camera-lifecycle:1.3.1")
+    implementation ("androidx.camera:camera-video:1.3.1")
+    implementation ("androidx.camera:camera-view:1.3.1")
+    implementation ("androidx.camera:camera-extensions:1.3.1")
+
+    implementation ("androidx.core:core:1.8.0")
+    implementation ("com.google.android.material:material:1.6.1")
 
     // 사용자 정보 조회 수정
     implementation("com.github.bumptech.glide:glide:4.16.0")
@@ -78,5 +93,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+
+    implementation("androidx.media3:media3-transformer:1.3.1")
 
 }

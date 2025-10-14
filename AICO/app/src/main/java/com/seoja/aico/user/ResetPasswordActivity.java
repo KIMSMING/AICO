@@ -17,7 +17,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
     private EditText editTextEmail, editTextPhone;
     private Button btnSend;
     private ImageButton btnBack;
-    private TextView textResult;
+    private TextView textResult, titleTextView;
     private FirebaseAuth mAuth;
     private DatabaseReference database;
 
@@ -34,6 +34,9 @@ public class ResetPasswordActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         btnSend = findViewById(R.id.btnSend);
         textResult = findViewById(R.id.textResult);
+        titleTextView = findViewById(R.id.header_title);
+
+        titleTextView.setText("비밀번호 재설정");
 
         btnBack.setOnClickListener(v -> finish());
 
