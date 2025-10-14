@@ -21,6 +21,7 @@ public class RecordingAdapter extends RecyclerView.Adapter<RecordingAdapter.Reco
 
     public interface OnItemClickListener {
         void onPlayClick(File file);
+
         void onDeleteClick(File file);
     }
 

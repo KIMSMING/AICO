@@ -94,8 +94,9 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class QuestActivity extends AppCompatActivity implements View.OnClickListener {
 
-    // --- 상수 선언 ---
-    public static final String BASE_URL = "http://10.0.2.2:8000/"; // 에뮬레이터에서 localhost 접근 주소
+    //    public static final String BASE_URL = "http://192.168.56.1:8000/"; // 본인 컴퓨터
+    public static final String BASE_URL = "http://172.20.10.4:8000/"; // 핫스팟 주소
+
     private static final String TAG = "QuestActivity";
     private static final int PERMISSION_REQUEST_CODE = 1001;
 
@@ -1000,7 +1001,12 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
 
             @Override
             public void onFailure(@NonNull Call<GptResponse> call, @NonNull Throwable t) {
-                textFeedback.setText("서버 연결 실패: " + t.getMessage());
+                Log.e(TAG, "GPT 요청 실패: " + t.getMessage());
+                // mainHandler를 사용하여 UI 스레드에서 Toast 메시지를 표시합니다.
+                mainHandler.post(() -> {
+                    textFeedback.setText("서버에 연결할 수 없습니다. 네트워크를 확인해주세요.");
+                    Toast.makeText(QuestActivity.this, "피드백 요청 실패", Toast.LENGTH_SHORT).show();
+                });
             }
         });
     }

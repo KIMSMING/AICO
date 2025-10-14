@@ -302,12 +302,12 @@
                         android:layout_width="100dp"
                         android:layout_height="120dp"
                         android:layout_gravity="center"
+                        android:background="@android:color/transparent"
+                        android:contentDescription="음성 입력 모드"
+                        android:scaleType="centerInside"
                         android:src="@drawable/ic_mic_on"
                         android:visibility="gone"
-                        android:contentDescription="음성 입력 모드"
-                        android:background="@android:color/transparent"
-                        app:tint="?attr/colorOnSurfaceVariant"
-                        android:scaleType="centerInside" />
+                        app:tint="?attr/colorOnSurfaceVariant" />
                 </FrameLayout>
 
 
