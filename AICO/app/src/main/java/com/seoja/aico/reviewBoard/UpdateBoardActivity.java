@@ -33,10 +33,10 @@ import java.util.List;
 
 public class UpdateBoardActivity extends AppCompatActivity {
 
-    private TextView titleTextView;
+    private TextView titleTextView, btnUpdate;
     private ImageButton btnBack;
     private EditText editTitle, editContent;
-    private Button btnAddImage, btnUpdate, btnCancel;
+    private Button btnAddImage;
     private RecyclerView rvImages;
 
     private final List<Uri> imageUriList = new ArrayList<>();
@@ -73,7 +73,6 @@ public class UpdateBoardActivity extends AppCompatActivity {
         editContent = findViewById(R.id.editContent);
         btnAddImage = findViewById(R.id.btnAddImage);
         btnUpdate = findViewById(R.id.btnUpdate);
-        btnCancel = findViewById(R.id.btnCancel);
         rvImages = findViewById(R.id.rvImages);
         titleTextView = findViewById(R.id.header_title);
 
@@ -94,7 +93,6 @@ public class UpdateBoardActivity extends AppCompatActivity {
 
         // 뒤로가기 및 취소
         btnBack.setOnClickListener(v -> finish());
-        btnCancel.setOnClickListener(v -> finish());
 
         // 이미지 RecyclerView 세팅
         imageAdapter = new ImageAdapter(imageUriList, position -> {
