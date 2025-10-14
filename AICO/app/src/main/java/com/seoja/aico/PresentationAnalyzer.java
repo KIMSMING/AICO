@@ -49,20 +49,22 @@ public class PresentationAnalyzer {
     private int totalFrames = 0;
     private int facesDetectedFrames = 0;
     private int eyesOpenFrames = 0;
-    private List<Float> smileProbabilities = new ArrayList<>();
-    private int expressionChanges = 0;
-    private float previousSmileProb = 0f;
+    private int smilingFrames = 0;
+    private int speakingFrames = 0; // 음성 대신 입 움직임 감지
+    private long analysisStartTime = 0;
+    private List<Float> confidenceScores = new ArrayList<>();
 
-    // 자기소개와 질문답변에 따른 다른 가중치
-    private AnalysisWeights weights;
+    // 에뮬레이터 최적화 변수
+    private int frameSkipCount = 0;
+    private final int FRAME_SKIP_INTERVAL = 3; // 3프레임마다 1번만 처리
 
     public PresentationAnalyzer() {
-        // ML Kit 얼굴 감지 설정
+        // ML Kit 얼굴 감지 설정 - 에뮬레이터 최적화
         FaceDetectorOptions options = new FaceDetectorOptions.Builder()
                 .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
-                .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
+                .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_NONE) // 성능 향상을 위해 랜드마크 비활성화
                 .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
-                .setMinFaceSize(0.15f)
+                .setMinFaceSize(0.1f) // 더 작은 얼굴도 감지
                 .enableTracking()
                 .build();
 
@@ -75,26 +77,15 @@ public class PresentationAnalyzer {
         this.callback = callback;
         this.isAnalyzing = true;
         this.analysisType = type;
-
-        // 분석 타입에 따른 가중치 설정
-        setWeightsByType(type);
+        this.analysisStartTime = System.currentTimeMillis();
 
         // 분석 데이터 초기화
         resetAnalysisData();
 
         // 카메라 설정
         setupCamera(context);
-    }
 
-    // 분석 타입별 가중치 설정
-    private void setWeightsByType(String type) {
-        if (TYPE_INTRO.equals(type)) {
-            // 자기소개: 자연스러움과 표정을 더 중시
-            weights = new AnalysisWeights(0.25f, 0.35f, 0.15f, 0.25f);
-        } else {
-            // 질문답변: 시선접촉과 음성을 더 중시
-            weights = new AnalysisWeights(0.35f, 0.20f, 0.30f, 0.15f);
-        }
+        Log.d(TAG, "분석 시작: " + type);
     }
 
     private void setupCamera(Context context) {
@@ -118,9 +109,9 @@ public class PresentationAnalyzer {
         // 전면 카메라 선택
         CameraSelector cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA;
 
-        // 이미지 분석 설정
+        // 이미지 분석 설정 - 에뮬레이터 최적화
         imageAnalysis = new ImageAnalysis.Builder()
-                .setTargetResolution(new android.util.Size(640, 480))
+                .setTargetResolution(new android.util.Size(320, 240)) // 해상도 낮춤
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build();
 
@@ -133,6 +124,7 @@ public class PresentationAnalyzer {
                     cameraSelector,
                     imageAnalysis
             );
+            Log.d(TAG, "카메라 바인딩 성공");
         } catch (Exception e) {
             Log.e(TAG, "카메라 바인딩 실패", e);
             if (callback != null) {
@@ -147,11 +139,17 @@ public class PresentationAnalyzer {
             return;
         }
 
+        // 프레임 스킵으로 성능 최적화
+        frameSkipCount++;
+        if (frameSkipCount % FRAME_SKIP_INTERVAL != 0) {
+            imageProxy.close();
+            return;
+        }
         try {
             // ImageProxy에서 Image 가져오기 (null일 수 있음)
             android.media.Image mediaImage = imageProxy.getImage();
             if (mediaImage == null) {
-                Log.w(TAG, "MediaImage is null - ImageProxy doesn't wrap an android Image");
+                Log.w(TAG, "MediaImage is null");
                 imageProxy.close();
                 return;
             }
@@ -189,8 +187,8 @@ public class PresentationAnalyzer {
             analyzeFaceData(face);
         }
 
-        // 10프레임마다 점수 업데이트
-        if (totalFrames % 10 == 0) {
+        // 5프레임마다 점수 업데이트 (성능 최적화)
+        if (totalFrames % 5 == 0) {
             calculateScores();
             if (callback != null) {
                 callback.onScoreUpdate(currentScores);
@@ -204,72 +202,86 @@ public class PresentationAnalyzer {
             float leftEyeOpen = face.getLeftEyeOpenProbability();
             float rightEyeOpen = face.getRightEyeOpenProbability();
 
-            if (leftEyeOpen > 0.5f && rightEyeOpen > 0.5f) {
+            // 더 관대한 기준 적용 (에뮬레이터 환경 고려)
+            if (leftEyeOpen > 0.3f && rightEyeOpen > 0.3f) {
                 eyesOpenFrames++;
             }
+
+            Log.d(TAG, String.format("눈 열림: L=%.2f, R=%.2f", leftEyeOpen, rightEyeOpen));
+        } else {
+            // ML Kit에서 확률을 제공하지 않는 경우 얼굴이 감지되었다면 눈이 열린 것으로 간주
+            eyesOpenFrames++;
+            Log.d(TAG, "눈 확률 정보 없음, 얼굴 감지됨으로 간주");
         }
 
-        // 2. 표정 다양성 분석 (미소 확률)
+        // 2. 표정 다양성 분석 - 향상된 로직
         if (face.getSmilingProbability() != null) {
-            float currentSmileProb = face.getSmilingProbability();
-            smileProbabilities.add(currentSmileProb);
-
-            // 표정 변화 감지
-            if (Math.abs(currentSmileProb - previousSmileProb) > 0.2f) {
-                expressionChanges++;
+            float smilingProb = face.getSmilingProbability();
+            if (smilingProb > 0.3f) { // 더 관대한 기준
+                smilingFrames++;
             }
-            previousSmileProb = currentSmileProb;
+            confidenceScores.add(smilingProb);
+            Log.d(TAG, String.format("미소 확률: %.2f", smilingProb));
+        } else {
+            // 미소 확률이 없는 경우 랜덤하게 표정 변화 시뮬레이션
+            if (Math.random() > 0.7) {
+                smilingFrames++;
+            }
+            Log.d(TAG, "미소 확률 정보 없음, 시뮬레이션 적용");
+        }
+
+        // 3. 음성 분석 대신 입 움직임이나 시간 기반 추정
+        // 실제 음성 분석은 별도 라이브러리가 필요하므로 시간 기반으로 추정
+        long currentTime = System.currentTimeMillis();
+        long elapsedTime = currentTime - analysisStartTime;
+
+        // 분석 시간이 5초 이상이면 말하고 있다고 가정 (간단한 휴리스틱)
+        if (elapsedTime > 5000 && Math.random() > 0.4) {
+            speakingFrames++;
         }
     }
 
     private void calculateScores() {
         if (totalFrames == 0) return;
 
-        // 1. 시선 접촉 점수
+        // 1. 시선 접촉 점수 - 개선된 계산
         float eyeContactRatio = (float) eyesOpenFrames / totalFrames;
-        currentScores.eyeContact = Math.min(100f, eyeContactRatio * getEyeContactMultiplier());
+        currentScores.eyeContact = Math.min(100f, Math.max(10f, eyeContactRatio * 100f));
 
-        // 2. 표정 다양성 점수
-        if (totalFrames > 10) {
-            float changeRatio = (float) expressionChanges / totalFrames;
-            currentScores.expressionVariety = Math.min(100f, changeRatio * getExpressionMultiplier());
+        // 2. 표정 다양성 점수 - 개선된 계산
+        float smilingRatio = (float) smilingFrames / totalFrames;
+        float expressionVariance = confidenceScores.size() > 1 ? calculateVariance(confidenceScores) : 0.1f;
+        currentScores.expressionVariety = Math.min(100f, Math.max(5f,
+                (smilingRatio * 50f) + (expressionVariance * 200f)));
 
-            // 미소 확률의 변화량 추가 고려
-            if (smileProbabilities.size() > 1) {
-                float variance = calculateVariance(smileProbabilities);
-                currentScores.expressionVariety = Math.min(100f,
-                        currentScores.expressionVariety + variance * 50f);
-            }
-        }
+        // 3. 음성 일관성 - 시간과 분석 타입 기반
+        long elapsedSeconds = (System.currentTimeMillis() - analysisStartTime) / 1000;
+        float speakingRatio = totalFrames > 0 ? (float) speakingFrames / totalFrames : 0;
 
-        // 3. 음성 일관성 (분석 타입에 따라 다른 기본값)
         if (TYPE_INTRO.equals(analysisType)) {
-            // 자기소개: 약간 더 높은 기본값 (준비된 내용)
-            currentScores.voiceConsistency = 80f + (float) (Math.random() * 10 - 5);
+            // 자기소개: 지속적으로 말해야 하므로 시간 기반 점수
+            currentScores.voiceConsistency = Math.min(100f, Math.max(60f,
+                    70f + (elapsedSeconds * 2f) + (speakingRatio * 20f)));
         } else {
-            // 질문답변: 일반적인 기본값
-            currentScores.voiceConsistency = 75f + (float) (Math.random() * 10 - 5);
+            // 질문답변: 간헐적 답변이므로 다른 기준
+            currentScores.voiceConsistency = Math.min(100f, Math.max(50f,
+                    65f + (elapsedSeconds * 1.5f) + (speakingRatio * 30f)));
         }
 
-        // 4. 자연스러움 (가중 평균 사용)
-        currentScores.naturalness = (
-                currentScores.eyeContact * weights.eyeContactWeight +
-                        currentScores.expressionVariety * weights.expressionWeight +
-                        currentScores.voiceConsistency * weights.voiceWeight
-        );
-    }
+        // 4. 자연스러움 점수 - 다른 점수들의 조합
+        float faceDetectionRatio = (float) facesDetectedFrames / totalFrames;
+        currentScores.naturalness = Math.min(100f, Math.max(20f,
+                (currentScores.eyeContact * 0.3f) +
+                        (currentScores.expressionVariety * 0.3f) +
+                        (faceDetectionRatio * 40f)));
 
-    // 분석 타입에 따른 다른 승수
-    private float getEyeContactMultiplier() {
-        return TYPE_INTRO.equals(analysisType) ? 110f : 120f;
-    }
-
-    private float getExpressionMultiplier() {
-        return TYPE_INTRO.equals(analysisType) ? 350f : 300f;
+        Log.d(TAG, String.format("점수 업데이트: 시선=%.1f, 표정=%.1f, 음성=%.1f, 자연=%.1f",
+                currentScores.eyeContact, currentScores.expressionVariety,
+                currentScores.voiceConsistency, currentScores.naturalness));
     }
 
     private float calculateVariance(List<Float> values) {
-        if (values.size() < 2) return 0f;
+        if (values.size() < 2) return 0.1f; // 기본값
 
         float sum = 0f;
         for (float value : values) {
@@ -291,6 +303,13 @@ public class PresentationAnalyzer {
         // 최종 점수 계산
         calculateScores();
 
+        // 최소 점수 보장 (0점 방지)
+        currentScores.eyeContact = Math.max(10f, currentScores.eyeContact);
+        currentScores.expressionVariety = Math.max(10f, currentScores.expressionVariety);
+        currentScores.voiceConsistency = Math.max(50f, currentScores.voiceConsistency);
+        currentScores.naturalness = Math.max(15f, currentScores.naturalness);
+
+        Log.d(TAG, "분석 종료 - 최종 점수: " + currentScores.toString());
         return currentScores.clone();
     }
 
@@ -308,30 +327,18 @@ public class PresentationAnalyzer {
         if (cameraExecutor != null) {
             cameraExecutor.shutdown();
         }
+
+        Log.d(TAG, "리소스 정리 완료");
     }
 
     private void resetAnalysisData() {
         totalFrames = 0;
         facesDetectedFrames = 0;
         eyesOpenFrames = 0;
-        smileProbabilities.clear();
-        expressionChanges = 0;
-        previousSmileProb = 0f;
+        smilingFrames = 0;
+        speakingFrames = 0;
+        frameSkipCount = 0;
+        confidenceScores.clear();
         currentScores = new PresentationScores();
-    }
-
-    // 가중치 클래스
-    private static class AnalysisWeights {
-        float eyeContactWeight;
-        float expressionWeight;
-        float voiceWeight;
-        float naturalnessWeight;
-
-        AnalysisWeights(float eyeContact, float expression, float voice, float naturalness) {
-            this.eyeContactWeight = eyeContact;
-            this.expressionWeight = expression;
-            this.voiceWeight = voice;
-            this.naturalnessWeight = naturalness;
-        }
     }
 }

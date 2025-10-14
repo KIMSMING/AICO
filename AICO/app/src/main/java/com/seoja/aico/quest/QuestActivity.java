@@ -1,11 +1,19 @@
 package com.seoja.aico.quest;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
+import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.MediaStore;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.speech.RecognitionListener;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -17,10 +25,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -35,8 +46,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.seoja.aico.PresentationAnalyzer;
-import com.seoja.aico.PresentationScores;
 import com.seoja.aico.R;
 import com.seoja.aico.gpt.GptApi;
 import com.seoja.aico.gpt.GptRequest;
@@ -45,23 +54,32 @@ import com.seoja.aico.gpt.HistoryItem;
 import com.seoja.aico.gpt.SummaryRequest;
 import com.seoja.aico.gpt.SummaryResponse;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -71,16 +89,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class QuestActivity extends AppCompatActivity implements View.OnClickListener {
 
-    // Android 에뮬레이터에서 PC(호스트)의 localhost(127.0.0.1)를 가리키는 특수 주소
-    public static final String BASE_URL = "http://10.0.2.2:8000/";
+//    public static final String BASE_URL = "http://192.168.56.1:8000/"; // 본인 컴퓨터
+    public static final String BASE_URL = "http://172.20.10.4:8000/"; // 핫스팟 주소
     private static final String TAG = "QuestActivity";
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 1001;
+    private static final int AUDIO_PERMISSION_REQUEST_CODE = 1002;
 
-    // 파이썬 프로세스 실행용
-    private Process pythonProcess;
-
-
-    // 메인 UI 스레드에서 작업하기 위한 핸들러 추가
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private String question;
     private TextView textRequest, textFeedback, textTip;
@@ -92,32 +106,49 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     // 자기소개 분석 관련
     private Button introCameraBtn, introCameraStopBtn;
     private TextView introText;
-    private PresentationAnalyzer introAnalyzer;
     private boolean isIntroAnalyzing = false;
 
     // 질문답변 분석 관련
     private Button btnStartCamera, btnStopCamera;
     private TextView presentationScoreText;
-    private PresentationAnalyzer presentationAnalyzer;
     private boolean isCameraAnalyzing = false;
+
+    // 녹음 관련
+    private MediaRecorder mediaRecorder;
+    private File currentRecordingFile;
+    private boolean isRecording = false;
+    private SpeechRecognizer speechRecognizer;
+
+    // 카메라 관련
+    private Uri videoUri;
+    private File currentVideoFile;
 
     private List<String> questionList = new ArrayList<>();
     private List<String> tipList = new ArrayList<>();
 
-    // 셔플된 리스트에서 문제출력을 위한 인덱스
     private int currentQuestion = 0;
     private int currentTip = 0;
 
     private String selectedFirst = "";
     private String selectedSecond = "";
 
-    // 오디오 재생을 위한 MediaPlayer 객체
     private MediaPlayer mediaPlayer;
 
     private Retrofit retrofit;
     private OkHttpClient client;
     private HttpLoggingInterceptor logging;
     private Gson gson;
+
+    // ActivityResultLauncher for camera
+    private ActivityResultLauncher<Intent> cameraLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    handleVideoResult();
+                } else {
+                    resetAnalysisState();
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,27 +161,9 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
             return insets;
         });
 
-
-        introCameraBtn = findViewById(R.id.introCameraBtn);
-        introCameraStopBtn = findViewById(R.id.introCameraStopBtn);
-        btnStartCamera = findViewById(R.id.btnStartCamera);
-        btnStopCamera = findViewById(R.id.btnStopCamera);
-        introText = findViewById(R.id.introText);
-        presentationScoreText = findViewById(R.id.presentationScoreText);
-
-        // 자기소개 분석 버튼
-        introCameraBtn.setOnClickListener(v -> runPythonScript("intro"));
-
-        // 질문답변 분석 버튼
-        btnStartCamera.setOnClickListener(v -> runPythonScript("question"));
-
-        // 중지 버튼
-        introCameraStopBtn.setOnClickListener(v -> stopPythonScript());
-        btnStopCamera.setOnClickListener(v -> stopPythonScript());
-
         initializeViews();
-        initializePresentationAnalyzers();
         initializeNetworking();
+        initializeSpeechRecognizer();
 
         selectedFirst = getIntent().getStringExtra("selectedFirst");
         selectedSecond = getIntent().getStringExtra("selectedSecond");
@@ -163,9 +176,8 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
 
         fetchJobQuestion();
         setupClickListeners();
-        checkCameraPermissions();
+        checkPermissions();
         testServerConnection();
-
     }
 
     private void initializeViews() {
@@ -192,38 +204,78 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         // 초기 상태 설정
         textFeedback.setText("답변 후 피드백이 여기에 표시됩니다.");
         introCameraStopBtn.setEnabled(false);
-        introText.setText("자기소개 분석을 시작해주세요");
+        introText.setText("자기소개 영상을 촬영하여 분석을 시작해주세요");
         btnStopCamera.setEnabled(false);
-        presentationScoreText.setText("카메라 분석을 시작해주세요");
-    }
-
-    private void initializePresentationAnalyzers() {
-        introAnalyzer = new PresentationAnalyzer();
-        presentationAnalyzer = new PresentationAnalyzer();
+        presentationScoreText.setText("질문 답변 영상을 촬영하여 분석을 시작해주세요");
     }
 
     private void initializeNetworking() {
         logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
-        // OkHttpClient 설정
         client = new OkHttpClient.Builder()
                 .connectTimeout(60, TimeUnit.SECONDS)
                 .readTimeout(60, TimeUnit.SECONDS)
                 .writeTimeout(60, TimeUnit.SECONDS)
                 .addInterceptor(logging)
                 .build();
-        //Gson 커스터마이즈
+
         gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .create();
 
-        // Retrofit 설정
         retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(client)
                 .build();
+    }
+
+    private void initializeSpeechRecognizer() {
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        speechRecognizer.setRecognitionListener(new RecognitionListener() {
+            @Override
+            public void onReadyForSpeech(Bundle params) {
+            }
+
+            @Override
+            public void onBeginningOfSpeech() {
+            }
+
+            @Override
+            public void onRmsChanged(float rmsdB) {
+            }
+
+            @Override
+            public void onBufferReceived(byte[] buffer) {
+            }
+
+            @Override
+            public void onEndOfSpeech() {
+            }
+
+            @Override
+            public void onError(int error) {
+                Log.e(TAG, "Speech recognition error: " + error);
+            }
+
+            @Override
+            public void onResults(Bundle results) {
+                ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                if (matches != null && !matches.isEmpty()) {
+                    String recognizedText = matches.get(0);
+                    Log.d(TAG, "Recognized text: " + recognizedText);
+                }
+            }
+
+            @Override
+            public void onPartialResults(Bundle partialResults) {
+            }
+
+            @Override
+            public void onEvent(int eventType, Bundle params) {
+            }
+        });
     }
 
     private void setupClickListeners() {
@@ -241,11 +293,23 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         btnStopCamera.setOnClickListener(this);
     }
 
-    private void checkCameraPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
+    private void checkPermissions() {
+        String[] permissions = {
+                Manifest.permission.CAMERA,
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+        };
+
+        List<String> permissionsToRequest = new ArrayList<>();
+        for (String permission : permissions) {
+            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(permission);
+            }
+        }
+
+        if (!permissionsToRequest.isEmpty()) {
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CAMERA},
+                    permissionsToRequest.toArray(new String[0]),
                     CAMERA_PERMISSION_REQUEST_CODE);
         }
     }
@@ -256,17 +320,23 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.d(TAG, "카메라 권한 승인됨");
+            boolean allPermissionsGranted = true;
+            for (int result : grantResults) {
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    allPermissionsGranted = false;
+                    break;
+                }
+            }
+
+            if (allPermissionsGranted) {
+                Log.d(TAG, "모든 권한 승인됨");
             } else {
-                Toast.makeText(this, "카메라 권한이 필요합니다.", Toast.LENGTH_LONG).show();
+                Log.d(TAG, "카메라와 오디오 권한이 필요합니다");
             }
         }
     }
 
     private void testServerConnection() {
-
-        // 루트 엔드포인트 호출
         retrofit.create(GptApi.class).testConnection().enqueue(new Callback<Object>() {
             @Override
             public void onResponse(Call<Object> call, Response<Object> response) {
@@ -280,7 +350,6 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         });
     }
 
-    // Firebase에서 데이터 가져오기
     private void fetchJobQuestion() {
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference("면접질문");
         DatabaseReference rootRef2 = FirebaseDatabase.getInstance().getReference("면접팁");
@@ -291,7 +360,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                // 1. 공통질문 가져오기
+                // 공통질문 가져오기
                 DataSnapshot commonSnap = snapshot.child("공통질문");
                 for (DataSnapshot questionSnap : commonSnap.getChildren()) {
                     String question = questionSnap.getValue(String.class);
@@ -300,7 +369,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                     }
                 }
 
-                // 2. 인사질문 가져오기
+                // 인사질문 가져오기
                 DataSnapshot hrSnap = snapshot.child("인사질문");
                 for (DataSnapshot questionSnap : hrSnap.getChildren()) {
                     String question = questionSnap.getValue(String.class);
@@ -309,7 +378,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                     }
                 }
 
-                // 3. 직업질문 가져오기 (selectedFirst, selectedSecond 기준)
+                // 직업질문 가져오기
                 DataSnapshot jobSnap = snapshot.child("직업질문")
                         .child(selectedFirst)
                         .child(selectedSecond);
@@ -320,7 +389,6 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                     }
                 }
 
-                // 리스트 셔플 후 첫 질문 출력
                 isQuestionListLoaded[0] = true;
                 if (isTipListLoaded[0]) {
                     initializeQuestions();
@@ -372,15 +440,16 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
             Toast.makeText(this, "더이상 낼 문제가 없습니다.", Toast.LENGTH_SHORT).show();
             return;
         }
+
         textTip.setText("");
         Collections.shuffle(tipList);
         String tip = tipList.get(currentTip);
         textTip.setText(tip);
         question = questionList.get(currentQuestion);
         textRequest.setText(question);
-        textResponse.setText(""); // 답변 필드 초기화
+        textResponse.setText("");
         feedbackSection.setVisibility(View.GONE);
-        textFeedback.setText("답변 후 피드백이 여기에 표시됩니다."); // 피드백 필드 초기화
+        textFeedback.setText("답변 후 피드백이 여기에 표시됩니다.");
         currentQuestion = (currentQuestion + 1) % questionList.size();
         currentTip = (currentTip + 1) % tipList.size();
     }
@@ -395,227 +464,608 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
             sendGptRequest();
         }
 
-        // 자기소개 분석 버튼들
+        // 자기소개 분석
         if (v.getId() == R.id.introCameraBtn) {
-            startIntroAnalysis();
+            startIntroVideoRecording();
         }
         if (v.getId() == R.id.introCameraStopBtn) {
-            stopIntroAnalysis();
+            stopCurrentAnalysis("intro");
         }
 
-        // 질문답변 분석 버튼들
+        // 질문답변 분석
         if (v.getId() == R.id.btnStartCamera) {
-            startQuestionAnalysis();
+            startQuestionVideoRecording();
         }
         if (v.getId() == R.id.btnStopCamera) {
-            stopQuestionAnalysis();
+            stopCurrentAnalysis("question");
         }
     }
 
-    // 자기소개 분석 시작
-    private void startIntroAnalysis() {
+    // 자기소개 영상 촬영 시작
+    private void startIntroVideoRecording() {
         if (!isIntroAnalyzing) {
             isIntroAnalyzing = true;
             introCameraBtn.setEnabled(false);
             introCameraStopBtn.setEnabled(true);
+            introText.setText("자기소개 영상을 촬영 중입니다...");
 
-            introText.setText("자기소개 분석 중... 카메라를 바라보며 자기소개를 해주세요");
-
-            introAnalyzer.startAnalysis(this, "INTRO", new PresentationAnalyzer.AnalysisCallback() {
-                @Override
-                public void onScoreUpdate(PresentationScores scores) {
-                    runOnUiThread(() -> updateIntroScores(scores));
-                }
-
-                @Override
-                public void onError(String error) {
-                    runOnUiThread(() -> {
-                        Toast.makeText(QuestActivity.this, "자기소개 분석 오류: " + error, Toast.LENGTH_SHORT).show();
-                        stopIntroAnalysis();
-                    });
-                }
-            });
+            startVideoRecording("intro", 60);
         }
     }
 
-    // 자기소개 분석 중지
-    private void stopIntroAnalysis() {
-        if (isIntroAnalyzing) {
-            isIntroAnalyzing = false;
-            introCameraBtn.setEnabled(true);
-            introCameraStopBtn.setEnabled(false);
-
-            PresentationScores finalScores = introAnalyzer.stopAnalysis();
-            showIntroResults(finalScores);
-        }
-    }
-
-    // 질문답변 분석 시작
-    private void startQuestionAnalysis() {
+    // 질문답변 영상 촬영 시작
+    private void startQuestionVideoRecording() {
         if (!isCameraAnalyzing) {
             isCameraAnalyzing = true;
             btnStartCamera.setEnabled(false);
             btnStopCamera.setEnabled(true);
+            presentationScoreText.setText("질문답변 영상을 촬영 중입니다...");
 
-            presentationScoreText.setText("질문답변 분석 중... 카메라를 바라보며 답변해주세요");
-
-            presentationAnalyzer.startAnalysis(this, "QUESTION", new PresentationAnalyzer.AnalysisCallback() {
-                @Override
-                public void onScoreUpdate(PresentationScores scores) {
-                    runOnUiThread(() -> updatePresentationScores(scores));
-                }
-
-                @Override
-                public void onError(String error) {
-                    runOnUiThread(() -> {
-                        Toast.makeText(QuestActivity.this, "질문답변 분석 오류: " + error, Toast.LENGTH_SHORT).show();
-                        stopQuestionAnalysis();
-                    });
-                }
-            });
+            startVideoRecording("question", 120);
         }
     }
 
-    // 질문답변 분석 중지
-    private void stopQuestionAnalysis() {
-        if (isCameraAnalyzing) {
+    // 영상 촬영 시작
+    private void startVideoRecording(String analysisType, int duration) {
+        // 권한 확인
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, "카메라 권한이 필요합니다", Toast.LENGTH_SHORT).show();
+            checkPermissions();
+            return;
+        }
+
+        try {
+            // 저장 경로 (간단하게 변경)
+            File storageDir = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
+            if (storageDir == null) {
+                showErrorMessage("저장소에 접근할 수 없습니다");
+                return;
+            }
+
+            // 파일명
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+            currentVideoFile = new File(storageDir, analysisType + "_" + timeStamp + ".mp4");
+
+            Log.d(TAG, "비디오 저장 경로: " + currentVideoFile.getAbsolutePath());
+
+            // FileProvider URI
+            videoUri = FileProvider.getUriForFile(
+                    this,
+                    "com.seoja.aico.fileprovider",  // 패키지명 확인
+                    currentVideoFile
+            );
+
+            Log.d(TAG, "VideoURI: " + videoUri.toString());
+
+            // 카메라 Intent
+            Intent cameraIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
+            cameraIntent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, duration);
+            cameraIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
+
+            // 권한 플래그 - 매우 중요!
+            cameraIntent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+            // 오디오 녹음
+            startAudioRecording(analysisType);
+
+            // 카메라 실행
+            cameraLauncher.launch(cameraIntent);
+
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "FileProvider 오류: " + e.getMessage());
+            showErrorMessage("파일 경로 설정 오류. file_paths.xml을 확인하세요.");
+            resetAnalysisState();
+        } catch (Exception e) {
+            Log.e(TAG, "카메라 시작 오류: " + e.getMessage());
+            e.printStackTrace();
+            showErrorMessage("카메라 시작 실패: " + e.getMessage());
+            resetAnalysisState();
+        }
+    }
+
+    // 오디오 녹음 시작
+    private void startAudioRecording(String analysisType) {
+        try {
+            // 오디오 파일 생성
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+            String fileName = analysisType + "_audio_" + timeStamp + ".3gp";
+            File audioDir = new File(getExternalFilesDir(Environment.DIRECTORY_MUSIC), "InterviewAudios");
+            if (!audioDir.exists()) {
+                audioDir.mkdirs();
+            }
+            currentRecordingFile = new File(audioDir, fileName);
+
+            mediaRecorder = new MediaRecorder();
+            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            mediaRecorder.setOutputFile(currentRecordingFile.getAbsolutePath());
+            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+
+            mediaRecorder.prepare();
+            mediaRecorder.start();
+            isRecording = true;
+
+            Log.d(TAG, "오디오 녹음 시작: " + currentRecordingFile.getAbsolutePath());
+
+        } catch (Exception e) {
+            Log.e(TAG, "오디오 녹음 시작 오류: " + e.getMessage());
+            showErrorMessage("오디오 녹음을 시작할 수 없습니다: " + e.getMessage());
+        }
+    }
+
+    // 영상 촬영 결과 처리
+    private void handleVideoResult() {
+        // 오디오 녹음 중지
+        stopAudioRecording();
+
+        Log.d(TAG, "비디오 촬영 완료");
+        Log.d(TAG, "currentVideoFile: " + (currentVideoFile != null ? currentVideoFile.getAbsolutePath() : "null"));
+        Log.d(TAG, "파일 존재 여부: " + (currentVideoFile != null && currentVideoFile.exists()));
+
+        // 파일 존재 확인
+        if (currentVideoFile == null || !currentVideoFile.exists()) {
+            Log.e(TAG, "비디오 파일을 찾을 수 없습니다");
+
+            // 파일이 없어도 오디오는 있으니 오디오만 분석
+            if (currentRecordingFile != null && currentRecordingFile.exists()) {
+                Log.d(TAG, "오디오 파일만 분석 시도");
+
+                if (isIntroAnalyzing) {
+                    analyzeIntroAudioOnly();
+                } else if (isCameraAnalyzing) {
+                    analyzeQuestionAudioOnly();
+                }
+            } else {
+                showErrorMessage("녹화 파일을 찾을 수 없습니다.");
+                resetAnalysisState();
+            }
+            return;
+        }
+
+        Log.d(TAG, "비디오 파일 크기: " + currentVideoFile.length() + " bytes");
+
+        // 분석 시작
+        if (isIntroAnalyzing) {
+            analyzeIntroVideo();
+        } else if (isCameraAnalyzing) {
+            analyzeQuestionVideo();
+        }
+    }
+
+    // 오디오 녹음 중지
+    private void stopAudioRecording() {
+        if (mediaRecorder != null && isRecording) {
+            try {
+                mediaRecorder.stop();
+                mediaRecorder.release();
+                mediaRecorder = null;
+                isRecording = false;
+                Log.d(TAG, "오디오 녹음 완료");
+            } catch (Exception e) {
+                Log.e(TAG, "오디오 녹음 중지 오류: " + e.getMessage());
+            }
+        }
+    }
+
+    // 자기소개 비디오 분석
+    private void analyzeIntroVideo() {
+        introText.setText("자기소개 영상을 분석 중입니다... 잠시만 기다려주세요");
+
+        new Thread(() -> {
+            try {
+                // STT 처리
+                String transcribedText = performSTT(currentRecordingFile);
+
+                // 영상과 음성 파일을 서버로 전송하여 분석
+                JSONObject analysisResult = analyzeVideoWithServer("intro", currentVideoFile, currentRecordingFile, transcribedText);
+
+                runOnUiThread(() -> updateIntroResults(analysisResult));
+
+            } catch (Exception e) {
+                Log.e(TAG, "자기소개 분석 오류: " + e.getMessage());
+                runOnUiThread(() -> showErrorMessage("자기소개 분석 중 오류가 발생했습니다: " + e.getMessage()));
+            }
+        }).start();
+    }
+
+    // 질문답변 비디오 분석
+    private void analyzeQuestionVideo() {
+        presentationScoreText.setText("질문답변 영상을 분석 중입니다... 잠시만 기다려주세요");
+
+        new Thread(() -> {
+            try {
+                // STT 처리
+                String transcribedText = performSTT(currentRecordingFile);
+
+                // 영상과 음성 파일을 서버로 전송하여 분석
+                JSONObject analysisResult = analyzeVideoWithServer("question", currentVideoFile, currentRecordingFile, transcribedText);
+
+                runOnUiThread(() -> updateQuestionResults(analysisResult));
+
+            } catch (Exception e) {
+                Log.e(TAG, "질문답변 분석 오류: " + e.getMessage());
+                runOnUiThread(() -> showErrorMessage("질문답변 분석 중 오류가 발생했습니다: " + e.getMessage()));
+            }
+        }).start();
+    }
+
+    // 자기소개 오디오만 분석
+    private void analyzeIntroAudioOnly() {
+        introText.setText("자기소개 음성을 분석 중입니다... 잠시만 기다려주세요");
+
+        new Thread(() -> {
+            try {
+                // STT 처리
+                String transcribedText = performSTT(currentRecordingFile);
+
+                Log.d(TAG, "STT 결과: " + transcribedText);
+
+                // 오디오만 서버로 전송하여 분석
+                JSONObject analysisResult = analyzeAudioWithServer("intro", currentRecordingFile, transcribedText);
+
+                runOnUiThread(() -> updateIntroResults(analysisResult));
+
+            } catch (Exception e) {
+                Log.e(TAG, "자기소개 분석 오류: " + e.getMessage());
+                runOnUiThread(() -> showErrorMessage("자기소개 분석 중 오류가 발생했습니다: " + e.getMessage()));
+            }
+        }).start();
+    }
+
+    // 질문답변 오디오만 분석
+    private void analyzeQuestionAudioOnly() {
+        presentationScoreText.setText("질문답변 음성을 분석 중입니다... 잠시만 기다려주세요");
+
+        new Thread(() -> {
+            try {
+                // STT 처리
+                String transcribedText = performSTT(currentRecordingFile);
+
+                Log.d(TAG, "STT 결과: " + transcribedText);
+
+                // 오디오만 서버로 전송하여 분석
+                JSONObject analysisResult = analyzeAudioWithServer("question", currentRecordingFile, transcribedText);
+
+                runOnUiThread(() -> updateQuestionResults(analysisResult));
+
+            } catch (Exception e) {
+                Log.e(TAG, "질문답변 분석 오류: " + e.getMessage());
+                runOnUiThread(() -> showErrorMessage("질문답변 분석 중 오류가 발생했습니다: " + e.getMessage()));
+            }
+        }).start();
+    }
+
+    // 오디오만 서버로 전송
+    private JSONObject analyzeAudioWithServer(String analysisType, File audioFile, String transcribedText) throws Exception {
+        URL url = new URL(BASE_URL + "analyze_video");
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        conn.setRequestMethod("POST");
+        conn.setDoOutput(true);
+
+        // Multipart 요청 생성
+        String boundary = "----WebKitFormBoundary" + System.currentTimeMillis();
+        conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+
+        try (OutputStream os = conn.getOutputStream()) {
+            // 분석 타입
+            writeFormField(os, boundary, "analysis_type", analysisType);
+
+            // 현재 질문 (질문답변 분석의 경우)
+            if ("question".equals(analysisType)) {
+                writeFormField(os, boundary, "question", question);
+            }
+
+            // 음성 인식 텍스트
+            writeFormField(os, boundary, "transcribed_text", transcribedText);
+
+            // 오디오 파일
+            writeFileField(os, boundary, "audio_file", audioFile);
+
+            // 마지막 boundary
+            os.write(("--" + boundary + "--\r\n").getBytes());
+        }
+
+        // 응답 받기
+        int responseCode = conn.getResponseCode();
+        InputStream inputStream = responseCode == 200 ? conn.getInputStream() : conn.getErrorStream();
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        StringBuilder response = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            response.append(line);
+        }
+
+        if (responseCode == 200) {
+            return new JSONObject(response.toString());
+        } else {
+            throw new Exception("서버 오류: " + responseCode + " " + response.toString());
+        }
+    }
+
+    // STT 처리 (간단한 더미 구현 - 실제로는 Google Speech API 등을 사용해야 함)
+    private String performSTT(File audioFile) {
+        // 실제 구현에서는 Google Speech-to-Text API나 다른 STT 서비스를 사용
+        // 여기서는 더미 텍스트 반환
+        try {
+            // 음성 인식을 위한 Intent 사용 (오프라인)
+            Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+
+            // 실제 구현에서는 음성 파일을 텍스트로 변환하는 로직 구현 필요
+            Log.d(TAG, "STT 처리 완료 (더미)");
+            return "음성을 텍스트로 변환한 내용입니다."; // 더미 텍스트
+
+        } catch (Exception e) {
+            Log.e(TAG, "STT 처리 오류: " + e.getMessage());
+            return "음성 인식을 처리할 수 없습니다.";
+        }
+    }
+
+    // 서버에서 영상 분석
+    private JSONObject analyzeVideoWithServer(String analysisType, File videoFile, File audioFile, String transcribedText) throws Exception {
+        URL url = new URL(BASE_URL + "analyze_video");
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        conn.setRequestMethod("POST");
+        conn.setDoOutput(true);
+
+        // Multipart 요청 생성
+        String boundary = "----WebKitFormBoundary" + System.currentTimeMillis();
+        conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+
+        try (OutputStream os = conn.getOutputStream()) {
+            // 분석 타입
+            writeFormField(os, boundary, "analysis_type", analysisType);
+
+            // 현재 질문 (질문답변 분석의 경우)
+            if ("question".equals(analysisType)) {
+                writeFormField(os, boundary, "question", question);
+            }
+
+            // 음성 인식 텍스트
+            writeFormField(os, boundary, "transcribed_text", transcribedText);
+
+            // 영상 파일
+            writeFileField(os, boundary, "video_file", videoFile);
+
+            // 오디오 파일
+            writeFileField(os, boundary, "audio_file", audioFile);
+
+            // 마지막 boundary
+            os.write(("--" + boundary + "--\r\n").getBytes());
+        }
+
+        // 응답 받기
+        int responseCode = conn.getResponseCode();
+        InputStream inputStream = responseCode == 200 ? conn.getInputStream() : conn.getErrorStream();
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        StringBuilder response = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            response.append(line);
+        }
+
+        if (responseCode == 200) {
+            return new JSONObject(response.toString());
+        } else {
+            throw new Exception("서버 오류: " + responseCode + " " + response.toString());
+        }
+    }
+
+    private void writeFormField(OutputStream os, String boundary, String fieldName, String value) throws IOException {
+        os.write(("--" + boundary + "\r\n").getBytes());
+        os.write(("Content-Disposition: form-data; name=\"" + fieldName + "\"\r\n").getBytes());
+        os.write("\r\n".getBytes());
+        os.write(value.getBytes());
+        os.write("\r\n".getBytes());
+    }
+
+    private void writeFileField(OutputStream os, String boundary, String fieldName, File file) throws IOException {
+        os.write(("--" + boundary + "\r\n").getBytes());
+        os.write(("Content-Disposition: form-data; name=\"" + fieldName + "\"; filename=\"" + file.getName() + "\"\r\n").getBytes());
+        os.write(("Content-Type: application/octet-stream\r\n").getBytes());
+        os.write("\r\n".getBytes());
+
+        try (FileInputStream fis = new FileInputStream(file)) {
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = fis.read(buffer)) != -1) {
+                os.write(buffer, 0, bytesRead);
+            }
+        }
+        os.write("\r\n".getBytes());
+    }
+
+    // 자기소개 결과 업데이트
+    private void updateIntroResults(JSONObject result) {
+        try {
+            boolean success = result.getBoolean("success");
+
+            if (!success) {
+                showErrorMessage("자기소개 분석 실패");
+                return;
+            }
+
+            JSONObject scores = result.getJSONObject("scores");
+            double totalScore = result.getDouble("total_score");
+            String grade = result.getString("grade");
+            JSONArray suggestions = result.getJSONArray("suggestions");
+
+            // 제안사항 문자열 생성
+            StringBuilder suggestionText = new StringBuilder();
+            for (int i = 0; i < suggestions.length(); i++) {
+                suggestionText.append("• ").append(suggestions.getString(i)).append("\n");
+            }
+
+            String scoreText = String.format(
+                    "자기소개 분석 결과\n\n" +
+                            "자신감 표현: %.1f점\n" +
+                            "목소리 톤: %.1f점\n" +
+                            "내용 구성: %.1f점\n" +
+                            "자세와 표정: %.1f점\n\n" +
+                            "총점: %.1f점 (%s)\n\n" +
+                            "개선 제안:\n%s",
+                    scores.getDouble("confidence_expression"),
+                    scores.getDouble("voice_tone"),
+                    scores.getDouble("content_structure"),
+                    scores.getDouble("posture_expression"),
+                    totalScore, grade,
+                    suggestionText.toString()
+            );
+
+            introText.setText(scoreText);
+            isIntroAnalyzing = false;
+            introCameraBtn.setEnabled(true);
+            introCameraStopBtn.setEnabled(false);
+
+            // 결과 팝업 표시
+            showResultsDialog(scoreText, "자기소개");
+
+        } catch (Exception e) {
+            Log.e(TAG, "자기소개 결과 파싱 오류: " + e.getMessage());
+            showErrorMessage("자기소개 결과 처리 오류");
+        }
+    }
+
+    // 질문답변 결과 업데이트
+    private void updateQuestionResults(JSONObject result) {
+        try {
+            boolean success = result.getBoolean("success");
+
+            if (!success) {
+                showErrorMessage("질문답변 분석 실패");
+                return;
+            }
+
+            JSONObject scores = result.getJSONObject("scores");
+            double totalScore = result.getDouble("total_score");
+            String grade = result.getString("grade");
+            JSONArray suggestions = result.getJSONArray("suggestions");
+
+            // 제안사항 문자열 생성
+            StringBuilder suggestionText = new StringBuilder();
+            for (int i = 0; i < suggestions.length(); i++) {
+                suggestionText.append("• ").append(suggestions.getString(i)).append("\n");
+            }
+
+            String scoreText = String.format(
+                    "질문답변 분석 결과\n\n" +
+                            "답변 정확성: %.1f점\n" +
+                            "논리적 구성: %.1f점\n" +
+                            "말하기 자연스러움: %.1f점\n" +
+                            "집중도: %.1f점\n\n" +
+                            "총점: %.1f점 (%s)\n\n" +
+                            "개선 제안:\n%s",
+                    scores.getDouble("answer_accuracy"),
+                    scores.getDouble("logical_structure"),
+                    scores.getDouble("speaking_naturalness"),
+                    scores.getDouble("focus_level"),
+                    totalScore, grade,
+                    suggestionText.toString()
+            );
+
+            presentationScoreText.setText(scoreText);
             isCameraAnalyzing = false;
             btnStartCamera.setEnabled(true);
             btnStopCamera.setEnabled(false);
 
-            PresentationScores finalScores = presentationAnalyzer.stopAnalysis();
-            showQuestionResults(finalScores);
+            // 결과 팝업 표시
+            showResultsDialog(scoreText, "질문답변");
+
+        } catch (Exception e) {
+            Log.e(TAG, "질문답변 결과 파싱 오류: " + e.getMessage());
+            showErrorMessage("질문답변 결과 처리 오류");
         }
     }
 
-    // 자기소개 점수 업데이트
-    private void updateIntroScores(PresentationScores scores) {
-        String scoreText = String.format(
-                "자기소개 분석\n\n" +
-                        "👁️ 시선 접촉: %.0f점\n" +
-                        "😊 표정 다양성: %.0f점\n" +
-                        "🎤 음성 일관성: %.0f점\n" +
-                        "✨ 자연스러움: %.0f점\n\n" +
-                        "총점: %.0f점",
-                scores.eyeContact,
-                scores.expressionVariety,
-                scores.voiceConsistency,
-                scores.naturalness,
-                scores.getTotalScore()
-        );
+    // 분석 중지
+    private void stopCurrentAnalysis(String analysisType) {
+        if ("intro".equals(analysisType) && isIntroAnalyzing) {
+            isIntroAnalyzing = false;
+            introCameraBtn.setEnabled(true);
+            introCameraStopBtn.setEnabled(false);
+            introText.setText("자기소개 분석이 중지되었습니다.");
 
-        introText.setText(scoreText);
+            // 진행 중인 녹음/촬영 중지
+            stopAudioRecording();
+
+        } else if ("question".equals(analysisType) && isCameraAnalyzing) {
+            isCameraAnalyzing = false;
+            btnStartCamera.setEnabled(true);
+            btnStopCamera.setEnabled(false);
+            presentationScoreText.setText("질문답변 분석이 중지되었습니다.");
+
+            // 진행 중인 녹음/촬영 중지
+            stopAudioRecording();
+        }
     }
 
-    // 질문답변 점수 업데이트
-    private void updatePresentationScores(PresentationScores scores) {
-        String scoreText = String.format(
-                "질문답변 분석\n\n" +
-                        "👁️ 시선 접촉: %.0f점\n" +
-                        "😊 표정 다양성: %.0f점\n" +
-                        "🎤 음성 일관성: %.0f점\n" +
-                        "✨ 자연스러움: %.0f점\n\n" +
-                        "총점: %.0f점",
-                scores.eyeContact,
-                scores.expressionVariety,
-                scores.voiceConsistency,
-                scores.naturalness,
-                scores.getTotalScore()
-        );
+    // 분석 상태 초기화
+    private void resetAnalysisState() {
+        if (isIntroAnalyzing) {
+            isIntroAnalyzing = false;
+            introCameraBtn.setEnabled(true);
+            introCameraStopBtn.setEnabled(false);
+            introText.setText("분석을 다시 시도해주세요.");
+        }
 
-        presentationScoreText.setText(scoreText);
+        if (isCameraAnalyzing) {
+            isCameraAnalyzing = false;
+            btnStartCamera.setEnabled(true);
+            btnStopCamera.setEnabled(false);
+            presentationScoreText.setText("분석을 다시 시도해주세요.");
+        }
+
+        stopAudioRecording();
     }
 
-    // 자기소개 결과 표시
-    private void showIntroResults(PresentationScores scores) {
-        String grade = getGrade(scores.getTotalScore());
-        String suggestions = generateSuggestions(scores);
-
-        String message = String.format(
-                "자기소개 분석 완료!\n\n" +
-                        "총점: %.0f점 (%s)\n\n" +
-                        "세부 점수:\n" +
-                        "• 시선 접촉: %.0f점\n" +
-                        "• 표정 다양성: %.0f점\n" +
-                        "• 음성 일관성: %.0f점\n" +
-                        "• 자연스러움: %.0f점\n\n" +
-                        "개선 제안:\n%s",
-                scores.getTotalScore(), grade,
-                scores.eyeContact, scores.expressionVariety,
-                scores.voiceConsistency, scores.naturalness,
-                suggestions
-        );
-
+    // 결과 다이얼로그 표시
+    private void showResultsDialog(String scoreText, String analysisType) {
         new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("자기소개 분석 결과")
-                .setMessage(message)
+                .setTitle(analysisType + " 분석 결과")
+                .setMessage(scoreText)
                 .setPositiveButton("확인", null)
+                .setNeutralButton("결과 저장", (dialog, which) -> saveAnalysisResult(scoreText, analysisType))
                 .show();
-
-        introText.setText("자기소개 분석 완료. 다시 시작하려면 분석 시작을 눌러주세요");
     }
 
-    // 질문답변 결과 표시
-    private void showQuestionResults(PresentationScores scores) {
-        String grade = getGrade(scores.getTotalScore());
-        String suggestions = generateSuggestions(scores);
+    // 분석 결과 저장
+    private void saveAnalysisResult(String scoreText, String analysisType) {
+        try {
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+            String fileName = analysisType + "_result_" + timeStamp + ".txt";
+            File resultDir = new File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "AnalysisResults");
+            if (!resultDir.exists()) {
+                resultDir.mkdirs();
+            }
 
-        String message = String.format(
-                "질문답변 분석 완료!\n\n" +
-                        "총점: %.0f점 (%s)\n\n" +
-                        "세부 점수:\n" +
-                        "• 시선 접촉: %.0f점\n" +
-                        "• 표정 다양성: %.0f점\n" +
-                        "• 음성 일관성: %.0f점\n" +
-                        "• 자연스러움: %.0f점\n\n" +
-                        "개선 제안:\n%s",
-                scores.getTotalScore(), grade,
-                scores.eyeContact, scores.expressionVariety,
-                scores.voiceConsistency, scores.naturalness,
-                suggestions
-        );
+            File resultFile = new File(resultDir, fileName);
 
-        new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("질문답변 분석 결과")
-                .setMessage(message)
-                .setPositiveButton("확인", null)
-                .show();
+            try (FileOutputStream fos = new FileOutputStream(resultFile)) {
+                fos.write(scoreText.getBytes());
+            }
 
-        presentationScoreText.setText("질문답변 분석 완료. 다시 시작하려면 분석 시작을 눌러주세요");
+            Toast.makeText(this, "결과가 저장되었습니다: " + fileName, Toast.LENGTH_SHORT).show();
+
+        } catch (Exception e) {
+            Log.e(TAG, "결과 저장 오류: " + e.getMessage());
+            Toast.makeText(this, "결과 저장에 실패했습니다.", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    private String getGrade(float score) {
-        if (score >= 80) return "우수";
-        else if (score >= 60) return "보통";
-        else if (score >= 40) return "개선 필요";
-        else return "많은 연습 필요";
-    }
-
-    private String generateSuggestions(PresentationScores scores) {
-        StringBuilder suggestions = new StringBuilder();
-
-        if (scores.eyeContact < 60) {
-            suggestions.append("• 카메라(청중)를 더 자주 바라보세요\n");
-        }
-        if (scores.expressionVariety < 60) {
-            suggestions.append("• 더 다양한 표정으로 감정을 표현해보세요\n");
-        }
-        if (scores.voiceConsistency < 60) {
-            suggestions.append("• 목소리 톤과 속도를 일정하게 유지하세요\n");
-        }
-        if (scores.naturalness < 60) {
-            suggestions.append("• 자연스러운 제스처를 더 많이 사용하세요\n");
-        }
-
-        if (suggestions.length() == 0) {
-            suggestions.append("• 전반적으로 훌륭한 프레젠테이션입니다!");
-        }
-
-        return suggestions.toString();
+    // 오류 메시지 표시
+    private void showErrorMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        resetAnalysisState();
     }
 
     public void sendGptRequest() {
-        // 질문과 답변 가져오기
         String quest = textRequest.getText().toString();
         String answer = textResponse.getText().toString();
         feedbackSection.setVisibility(View.VISIBLE);
@@ -627,25 +1077,19 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         }
 
         String userId = user.getUid();
-        // 질문과 답변 하나의 문자열로 만들기
         String requestMessage = "면접 질문 : " + quest + "\n사용자 답변 : " + answer;
-
-        // 요청 객체 만들기
         GptRequest request = new GptRequest(userId, requestMessage);
 
-        // 요청 중임을 표시
         textFeedback.setText("피드백을 요청 중입니다...");
 
         GptApi gptApi = retrofit.create(GptApi.class);
-
         Log.d(TAG, "요청 시작: " + requestMessage);
 
         gptApi.askGpt(request).enqueue(new Callback<GptResponse>() {
             @Override
             public void onResponse(@NonNull Call<GptResponse> call, @NonNull Response<GptResponse> response) {
-                Log.d(TAG, "onResponse 호출됨, HTTP 코드: " + response.code());  // 콜백 진입 확인
+                Log.d(TAG, "onResponse 호출됨, HTTP 코드: " + response.code());
 
-                // UI 업데이트는 반드시 메인 스레드에서 실행
                 mainHandler.post(() -> {
                     btnRequest.setEnabled(true);
 
@@ -653,7 +1097,6 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                         String content = response.body().content;
                         textFeedback.setText(content);
 
-                        //요약 요청 보내기
                         SummaryRequest summaryReq = new SummaryRequest(content);
                         gptApi.summarize(summaryReq).enqueue(new Callback<SummaryResponse>() {
                             @Override
@@ -677,7 +1120,6 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                     } else {
                         String errorMsg = "응답 실패: " + response.code();
                         try {
-                            // 에러 바디가 있으면 읽어서 출력
                             if (response.errorBody() != null) {
                                 errorMsg += "\n" + response.errorBody().string();
                             }
@@ -711,7 +1153,6 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                 conn.setRequestProperty("Content-Type", "application/json; utf-8");
                 conn.setDoOutput(true);
 
-                // JSON으로 질문 전송
                 JSONObject json = new JSONObject();
                 json.put("text", questionText);
 
@@ -720,7 +1161,6 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                     os.write(input, 0, input.length);
                 }
 
-                // 응답 읽기
                 InputStream responseStream = conn.getInputStream();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(responseStream));
                 StringBuilder responseBuilder = new StringBuilder();
@@ -732,41 +1172,35 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                 JSONObject responseJson = new JSONObject(responseBuilder.toString());
                 String audioBase64 = responseJson.getString("audio_base64");
 
-                // Base64 디코딩
                 byte[] audioBytes = Base64.decode(audioBase64, Base64.DEFAULT);
 
-                // 임시 mp3 파일 저장
                 File tempFile = File.createTempFile("tts", ".mp3", getCacheDir());
                 try (FileOutputStream fos = new FileOutputStream(tempFile)) {
                     fos.write(audioBytes);
                 }
 
-                // UI 쓰레드에서 MediaPlayer 재생
                 runOnUiThread(() -> {
                     try {
                         Log.d("TTS", "UI 스레드 진입");
 
                         if (mediaPlayer != null) {
-                            mediaPlayer.release(); // 이전 mediaPlayer 해제
+                            mediaPlayer.release();
                         }
 
-                        mediaPlayer = new MediaPlayer(); // 새 인스턴스 생성
+                        mediaPlayer = new MediaPlayer();
 
                         Log.d("TTS", "오디오 파일 경로: " + tempFile.getAbsolutePath());
                         Log.d("TTS", "파일 존재 여부: " + tempFile.exists());
                         Log.d("TTS", "파일 크기: " + tempFile.length());
 
-                        mediaPlayer.setDataSource(tempFile.getAbsolutePath()); // 파일 경로 설정
-
-                        mediaPlayer.prepare(); // 준비
-
-                        mediaPlayer.start(); // 재생 시작
+                        mediaPlayer.setDataSource(tempFile.getAbsolutePath());
+                        mediaPlayer.prepare();
+                        mediaPlayer.start();
 
                     } catch (Exception e) {
                         Log.e("TTS", "UI 쓰레드 내 에러: " + e.getMessage(), e);
                     }
                 });
-
 
             } catch (Exception e) {
                 Log.e("TTS", "Error: " + e.getMessage());
@@ -785,7 +1219,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         String userId = user.getUid();
         Log.d("HISTORY_SAVE", "저장 시도 : userId = " + userId);
 
-        String generatedId = UUID.randomUUID().toString(); //고유 ID 생성
+        String generatedId = UUID.randomUUID().toString();
         HistoryItem item = new HistoryItem(generatedId, userId, question, answer, feedback);
 
         GptApi api = retrofit.create(GptApi.class);
@@ -821,67 +1255,18 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
             mediaPlayer.release();
         }
 
-        if (introAnalyzer != null) {
-            introAnalyzer.cleanup();
+        if (mediaRecorder != null) {
+            try {
+                mediaRecorder.release();
+            } catch (Exception e) {
+                Log.e(TAG, "MediaRecorder 해제 오류: " + e.getMessage());
+            }
         }
 
-        if (presentationAnalyzer != null) {
-            presentationAnalyzer.cleanup();
+        if (speechRecognizer != null) {
+            speechRecognizer.destroy();
         }
 
         super.onDestroy();
-    }
-
-    private void runPythonScript(String mode) {
-        try {
-            // pythonExample.py 실행 (가상환경 or python 경로 직접 지정 필요)
-            String pythonPath = "/usr/bin/python3"; // 또는 C:\Python312\python.exe
-            String scriptPath = getFilesDir().getAbsolutePath() + "/pythonExample.py";
-
-            // intro / question 모드 전달
-            ProcessBuilder pb = new ProcessBuilder(
-                    pythonPath, scriptPath, mode
-            );
-            pb.redirectErrorStream(true);
-            pythonProcess = pb.start();
-
-            // 실행 결과 읽기
-            new Thread(() -> {
-                try (BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(pythonProcess.getInputStream()))) {
-                    String line;
-                    StringBuilder output = new StringBuilder();
-                    while ((line = reader.readLine()) != null) {
-                        output.append(line).append("\n");
-                        Log.d("PythonOutput", line);
-                    }
-
-                    String finalOutput = output.toString();
-                    runOnUiThread(() -> {
-                        if (mode.equals("intro")) {
-                            introText.setText(finalOutput);
-                        } else {
-                            presentationScoreText.setText(finalOutput);
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }).start();
-
-            Toast.makeText(this, "분석을 시작합니다 (" + mode + ")", Toast.LENGTH_SHORT).show();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Python 실행 실패", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void stopPythonScript() {
-        if (pythonProcess != null) {
-            pythonProcess.destroy();
-            pythonProcess = null;
-            Toast.makeText(this, "분석이 중지되었습니다", Toast.LENGTH_SHORT).show();
-        }
     }
 }

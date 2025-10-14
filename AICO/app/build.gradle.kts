@@ -70,6 +70,8 @@ dependencies {
     implementation ("androidx.camera:camera-view:1.3.1")
     implementation ("androidx.camera:camera-extensions:1.3.1")
 
+    implementation ("androidx.core:core:1.8.0")
+    implementation ("com.google.android.material:material:1.6.1")
 
     // 사용자 정보 조회 수정
     implementation("com.github.bumptech.glide:glide:4.16.0")
