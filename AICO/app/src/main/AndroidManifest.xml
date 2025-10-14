@@ -23,6 +23,7 @@
     <uses-feature
         android:name="android.hardware.camera.front"
         android:required="false" />
+
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -116,8 +117,7 @@
             android:exported="true"
             android:screenOrientation="portrait" />
 
-        <activity
-            android:name=".user.HistoryActivity" />
+        <activity android:name=".user.HistoryActivity" />
 
         <meta-data
             android:name="com.kakao.sdk.AppKey"
