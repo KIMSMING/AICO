@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.View;
 import android.widget.*;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,7 +33,7 @@ public class UpdateUserActivity extends AppCompatActivity {
     //private Button btnChangeProfile;
     private EditText editTextNickname, editTextEmail, editTextName, editTextBirth, editTextAddress, editTextPhone;
     private RadioGroup radioGroupGender;
-    private TextView btnUpdate;
+    private TextView btnUpdate, titleTextView;
 
     private Uri imageUri;
     private String photoUrl;
@@ -61,6 +62,10 @@ public class UpdateUserActivity extends AppCompatActivity {
         editTextAddress = findViewById(R.id.editTextAddress);
         editTextPhone = findViewById(R.id.editTextPhone);
         radioGroupGender = findViewById(R.id.radioGroupGender);
+        titleTextView = findViewById(R.id.header_title);
+
+        titleTextView.setText("프로필 수정");
+        btnUpdate.setVisibility(View.VISIBLE);
 
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser == null) {

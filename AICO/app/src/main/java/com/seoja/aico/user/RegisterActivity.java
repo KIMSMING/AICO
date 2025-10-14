@@ -36,7 +36,7 @@ public class RegisterActivity extends AppCompatActivity {
             editTextPasswordConfirm, editTextName, editTextBirth, editTextAddress, editTextPhone;
     private RadioGroup radioGroupGender;
     private Button btnSignUp, btnSendEmail, btnCancle;
-    private TextView codeTimer, passwordRule1, passwordRule2, passwordRule3;
+    private TextView codeTimer, passwordRule1, passwordRule2, passwordRule3, titleTextView;
     private ImageView ivCodeCheck, ivPwCheck, btnBack;
     private LinearLayout codeBar;
 
@@ -77,6 +77,9 @@ public class RegisterActivity extends AppCompatActivity {
         passwordRule2 = findViewById(R.id.passwordRule2);
         passwordRule3 = findViewById(R.id.passwordRule3);
         btnBack = findViewById(R.id.btnBack);
+        titleTextView = findViewById(R.id.header_title);
+
+        titleTextView.setText("회원가입");
 
         database = FirebaseDatabase.getInstance().getReference("users");
 

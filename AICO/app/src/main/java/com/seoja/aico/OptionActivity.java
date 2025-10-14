@@ -20,7 +20,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class OptionActivity extends AppCompatActivity {
 
-    ImageButton btnBack;
+    private TextView titleTextView;
+    private ImageButton btnBack;
     private SeekBar seekBarVolume;
     private Switch switchVibration, switchNotification;
     private AudioManager audioManager;
@@ -44,8 +45,13 @@ public class OptionActivity extends AppCompatActivity {
         // 소리(SeekBar) 설정
         seekBarVolume = findViewById(R.id.seekBarVolume);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        titleTextView = findViewById(R.id.header_title);
+
+        titleTextView.setText("설정");
+
         int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         int curVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+
         seekBarVolume.setMax(maxVolume);
         seekBarVolume.setProgress(curVolume);
 

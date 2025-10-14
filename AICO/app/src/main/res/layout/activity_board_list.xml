@@ -5,48 +5,13 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/professional_bg_primary"
-    tools:context=".reviewBoard.BoardListActivity">
+    android:background="?android:colorBackground"
+    tools:context=".reviewBoard.BoardListActivity"
+    android:fitsSystemWindows="true">
 
-    <!-- 상단 네비게이션 -->
-    <LinearLayout
+    <include
         android:id="@+id/topNavBar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center_vertical"
-        android:background="@color/professional_bg_secondary"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <ImageButton
-            android:id="@+id/btnBack"
-            style="@style/ProfessionalIconButton"
-            android:src="@drawable/ic_backarrow"
-            android:contentDescription="뒤로가기"
-            app:tint="@color/professional_text_secondary" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="면접 후기"
-            android:textColor="@color/professional_text_primary"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:fontFamily="sans-serif-medium" />
-
-        <ImageButton
-            android:id="@+id/btnSearch"
-            style="@style/ProfessionalIconButton"
-            android:src="@drawable/ic_search"
-            android:contentDescription="검색"
-            app:tint="@color/professional_text_secondary" />
-
-    </LinearLayout>
+        layout="@layout/header_toolbar" />
 
     <!-- 필터 및 정렬 옵션 -->
     <LinearLayout
@@ -55,7 +20,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="16dp"
-        android:background="@color/professional_bg_primary"
+        android:background="?android:colorBackground"
         app:layout_constraintTop_toBottomOf="@id/topNavBar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -71,7 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="전체"
-                android:textColor="@color/professional_primary_light"
+                android:textColor="?attr/colorPrimary"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:background="@drawable/professional_button_secondary"
@@ -95,7 +60,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="정렬:"
-                android:textColor="@color/professional_text_tertiary"
+                android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="12sp"
                 android:layout_marginEnd="4dp" />
 
@@ -103,7 +68,7 @@
                 android:id="@+id/spinnerSort"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/professional_text_secondary" />
+                android:backgroundTint="?attr/colorOnSurfaceVariant" />
 
         </LinearLayout>
 
@@ -142,13 +107,13 @@
             android:layout_height="64dp"
             android:src="@drawable/ic_empty"
             android:layout_marginBottom="16dp"
-            app:tint="@color/professional_text_tertiary" />
+            app:tint="?attr/colorOnSurfaceVariant" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="아직 작성된 후기가 없습니다"
-            android:textColor="@color/professional_text_secondary"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="16sp"
             android:layout_marginBottom="8dp" />
 
@@ -156,7 +121,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="첫 번째 면접 후기를 작성해보세요!"
-            android:textColor="@color/professional_text_tertiary"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="14sp" />
 
     </LinearLayout>
@@ -169,7 +134,7 @@
         android:layout_margin="20dp"
         android:contentDescription="글 작성"
         android:src="@drawable/ic_write"
-        app:backgroundTint="@color/professional_primary"
+        app:backgroundTint="?attr/colorPrimary"
         app:borderWidth="0dp"
         app:elevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/professional_bg_primary"
+    android:background="?android:colorBackground"
     android:fillViewport="true"
     tools:context=".user.LoginActivity">
 
@@ -51,7 +51,7 @@
                 android:fontFamily="sans-serif-medium"
                 android:letterSpacing="0.02"
                 android:text="AICO"
-                android:textColor="@color/professional_text_primary"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="32sp"
                 android:textStyle="bold" />
 
@@ -79,7 +79,7 @@
                 android:layout_marginBottom="24dp"
                 android:fontFamily="sans-serif-medium"
                 android:text="로그인"
-                android:textColor="@color/professional_text_primary"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -96,7 +96,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif"
                     android:inputType="textEmailAddress"
-                    android:textColor="@color/professional_text_primary" />
+                    android:textColor="?attr/colorOnSurface" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- 비밀번호 입력 -->
@@ -115,7 +115,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif"
                     android:inputType="textPassword"
-                    android:textColor="@color/professional_text_primary" />
+                    android:textColor="?attr/colorOnSurface" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- 로그인 버튼 -->

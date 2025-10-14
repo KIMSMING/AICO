@@ -151,20 +151,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // 알람권한
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)
-                    != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 1001);
-            }
-        }
-        // 마이크권한
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO)
-                    != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{android.Manifest.permission.RECORD_AUDIO}, 2001);
-            }
-        }
-
+        checkAndRequestPermissions();
     }
 
     @Override
@@ -238,5 +225,63 @@ public class MainActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "저장 실패 : " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    private void checkAndRequestPermissions() {
+        // 첫 번째: 알림 권한 확인 및 요청 (API 33 이상)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 1001);
+                return;
+            }
+        }
+        checkAndRequestMediaPermission();
+    }
+
+    // 2. 미디어(오디오) 권한 확인 및 요청 함수
+    private void checkAndRequestMediaPermission() {
+        String permission;
+        // 버전에 따라 다른 권한을 요청
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            permission = android.Manifest.permission.READ_MEDIA_AUDIO;
+        } else {
+            permission = android.Manifest.permission.READ_EXTERNAL_STORAGE;
+        }
+
+        if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{permission}, 3001);
+            return;
+        }
+        checkAndRequestRecordAudioPermission();
+    }
+
+    // 3. 마이크 권한 확인 및 요청 함수
+    private void checkAndRequestRecordAudioPermission() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{android.Manifest.permission.RECORD_AUDIO}, 2001);
+            }
+        }
+    }
+
+    // 4. 모든 권한 요청 결과를 처리하는 콜백 메소드
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 1001: // 알림 권한 결과
+                checkAndRequestMediaPermission();
+                break;
+            case 3001: // 미디어(오디오) 권한 결과
+                checkAndRequestRecordAudioPermission();
+                break;
+            case 2001: // 마이크 권한 결과
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "마이크 권한이 허용되었습니다.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "마이크 권한이 거부되었습니다.", Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
     }
 }

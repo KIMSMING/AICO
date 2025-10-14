@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/professional_bg_primary"
+    android:background="?android:colorBackground"
     android:gravity="center"
     android:orientation="vertical"
     tools:context=".SplashActivity">
@@ -37,7 +37,7 @@
             android:fontFamily="sans-serif-medium"
             android:letterSpacing="0.1"
             android:text="AICO"
-            android:textColor="@color/professional_text_primary"
+            android:textColor="?attr/colorOnSurface"
             android:textSize="48sp"
             android:textStyle="bold"
             android:translationY="20dp" />

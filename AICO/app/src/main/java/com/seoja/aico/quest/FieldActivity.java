@@ -33,7 +33,7 @@ public class FieldActivity extends AppCompatActivity implements View.OnClickList
 
     Map<String, List<String>> jobMap = new LinkedHashMap<>(); // 직업 대분류 → 소분류 맵
 
-    TextView firstText, secondText; // 텍스트 라벨
+    TextView firstText, secondText, titleTextView; // 텍스트 라벨
 
     String selectedFirst = "";  // 대분류
     String selectedSecond = ""; // 사용자가 선택한 소분류 값 저장
@@ -49,7 +49,10 @@ public class FieldActivity extends AppCompatActivity implements View.OnClickList
         firstText = findViewById(R.id.firstText);
         secondText = findViewById(R.id.secondText);
         btnQuest = findViewById(R.id.btnQuest);
-        imageBack = findViewById(R.id.imageBack);
+        imageBack = findViewById(R.id.btnBack);
+        titleTextView = findViewById(R.id.header_title);
+
+        titleTextView.setText("면접 선택");
 
         // 클릭 리스너 등록
         btnQuest.setOnClickListener(this);
@@ -154,7 +157,7 @@ public class FieldActivity extends AppCompatActivity implements View.OnClickList
     // 버튼 클릭 이벤트 처리
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.imageBack) {
+        if (v.getId() == R.id.btnBack) {
             finish(); // 뒤로가기
         }
 

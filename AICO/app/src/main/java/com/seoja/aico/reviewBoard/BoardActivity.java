@@ -36,7 +36,7 @@ public class BoardActivity extends AppCompatActivity {
 
     private Button btnEdit, btnDelete;
     private ImageButton btnBack, btnLike;
-    private TextView textPostTitle, textPostInfo, textPostContent, tvLikes;
+    private TextView textPostTitle, textPostInfo, textPostContent, tvLikes, titleTextView;
     private ImageView imagePost;
 
     // Firebase
@@ -77,6 +77,9 @@ public class BoardActivity extends AppCompatActivity {
         textPostContent = findViewById(R.id.textPostContent);
         imagePost = findViewById(R.id.imagePost);
         tvLikes = findViewById(R.id.tvLikes);
+        titleTextView = findViewById(R.id.header_title);
+
+        titleTextView.setText("면접 후기");
 
         // Firebase 참조
         boardRef = FirebaseDatabase.getInstance().getReference("board");

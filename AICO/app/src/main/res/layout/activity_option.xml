@@ -6,45 +6,12 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/professional_bg_primary"
+    android:background="?android:colorBackground"
     tools:context=".OptionActivity">
 
-    <!-- 상단 네비게이션 -->
-    <LinearLayout
+    <include
         android:id="@+id/topNavBar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center_vertical"
-        android:background="@color/professional_bg_secondary"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <ImageButton
-            android:id="@+id/btnBack"
-            style="@style/ProfessionalIconButton"
-            android:src="@drawable/ic_backarrow"
-            android:contentDescription="뒤로가기"
-            app:tint="@color/professional_text_secondary" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="설정"
-            android:textColor="@color/professional_text_primary"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:fontFamily="sans-serif-medium" />
-
-        <View
-            android:layout_width="48dp"
-            android:layout_height="48dp" />
-
-    </LinearLayout>
+        layout="@layout/header_toolbar" />
 
     <ScrollView
         android:layout_width="0dp"
@@ -78,7 +45,7 @@
                     android:text="앱 설정"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="@color/professional_text_primary"
+                    android:textColor="?attr/colorOnSurface"
                     android:layout_marginBottom="20dp"
                     android:fontFamily="sans-serif-medium" />
 
@@ -88,7 +55,7 @@
                     android:layout_height="wrap_content"
                     android:text="소리"
                     android:textSize="14sp"
-                    android:textColor="@color/professional_text_secondary"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:layout_marginBottom="8dp" />
 
                 <SeekBar
@@ -97,7 +64,7 @@
                     android:layout_height="wrap_content"
                     android:max="100"
                     android:progress="50"
-                    android:progressTint="@color/professional_primary"
+                    android:progressTint="?attr/colorPrimary"
                     android:thumbTint="@color/professional_primary_light"
                     android:layout_marginBottom="24dp" />
 
@@ -120,7 +87,7 @@
                             android:layout_height="wrap_content"
                             android:text="진동"
                             android:textSize="16sp"
-                            android:textColor="@color/professional_text_primary"
+                            android:textColor="?attr/colorOnSurface"
                             android:textStyle="bold" />
 
                         <TextView
@@ -136,8 +103,8 @@
                         android:id="@+id/switchVibration"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:thumbTint="@color/professional_text_primary"
-                        android:trackTint="@color/professional_primary" />
+                        android:thumbTint="?attr/colorOnSurface"
+                        android:trackTint="?attr/colorOutline" />
 
                 </LinearLayout>
 
@@ -159,7 +126,7 @@
                             android:layout_height="wrap_content"
                             android:text="알림"
                             android:textSize="16sp"
-                            android:textColor="@color/professional_text_primary"
+                            android:textColor="?attr/colorOnSurface"
                             android:textStyle="bold" />
 
                         <TextView
@@ -175,8 +142,8 @@
                         android:id="@+id/switchNotification"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:thumbTint="@color/professional_text_primary"
-                        android:trackTint="@color/professional_primary" />
+                        android:thumbTint="?attr/colorOnSurface"
+                        android:trackTint="?attr/colorOutline" />
 
                 </LinearLayout>
 
@@ -197,7 +164,7 @@
                     android:text="지원 및 정보"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="@color/professional_text_primary"
+                    android:textColor="?attr/colorOnSurface"
                     android:layout_marginBottom="20dp"
                     android:fontFamily="sans-serif-medium" />
 
@@ -218,7 +185,7 @@
                         android:layout_height="wrap_content"
                         android:text="개인정보 처리방침"
                         android:textSize="16sp"
-                        android:textColor="@color/professional_text_primary"
+                        android:textColor="?attr/colorOnSurface"
                         android:layout_weight="1" />
 
                     <TextView
@@ -249,7 +216,7 @@
                         android:layout_height="wrap_content"
                         android:text="이용약관"
                         android:textSize="16sp"
-                        android:textColor="@color/professional_text_primary"
+                        android:textColor="?attr/colorOnSurface"
                         android:layout_weight="1" />
 
                     <TextView
@@ -285,7 +252,7 @@
                             android:layout_height="wrap_content"
                             android:text="고객센터"
                             android:textSize="16sp"
-                            android:textColor="@color/professional_text_primary" />
+                            android:textColor="?attr/colorOnSurface" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -323,7 +290,7 @@
                     android:text="시스템 요구사항"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="@color/professional_text_primary"
+                    android:textColor="?attr/colorOnSurface"
                     android:layout_marginBottom="16dp"
                     android:fontFamily="sans-serif-medium" />
 
@@ -332,7 +299,7 @@
                     android:layout_height="wrap_content"
                     android:text="• Android 10.0 이상\n• iOS 13.0 이상\n• 최소 500MB 여유 저장 공간\n• 마이크 권한 (음성 인식 기능)\n• 저장소 권한 (파일 저장/불러오기)\n• 알림 권한 (푸시 알림 수신)\n• 네트워크 연결 (인터넷 필요)"
                     android:textSize="13sp"
-                    android:textColor="@color/professional_text_secondary"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:lineSpacingExtra="2dp" />
 
             </LinearLayout>
@@ -352,7 +319,7 @@
                     android:text="앱 정보"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="@color/professional_text_primary"
+                    android:textColor="?attr/colorOnSurface"
                     android:layout_marginBottom="16dp"
                     android:fontFamily="sans-serif-medium" />
 
@@ -368,14 +335,14 @@
                         android:layout_weight="1"
                         android:text="버전"
                         android:textSize="14sp"
-                        android:textColor="@color/professional_text_secondary" />
+                        android:textColor="?attr/colorOnSurfaceVariant" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="1.0.0"
                         android:textSize="14sp"
-                        android:textColor="@color/professional_text_primary"
+                        android:textColor="?attr/colorOnSurface"
                         android:textStyle="bold" />
 
                 </LinearLayout>
@@ -391,14 +358,14 @@
                         android:layout_weight="1"
                         android:text="개발사"
                         android:textSize="14sp"
-                        android:textColor="@color/professional_text_secondary" />
+                        android:textColor="?attr/colorOnSurfaceVariant" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Seoja"
                         android:textSize="14sp"
-                        android:textColor="@color/professional_text_primary"
+                        android:textColor="?attr/colorOnSurface"
                         android:textStyle="bold" />
 
                 </LinearLayout>
