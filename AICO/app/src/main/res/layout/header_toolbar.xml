@@ -58,7 +58,18 @@
             app:tint="@color/white"
             android:visibility="gone"
             tools:visibility="visible"/>
-
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/searchView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:queryHint="제목 또는 작성자 검색"
+            app:iconifiedByDefault="false"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:layout_constraintStart_toEndOf="@id/btnBack"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.appcompat.widget.Toolbar>
 
