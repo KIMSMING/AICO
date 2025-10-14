@@ -44,6 +44,10 @@ import com.seoja.aico.gpt.GptApi;
 import com.seoja.aico.gpt.GptRequest;
 import com.seoja.aico.gpt.GptResponse;
 import com.seoja.aico.gpt.HistoryItem;
+import com.seoja.aico.gpt.NextInterviewRequest;
+import com.seoja.aico.gpt.NextInterviewResponse;
+import com.seoja.aico.gpt.StartInterviewRequest;
+import com.seoja.aico.gpt.StartInterviewResponse;
 import com.seoja.aico.gpt.SummaryRequest;
 import com.seoja.aico.gpt.SummaryResponse;
 
@@ -86,11 +90,16 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
 
     // 메인 UI 스레드에서 작업하기 위한 핸들러 추가
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
+
     private String question;
+    private String sessionId = null;
+    private String userId = null;
+    private String lastQuestion = null;
+
     private TextView textRequest, textFeedback, textTip, titleTextView;
     private View textInputLayout;
     private EditText textResponse;
-    private Button btnRequest, btnNextQuestion;
+    private Button btnRequest, btnNextQuestion, btnFollowup;
     private ImageButton btnBack, btnSoundplay;
     private LinearLayout feedbackSection;
 
@@ -146,6 +155,17 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         feedbackSection = findViewById(R.id.feedbackSection);
         btnBack = findViewById(R.id.btnBack);
         btnSoundplay = findViewById(R.id.btnSoundplay);
+        btnFollowup = findViewById(R.id.btnFollowup);
+
+        //Firebase 사용자 ID 초기화
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            userId = user.getUid();
+        } else {
+            Toast.makeText(this, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         selectedFirst = getIntent().getStringExtra("selectedFirst");
         selectedSecond = getIntent().getStringExtra("selectedSecond");
@@ -167,10 +187,17 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         btnRequest.setOnClickListener(this);
         btnNextQuestion.setOnClickListener(v -> loadNewQuestion());
         btnBack.setOnClickListener(V -> finish());
-        btnSoundplay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendTextToServer(question);
+        btnSoundplay.setOnClickListener(v -> sendTextToServer(question));
+        btnFollowup.setOnClickListener(v -> {
+            String answer = textResponse.getText().toString().trim();
+            if (answer.isEmpty() || question == null) {
+                Toast.makeText(this, "답변 입력 후 눌러주세요.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (sessionId == null) {
+                startInterview(answer);
+            } else {
+                requestFollowup(answer);
             }
         });
 
@@ -330,6 +357,25 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(client)
                 .build();
+
+        // 서버 연결 테스트
+        testServerConnection();
+    }
+
+    // 서버 연결 테스트
+    private void testServerConnection() {
+        // 루트 엔드포인트 호출
+        retrofit.create(GptApi.class).testConnection().enqueue(new Callback<Object>() {
+            @Override
+            public void onResponse(Call<Object> call, Response<Object> response) {
+                Log.d(TAG, "서버 연결 테스트 성공: " + response.code());
+            }
+
+            @Override
+            public void onFailure(Call<Object> call, Throwable t) {
+                Log.e(TAG, "서버 연결 테스트 실패: " + t.getMessage());
+            }
+        });
     }
 
     // Firebase에서 데이터 가져오기
@@ -404,17 +450,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                 }
 
                 isTipListLoaded[0] = true;
-                if (isQuestionListLoaded[0]) {
-                    // 질문과 팁 모두 로드 완료
-                    if (!questionList.isEmpty()) {
-                        Collections.shuffle(questionList);
-                        currentQuestion = 0;
-                        loadNewQuestion();
-                    } else {
-                        Toast.makeText(QuestActivity.this, "질문이 없습니다.", Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                }
+                if (isQuestionListLoaded[0]) showFirstQuestion();
             }
 
             @Override
@@ -422,6 +458,35 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                 Toast.makeText(QuestActivity.this, "면접 팁 로딩 실패", Toast.LENGTH_SHORT).show();
             }
         });
+
+        rootRef2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot tipSnap : snapshot.getChildren()) {
+                    String tip = tipSnap.getValue(String.class);
+                    if (tip != null && !tip.isEmpty()) tipList.add(tip);
+                }
+                isTipListLoaded[0] = true;
+                if (isQuestionListLoaded[0]) showFirstQuestion();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(QuestActivity.this, "팁 로딩 실패", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void showFirstQuestion() {
+        // 질문과 팁 모두 로드 완료
+        if (!questionList.isEmpty()) {
+            Collections.shuffle(questionList);
+            currentQuestion = 0;
+            loadNewQuestion();
+        } else {
+            Toast.makeText(this, "질문이 없습니다.", Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
 
     private void loadNewQuestion() {
@@ -431,15 +496,18 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         }
         textTip.setText("");
         Collections.shuffle(tipList);
-        String tip = tipList.get(currentTip);
-        textTip.setText(tip);
+        if (!tipList.isEmpty()) {
+            String tip = tipList.get(currentTip);
+            textTip.setText(tip);
+            currentTip = (currentTip + 1) % tipList.size();
+        }
         question = questionList.get(currentQuestion);
         textRequest.setText(question);
         textResponse.setText(""); // 답변 필드 초기화
         feedbackSection.setVisibility(View.GONE);
         textFeedback.setText("답변 후 피드백이 여기에 표시됩니다."); // 피드백 필드 초기화
+        lastQuestion = question;
         currentQuestion = (currentQuestion + 1) % questionList.size();
-        currentTip = (currentTip + 1) % tipList.size();
     }
 
     public void sendGptRequest() {
@@ -448,13 +516,10 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         String answer = textResponse.getText().toString();
         feedbackSection.setVisibility(View.VISIBLE);
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
+        if (userId == null) {
             textFeedback.setText("로그인 정보 없음 : 서버 요청 실패");
             return;
         }
-
-        String userId = user.getUid();
         // 질문과 답변 하나의 문자열로 만들기
         String requestMessage = "면접 질문 : " + quest + "\n사용자 답변 : " + answer;
 
@@ -463,31 +528,8 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
 
         // 요청 중임을 표시
         textFeedback.setText("피드백을 요청 중입니다...");
-//        btnRequest.setEnabled(false); // 버튼 비활성화
-
-        // 로깅 인터셉터 추가
-//        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-//        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-        // OkHttpClient 설정
-//        OkHttpClient client = new OkHttpClient.Builder()
-//                .connectTimeout(60, TimeUnit.SECONDS)  // 연결 타임아웃 증가
-//                .readTimeout(60, TimeUnit.SECONDS)     // 읽기 타임아웃 증가
-//                .writeTimeout(60, TimeUnit.SECONDS)    // 쓰기 타임아웃 증가
-//                .addInterceptor(logging)               // 로깅 추가
-//                .build();
-
-        // Retrofit 설정
-//        Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl(BASE_URL)
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .client(client)  // OkHttpClient 설정 추가
-//                .build();
 
         GptApi gptApi = retrofit.create(GptApi.class);
-
-        Log.d(TAG, "요청 시작: " + requestMessage);
-
         gptApi.askGpt(request).enqueue(new Callback<GptResponse>() {
             @Override
             public void onResponse(@NonNull Call<GptResponse> call, @NonNull Response<GptResponse> response) {
@@ -507,49 +549,71 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                             @Override
                             public void onResponse(Call<SummaryResponse> call, Response<SummaryResponse> response) {
                                 if (response.isSuccessful() && response.body() != null) {
-                                    String summary = response.body().summary;
-                                    Log.d("SUMMARY", "요약 성공: " + summary);
-
-                                    saveHistoryToServer(
-                                            quest,
-                                            answer,
-                                            summary
-                                    );
+                                    saveHistoryToServer(quest, answer, response.body().summary);
                                 } else {
-                                    Log.e("SUMMARY", "요약 실패, 원문 저장");
                                     saveHistoryToServer(quest, answer, content);
                                 }
                             }
 
                             @Override
                             public void onFailure(Call<SummaryResponse> call, Throwable t) {
-                                Log.e("SUMMARY_ERR", "요약 실패: " + t.getMessage());
                                 saveHistoryToServer(quest, answer, content);
                             }
                         });
                     } else {
-                        String errorMsg = "응답 실패: " + response.code();
-                        try {
-                            // 에러 바디가 있으면 읽어서 출력
-                            if (response.errorBody() != null) {
-                                errorMsg += "\n" + response.errorBody().string();
-                            }
-                        } catch (Exception e) {
-                            errorMsg += "\n" + e.getMessage();
-                        }
-                        Log.e(TAG, errorMsg);
-                        textFeedback.setText(errorMsg);
+                        textFeedback.setText("응답 실패");
                     }
                 });
             }
 
             @Override
             public void onFailure(Call<GptResponse> call, Throwable t) {
-                Log.e(TAG, "서버 연결 실패: " + t.getMessage());
-                mainHandler.post(() -> {
-                    btnRequest.setEnabled(true);
-                    textFeedback.setText("서버 연결 실패: " + t.getMessage());
-                });
+                mainHandler.post(() ->
+                    textFeedback.setText("서버 연결 실패: " + t.getMessage()));
+            }
+        });
+    }
+    //연관 질문 세션 시작
+    private void startInterview(String answer) {
+        GptApi api = retrofit.create(GptApi.class);
+        StartInterviewRequest req = new StartInterviewRequest(userId, "개발직무", question);
+        api.startInterview(req).enqueue(new Callback<StartInterviewResponse>() {
+            @Override
+            public void onResponse(Call<StartInterviewResponse> call, Response<StartInterviewResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    sessionId = response.body().getSession_id();
+                    requestFollowup(answer);
+                }
+            }
+            @Override
+            public void onFailure(Call<StartInterviewResponse> call, Throwable t) {
+                Toast.makeText(QuestActivity.this, "세션 시작 실패", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    //연관질문 요청
+    private void requestFollowup (String answer) {
+        GptApi api = retrofit.create(GptApi.class);
+        NextInterviewRequest req = new NextInterviewRequest(userId, sessionId, question, answer);
+        api.nextInterview(req).enqueue(new Callback<NextInterviewResponse>() {
+            @Override
+            public void onResponse(Call<NextInterviewResponse> call, Response<NextInterviewResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    NextInterviewResponse body = response.body();
+                    Log.d("FOLLOWUP_API", "새 질문: " + body.getQuestion());
+                    Log.d("FOLLOWUP_API", "피드백: " + body.getFeedback());
+                    textRequest.setText(body.getQuestion());
+                    textFeedback.setText(body.getFeedback());
+                    question = body.getQuestion();
+                    lastQuestion = question;
+                    textResponse.setText("");
+                } else {
+                    Log.e("FOLLOWUP_API", "응답 실패: " + response.code());
+                }
+            }
+            @Override
+            public void onFailure(Call<NextInterviewResponse> call, Throwable t) {
+                Toast.makeText(QuestActivity.this, "연관 질문 요청 실패", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -563,19 +627,16 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
             }
             sendGptRequest();
         }
-
         if (v.getId() == R.id.btnNextQuestion) {
             loadNewQuestion();
         }
     }
-
     // 질문 텍스트를 백엔드 서버에 전송하고, 응답받은 Base64 음성을 재생하는 함수
     private void sendTextToServer(String questionText) {
         new Thread(() -> {
             try {
                 URL url = new URL(BASE_URL + "interview/voice");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
                 conn.setRequestMethod("POST");
                 conn.setRequestProperty("Content-Type", "application/json; utf-8");
                 conn.setDoOutput(true);
@@ -585,13 +646,11 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                 json.put("text", questionText);
 
                 try (OutputStream os = conn.getOutputStream()) {
-                    byte[] input = json.toString().getBytes("utf-8");
-                    os.write(input, 0, input.length);
+                    os.write(json.toString().getBytes("utf-8"));
                 }
 
                 // 응답 읽기
-                InputStream responseStream = conn.getInputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(responseStream));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 StringBuilder responseBuilder = new StringBuilder();
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -600,7 +659,6 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
 
                 JSONObject responseJson = new JSONObject(responseBuilder.toString());
                 String audioBase64 = responseJson.getString("audio_base64");
-
                 // Base64 디코딩
                 byte[] audioBytes = Base64.decode(audioBase64, Base64.DEFAULT);
 
@@ -613,32 +671,20 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                 // UI 쓰레드에서 MediaPlayer 재생
                 runOnUiThread(() -> {
                     try {
-                        Log.d("TTS", "UI 스레드 진입");
-
                         if (mediaPlayer != null) {
                             mediaPlayer.release(); // 이전 mediaPlayer 해제
                         }
-
                         mediaPlayer = new MediaPlayer(); // 새 인스턴스 생성
-
-                        Log.d("TTS", "오디오 파일 경로: " + tempFile.getAbsolutePath());
-                        Log.d("TTS", "파일 존재 여부: " + tempFile.exists());
-                        Log.d("TTS", "파일 크기: " + tempFile.length());
-
                         mediaPlayer.setDataSource(tempFile.getAbsolutePath()); // 파일 경로 설정
-
                         mediaPlayer.prepare(); // 준비
-
                         mediaPlayer.start(); // 재생 시작
-
                     } catch (Exception e) {
-                        Log.e("TTS", "UI 쓰레드 내 에러: " + e.getMessage(), e);
+                        Log.e("TTS", "재생 에러 : " + e.getMessage(), e);
                     }
                 });
 
-
             } catch (Exception e) {
-                Log.e("TTS", "Error: " + e.getMessage());
+                Log.e("TTS", "에러: " + e.getMessage(), e);
                 e.printStackTrace();
             }
         }).start();
@@ -658,21 +704,15 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     }
     //히스토리 저장 함수
     private void saveHistoryToServer(String question, String answer, String feedback) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user == null) {
-            Log.e("HISTORY_SAVE", "Firebase 사용자 정보 없음 (로그인 필요)");
+        if(userId == null) {
+            Log.e("HISTORY_SAVE", "로그인 필요");
             return;
         }
-
-        String userId = user.getUid();
-        Log.d("HISTORY_SAVE", "저장 시도 : userId = " + userId);
-
         String generatedId = UUID.randomUUID().toString(); //고유 ID 생성
         HistoryItem item = new HistoryItem  (generatedId, userId, question, answer, feedback);
 
         GptApi api = retrofit.create(GptApi.class);
         Call<Void> call = api.saveHistory(item);
-
         Log.d("HISTORY_JSON", gson.toJson(item));
 
         call.enqueue(new Callback<Void>() {
@@ -682,11 +722,6 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                     Log.d("HISTORY_SAVE", "히스토리 저장 성공");
                 } else {
                     Log.e("HISTORY_SAVE", "저장 실패 : " + response.code());
-                    try {
-                        Log.e("HISTORY_SAVE", "에러 바디: " + response.errorBody().string());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
                 }
             }
 
