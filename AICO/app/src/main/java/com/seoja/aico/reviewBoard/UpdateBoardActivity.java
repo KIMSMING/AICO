@@ -71,7 +71,7 @@ public class UpdateBoardActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         editTitle = findViewById(R.id.editTitle);
         editContent = findViewById(R.id.editContent);
-        btnAddImage = findViewById(R.id.btnAddImage);
+//        btnAddImage = findViewById(R.id.btnAddImage);
         btnUpdate = findViewById(R.id.btnUpdate);
         rvImages = findViewById(R.id.rvImages);
         titleTextView = findViewById(R.id.header_title);
@@ -103,7 +103,7 @@ public class UpdateBoardActivity extends AppCompatActivity {
         rvImages.setAdapter(imageAdapter);
 
         // 사진 추가
-        btnAddImage.setOnClickListener(v -> openImagePicker());
+//        btnAddImage.setOnClickListener(v -> openImagePicker());
 
         // 수정 완료
         btnUpdate.setOnClickListener(v -> updatePost());

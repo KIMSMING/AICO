@@ -40,7 +40,7 @@
                 android:text=""
                 android:textSize="22sp"
                 android:textStyle="bold"
-                android:textColor="#222"
+                android:textColor="?attr/colorOnSurface"
                 android:layout_marginTop="40dp"/>
 
             <!-- 작성자 및 날짜 -->
@@ -77,7 +77,7 @@
                 android:layout_height="wrap_content"
                 android:text=""
                 android:textSize="16sp"
-                android:textColor="#333"
+                android:textColor="?attr/colorOnSurface"
                 android:layout_marginTop="20dp"
                 android:lineSpacingExtra="6dp"/>
 
@@ -104,7 +104,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0"
-                    android:textColor="#222"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:layout_marginStart="8dp" />
             </LinearLayout>
@@ -120,10 +120,10 @@
                 <Button
                     android:id="@+id/btnEdit"
                     android:layout_width="wrap_content"
-                    android:layout_height="36dp"
+                    android:layout_height="54dp"
                     android:text="수정"
                     android:visibility="gone"
-                    android:textSize="12sp"
+                    android:textSize="16sp"
                     android:textColor="#FFFFFF"
                     android:backgroundTint="#4CAF50"
                     android:layout_marginEnd="8dp"/>
@@ -131,10 +131,10 @@
                 <Button
                     android:id="@+id/btnDelete"
                     android:layout_width="wrap_content"
-                    android:layout_height="36dp"
+                    android:layout_height="54dp"
                     android:text="삭제"
                     android:visibility="gone"
-                    android:textSize="12sp"
+                    android:textSize="16sp"
                     android:textColor="#FFFFFF"
                     android:backgroundTint="#F44336"/>
             </LinearLayout>
