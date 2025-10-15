@@ -75,12 +75,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         HistoryItem item = historyList.get(position);
         String feedback = item.getFeedback();
 
-        holder.textQuestion.setText("Q. " + item.getQuestion());
-        holder.textAnswer.setText("A. " + item.getAnswer());
+        holder.textQuestion.setText(item.getQuestion());
+        holder.textAnswer.setText(item.getAnswer());
 
-        if (!feedback.startsWith("피드백:")) {
-            feedback = "피드백: " + feedback;
-        }
         holder.textFeedback.setText(feedback);
 
         // HistoryAdapter.java 파일의 onBindViewHolder 메서드 안에서...
