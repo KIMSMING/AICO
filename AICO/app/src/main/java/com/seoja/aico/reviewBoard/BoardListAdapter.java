@@ -52,6 +52,7 @@ public class BoardListAdapter extends RecyclerView.Adapter<BoardListAdapter.Boar
 
     @Override
     public void onBindViewHolder(@NonNull BoardViewHolder holder, int position) {
+        String nickname;
         BoardPost post = postList.get(position);
         holder.tvTitle.setText(post.title);
         holder.tvWriter.setText(post.nickname);

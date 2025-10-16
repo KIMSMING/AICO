@@ -118,5 +118,26 @@
     <style name="ProfessionalButtonWarning" parent="ProfessionalButtonPrimary">
         <item name="android:backgroundTint">@color/professional_warning</item>
     </style>
+
+    <!-- 필터 -->
+    <style name="FilterButton" parent="Widget.AppCompat.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:background">@drawable/professional_button_tertiary</item> <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingTop">6dp</item>
+        <item name="android:paddingBottom">6dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="FilterButton.Selected">
+        <item name="android:textColor">?attr/colorPrimary</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:background">@drawable/professional_button_secondary</item> </style>
 </resources>
 

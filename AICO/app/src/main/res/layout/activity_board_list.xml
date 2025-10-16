@@ -25,52 +25,41 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <LinearLayout
+        <HorizontalScrollView
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/btnFilterAll"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="전체"
-                android:textColor="?attr/colorPrimary"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:background="@drawable/professional_button_secondary"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:layout_marginEnd="8dp"
-                android:clickable="true"
-                android:focusable="true" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+                style="@style/FilterButton.Selected"
+                android:text="전체" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="정렬:"
-                android:textColor="?attr/colorOnSurfaceVariant"
-                android:textSize="12sp"
-                android:layout_marginEnd="4dp" />
+                android:id="@+id/btnFilterTech"
+                style="@style/FilterButton"
+                android:text="기술면접" />
 
-            <Spinner
-                android:id="@+id/spinnerSort"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="?attr/colorOnSurfaceVariant" />
+            <TextView
+                android:id="@+id/btnFilterPersonality"
+                style="@style/FilterButton"
+                android:text="인성면접" />
 
-        </LinearLayout>
+            <TextView
+                android:id="@+id/btnFilterGroup"
+                style="@style/FilterButton"
+                android:text="그룹면접" />
+
+            </LinearLayout>
+
+        </HorizontalScrollView>
 
     </LinearLayout>
 
