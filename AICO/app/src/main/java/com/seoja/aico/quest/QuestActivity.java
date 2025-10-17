@@ -991,7 +991,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onResponse(@NonNull Call<GptResponse> call, @NonNull Response<GptResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    String content = response.body().content;
+                    String content = response.body().getContent();
                     textFeedback.setText(content);
                     summarizeAndSaveHistory(quest, answer, content);
                 } else {

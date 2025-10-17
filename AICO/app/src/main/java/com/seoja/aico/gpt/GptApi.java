@@ -4,6 +4,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 public interface GptApi {
     @POST("/ask") // FastAPI의 POST 엔드포인트 경로
@@ -29,5 +30,8 @@ public interface GptApi {
 
     @POST("/interview/next") //연관질문 요청
     Call<NextInterviewResponse> nextInterview(@Body NextInterviewRequest request);
+
+    @GET("/generate_resume_question/{user_id}") //이력서 관련 질문 요청
+    Call<GptResponse> generateResumeQuestion(@Path("user_id") String userId);
 }
 
