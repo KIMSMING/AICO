@@ -104,10 +104,18 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     private TextView textRequest, textFeedback, textTip, titleTextView, introText, presentationScoreText;
     private View textInputLayout;
     private EditText textResponse;
-    private Button btnRequest, btnNextQuestion, btnFollowup, btnChangeMic;
+    private Button btnRequest, btnNextQuestion, btnFollowup;
     private Button introCameraBtn, introCameraStopBtn, btnStartCamera, btnStopCamera;
-    private ImageButton btnBack, btnSoundplay, micIcon;
+    private ImageButton btnBack, btnSoundplay;
     private LinearLayout feedbackSection;
+
+    private LinearLayout introSection;
+    private LinearLayout presentationSection;
+    private LinearLayout textResponseSection;
+
+    private Button btnIntroAnalysis;
+    private Button btnPresentationAnalysis;
+    private Button btnTextResponse;
 
     // --- 상태 변수 및 데이터 ---
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -165,6 +173,48 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         initializeNetworking();
         initializeSpeechRecognizer();
 
+        introSection = findViewById(R.id.introSection);
+        presentationSection = findViewById(R.id.presentationSection);
+        textResponseSection = findViewById(R.id.textResponseSection);
+
+        btnIntroAnalysis = findViewById(R.id.btnIntroAnalysis);
+        btnPresentationAnalysis = findViewById(R.id.btnPresentationAnalysis);
+        btnTextResponse = findViewById(R.id.btnTextResponse);
+
+        introSection.setVisibility(View.VISIBLE);
+        presentationSection.setVisibility(View.GONE);
+        textResponseSection.setVisibility(View.GONE);
+
+        View.OnClickListener filterClickListener = this::onFilterButtonClick;
+
+        // 3) 버튼 클릭 이벤트
+        btnIntroAnalysis.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                introSection.setVisibility(View.VISIBLE);
+                presentationSection.setVisibility(View.GONE);
+                textResponseSection.setVisibility(View.GONE);
+            }
+        });
+
+        btnPresentationAnalysis.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                introSection.setVisibility(View.GONE);
+                presentationSection.setVisibility(View.VISIBLE);
+                textResponseSection.setVisibility(View.GONE);
+            }
+        });
+
+        btnTextResponse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                introSection.setVisibility(View.GONE);
+                presentationSection.setVisibility(View.GONE);
+                textResponseSection.setVisibility(View.VISIBLE);
+            }
+        });
+
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             userId = user.getUid();
@@ -207,8 +257,8 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         // STT 및 꼬리질문 UI
         textInputLayout = findViewById(R.id.textInputLayout);
         btnFollowup = findViewById(R.id.btnFollowup);
-        btnChangeMic = findViewById(R.id.btnChangeMic);
-        micIcon = findViewById(R.id.micIcon);
+//        btnChangeMic = findViewById(R.id.btnChangeMic);
+//        micIcon = findViewById(R.id.micIcon);
 
         // 영상 분석 UI
         introCameraBtn = findViewById(R.id.introCameraBtn);
@@ -302,19 +352,18 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         btnNextQuestion.setOnClickListener(this);
         btnBack.setOnClickListener(v -> finish());
         btnSoundplay.setOnClickListener(v -> sendTextToServer(question));
-
-        // STT 및 꼬리질문
-        btnChangeMic.setOnClickListener(v -> toggleInputMode());
         btnFollowup.setOnClickListener(this);
-        micIcon.setOnClickListener(v -> {
-            if (!isMicMode) return;
-            try {
-                toggleRecording();
-            } catch (IOException e) {
-                Log.e(TAG, "Recording toggle failed", e);
-                Toast.makeText(this, "녹음 시작/중지에 실패했습니다.", Toast.LENGTH_SHORT).show();
-            }
-        });
+        // STT 및 꼬리질문
+//        btnChangeMic.setOnClickListener(v -> toggleInputMode());
+//        micIcon.setOnClickListener(v -> {
+//            if (!isMicMode) return;
+//            try {
+//                toggleRecording();
+//            } catch (IOException e) {
+//                Log.e(TAG, "Recording toggle failed", e);
+//                Toast.makeText(this, "녹음 시작/중지에 실패했습니다.", Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
         // 영상 분석
         introCameraBtn.setOnClickListener(this);
@@ -495,32 +544,32 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     }
 
     // --- STT 및 꼬리질문 관련 메서드 ---
-    private void toggleInputMode() {
-        if (isRecording) {
-            stopSttRecording();
-        }
-        isMicMode = !isMicMode;
-        if (isMicMode) {
-            textInputLayout.setVisibility(View.GONE);
-            micIcon.setVisibility(View.VISIBLE);
-            btnChangeMic.setText("텍스트 전환");
-            micIcon.setImageResource(R.drawable.ic_mic);
-        } else {
-            textInputLayout.setVisibility(View.VISIBLE);
-            micIcon.setVisibility(View.GONE);
-            btnChangeMic.setText("음성 전환");
-        }
-    }
-
-    private void toggleRecording() throws IOException {
-        if (isRecording) {
-            stopSttRecording();
-            micIcon.setImageResource(R.drawable.ic_mic);
-        } else {
-            startSttRecording();
-            micIcon.setImageResource(R.drawable.ic_mic_on);
-        }
-    }
+//    private void toggleInputMode() {
+//        if (isRecording) {
+//            stopSttRecording();
+//        }
+//        isMicMode = !isMicMode;
+//        if (isMicMode) {
+//            textInputLayout.setVisibility(View.GONE);
+//            micIcon.setVisibility(View.VISIBLE);
+//            btnChangeMic.setText("텍스트 전환");
+//            micIcon.setImageResource(R.drawable.ic_mic);
+//        } else {
+//            textInputLayout.setVisibility(View.VISIBLE);
+//            micIcon.setVisibility(View.GONE);
+//            btnChangeMic.setText("음성 전환");
+//        }
+//    }
+//
+//    private void toggleRecording() throws IOException {
+//        if (isRecording) {
+//            stopSttRecording();
+//            micIcon.setImageResource(R.drawable.ic_mic);
+//        } else {
+//            startSttRecording();
+//            micIcon.setImageResource(R.drawable.ic_mic_on);
+//        }
+//    }
 
     private void startSttRecording() throws IOException {
         File outputDir = new File(getExternalFilesDir(Environment.DIRECTORY_MUSIC), "recordings");
@@ -1104,5 +1153,22 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         if (mediaRecorder != null) mediaRecorder.release();
         if (speechRecognizer != null) speechRecognizer.destroy();
         super.onDestroy();
+    }
+    private void onFilterButtonClick(View view) {
+        updateFilterButtonsUI();
+    }
+
+    private void updateFilterButtonsUI() {
+        TextView[] buttons = {btnIntroAnalysis, btnPresentationAnalysis, btnTextResponse};
+        for (TextView button : buttons) {
+            boolean isSelected = button.getText().toString().equals(btnIntroAnalysis);
+            if (isSelected) {
+                button.setTextAppearance(R.style.FilterButton_Selected);
+                button.setBackgroundResource(R.drawable.professional_button_secondary);
+            } else {
+                button.setTextAppearance(R.style.FilterButton);
+                button.setBackgroundResource(R.drawable.professional_button_tertiary);
+            }
+        }
     }
 }

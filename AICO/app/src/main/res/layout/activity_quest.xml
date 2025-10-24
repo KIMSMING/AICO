@@ -12,7 +12,6 @@
         android:id="@+id/topNavBar"
         layout="@layout/header_toolbar" />
 
-    <!-- 진행률 표시 -->
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
@@ -93,9 +92,56 @@
                     android:lineSpacingExtra="4dp"
                     android:textColor="?attr/colorOnSurface"
                     android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/textTip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
             </LinearLayout>
 
+            <!-- 버튼 3개 추가 -->
             <LinearLayout
+                android:id="@+id/btnSectionSelector"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:weightSum="3">
+
+                <Button
+                    android:id="@+id/btnIntroAnalysis"
+                    style="@style/FilterButton.Selected"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="자기소개 분석" />
+
+                <Button
+                    android:id="@+id/btnPresentationAnalysis"
+                    style="@style/FilterButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="질문 답변 분석" />
+
+                <Button
+                    android:id="@+id/btnTextResponse"
+                    style="@style/FilterButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="답변 작성" />
+            </LinearLayout>
+
+            <!-- 자기소개 분석 섹션 -->
+            <LinearLayout
+                android:id="@+id/introSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -163,7 +209,9 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- 질문 답변 분석 섹션 -->
             <LinearLayout
+                android:id="@+id/presentationSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -231,8 +279,9 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- 답변 입력 카드 -->
+            <!-- 답변 작성 섹션 -->
             <LinearLayout
+                android:id="@+id/textResponseSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -240,6 +289,7 @@
                 android:orientation="vertical"
                 android:padding="20dp">
 
+                <!-- 기존 답변 작성 UI 동일 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -261,55 +311,24 @@
                         android:textColor="?attr/colorOnSurface"
                         android:textSize="16sp"
                         android:textStyle="bold" />
-
-                    <Button
-                        android:id="@+id/btnChangeMic"
-                        style="@style/ProfessionalButtonPrimary"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="90dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_weight="1"
-                        android:text="음성 전환" />
                 </LinearLayout>
 
-                <FrameLayout
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputLayout"
+                    style="@style/ProfessionalEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp">
+                    android:hint="답변을 입력해주세요">
 
-                    <!-- 텍스트 입력 -->
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/textInputLayout"
-                        style="@style/ProfessionalEditText"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/textResponse"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="답변을 입력해주세요">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/textResponse"
-                            android:layout_width="match_parent"
-                            android:layout_height="120dp"
-                            android:gravity="top|start"
-                            android:inputType="textMultiLine"
-                            android:maxLength="500"
-                            android:textColor="?attr/colorOnSurface" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <!-- 마이크 아이콘 -->
-                    <ImageButton
-                        android:id="@+id/micIcon"
-                        android:layout_width="100dp"
                         android:layout_height="120dp"
-                        android:layout_gravity="center"
-                        android:background="@android:color/transparent"
-                        android:contentDescription="음성 입력 모드"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/ic_mic_on"
-                        android:visibility="gone"
-                        app:tint="?attr/colorOnSurfaceVariant" />
-                </FrameLayout>
-
+                        android:gravity="top|start"
+                        android:inputType="textMultiLine"
+                        android:maxLength="500"
+                        android:textColor="?attr/colorOnSurface" />
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -345,31 +364,8 @@
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:gravity="center">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:src="@drawable/ic_lightbulb" />
-
-                    <TextView
-                        android:id="@+id/textTip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:textColor="?attr/colorOnSurfaceVariant"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
             </LinearLayout>
 
-            <!-- 피드백 카드 -->
             <LinearLayout
                 android:id="@+id/feedbackSection"
                 android:layout_width="match_parent"
@@ -409,6 +405,8 @@
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp" />
             </LinearLayout>
+
+
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

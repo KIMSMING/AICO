@@ -103,7 +103,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="12dp"
-                        android:text="이번 주 연습"
+                        android:text="취업까지"
                         android:textColor="?attr/colorOnSurface"
                         android:textSize="12sp" />
 
