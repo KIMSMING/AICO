@@ -75,10 +75,10 @@
                 app:layout_constraintTop_toBottomOf="@id/topNavBar">
 
                 <TextView
+                    android:id="@+id/tvWelcomeMessage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
-                    android:text="AI 면접 준비"
                     android:textColor="?attr/colorOnSurface"
                     android:textSize="28sp"
                     android:textStyle="bold" />
@@ -86,8 +86,17 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="AI 면접 준비를 시작하세요"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:alpha="0.9"
+                    android:alpha="0.8"
                     android:text="체계적인 면접 연습으로 성공적인 취업을 준비하세요"
                     android:textColor="?attr/colorOnSurface"
                     android:textSize="14sp" />
@@ -95,36 +104,37 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="8dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="12dp"
-                        android:text="취업까지"
+                        android:layout_marginEnd="8dp"
+                        android:text="다음 성장까지"
                         android:textColor="?attr/colorOnSurface"
                         android:textSize="12sp" />
 
                     <ProgressBar
+                        android:id="@+id/progressLevel"
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="0dp"
-                        android:layout_height="6dp"
+                        android:layout_height="12dp"
                         android:layout_weight="1"
-                        android:progress="65"
+                        android:progress="0"
                         android:progressBackgroundTint="?attr/colorOutlineVariant"
-                        android:progressTint="@color/professional_success" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:text="65%"
-                        android:textColor="@color/professional_success"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
+                        android:progressTint="#A5E6A8" />
                 </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvCurrentLevel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginTop="2dp"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <TextView

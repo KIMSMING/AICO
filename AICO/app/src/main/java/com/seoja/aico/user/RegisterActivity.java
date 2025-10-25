@@ -425,6 +425,8 @@ public class RegisterActivity extends AppCompatActivity {
                         userMap.put("address", address);
                         userMap.put("phone", phone);
                         userMap.put("photoUrl", "");
+                        userMap.put("level", 1);
+                        userMap.put("experience", 0);
 
                         database.child(uid).setValue(userMap)
                                 .addOnSuccessListener(aVoid -> {

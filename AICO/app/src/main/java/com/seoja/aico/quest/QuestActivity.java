@@ -46,6 +46,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.seoja.aico.MainActivity;
 import com.seoja.aico.R;
 import com.seoja.aico.gpt.GptApi;
 import com.seoja.aico.gpt.GptRequest;
@@ -908,6 +909,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
             introText.setText(scoreText);
             resetAnalysisState();
             showResultsDialog(scoreText, "자기소개");
+            addExperience(5); // 자기소개 분석 성공 시 5점 경험치
         } catch (Exception e) {
             Log.e(TAG, "자기소개 결과 파싱 오류", e);
             showErrorMessage("자기소개 결과 처리 오류");
@@ -935,6 +937,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
             presentationScoreText.setText(scoreText);
             resetAnalysisState();
             showResultsDialog(scoreText, "질문답변");
+            addExperience(4); // 질문답변 분석 성공 시 4점 경험치
         } catch (Exception e) {
             Log.e(TAG, "질문답변 결과 파싱 오류", e);
             showErrorMessage("질문답변 결과 처리 오류");
@@ -1017,6 +1020,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                     String content = response.body().content;
                     textFeedback.setText(content);
                     summarizeAndSaveHistory(quest, answer, content);
+                    addExperience(2); // 답변 제출 성공 시 2점 경험치
                 } else {
                     textFeedback.setText("응답 실패: " + response.code());
                 }
@@ -1161,5 +1165,69 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
             button.setTextAppearance(this, R.style.SectionButton);
             button.setBackgroundResource(R.drawable.professional_button_tertiary);
         }
+    }
+    
+    // 경험치 추가 메서드
+    private void addExperience(int exp) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) return;
+        
+        String uid = currentUser.getUid();
+        DatabaseReference userRef = FirebaseDatabase.getInstance()
+                .getReference("users")
+                .child(uid);
+        
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Integer currentLevel = snapshot.child("level").getValue(Integer.class);
+                    Integer currentExp = snapshot.child("experience").getValue(Integer.class);
+                    
+                    if (currentLevel == null) currentLevel = 1;
+                    if (currentExp == null) currentExp = 0;
+                    
+                    int oldLevel = currentLevel;
+                    int newExp = currentExp + exp;
+                    int newLevel = currentLevel;
+                    
+                    // 레벨업 체크
+                    while (newExp >= calculateTotalExpForLevel(newLevel)) {
+                        newLevel++;
+                    }
+                    
+                    // Firebase 업데이트
+                    userRef.child("level").setValue(newLevel);
+                    userRef.child("experience").setValue(newExp);
+                    
+                    // 레벨업 알림
+                    if (newLevel > oldLevel) {
+                        Toast.makeText(QuestActivity.this, "레벨업! 레벨 " + newLevel + " 달성!", Toast.LENGTH_LONG).show();
+                    }
+                    
+                    // 경험치 획득 알림
+                    Toast.makeText(QuestActivity.this, "+" + exp + " 경험치 획득!", Toast.LENGTH_SHORT).show();
+                }
+            }
+            
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.e(TAG, "경험치 추가 실패: " + error.getMessage());
+            }
+        });
+    }
+    
+    // 특정 레벨까지의 총 필요 경험치 계산 (MainActivity와 동일한 로직)
+    private int calculateTotalExpForLevel(int level) {
+        int totalExp = 0;
+        for (int i = 1; i <= level; i++) {
+            totalExp += calculateRequiredExp(i);
+        }
+        return totalExp;
+    }
+    
+    // 레벨업에 필요한 경험치 계산 (MainActivity와 동일한 로직)
+    private int calculateRequiredExp(int level) {
+        return 20 + (level - 1) * 5;
     }
 }
