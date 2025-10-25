@@ -371,6 +371,9 @@ public class MainActivity extends AppCompatActivity {
                         userRef.child("experience").setValue(0);
                         currentExperience = 0;
                     }
+                    
+                    // 레벨업 체크 및 처리
+                    checkAndProcessLevelUp();
                 } else {
                     // 신규 사용자면 기본값 설정
                     Log.d("MainActivity", "신규 사용자 - 기본값 설정");
@@ -400,6 +403,37 @@ public class MainActivity extends AppCompatActivity {
         progressLevel.setProgress(progress);
         
         Log.d("MainActivity", "프로그레스바 진행률: " + progress + "%");
+    }
+    
+    // 레벨업 체크 및 처리
+    private void checkAndProcessLevelUp() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) return;
+        
+        int oldLevel = currentLevel;
+        int newLevel = currentLevel;
+        
+        // 레벨업 체크
+        while (currentExperience >= calculateTotalExpForLevel(newLevel)) {
+            newLevel++;
+        }
+        
+        // 레벨업이 발생한 경우
+        if (newLevel > oldLevel) {
+            // Firebase에 업데이트
+            String uid = currentUser.getUid();
+            DatabaseReference userRef = FirebaseDatabase.getInstance()
+                    .getReference("users")
+                    .child(uid);
+            
+            userRef.child("level").setValue(newLevel);
+            
+            // 로컬 변수 업데이트
+            currentLevel = newLevel;
+            
+            // 레벨업 알림
+            Toast.makeText(this, "레벨업! 레벨 " + newLevel + " 달성!", Toast.LENGTH_LONG).show();
+        }
     }
     
     // 레벨 텍스트 스타일링 (레벨 숫자만 밝게)
