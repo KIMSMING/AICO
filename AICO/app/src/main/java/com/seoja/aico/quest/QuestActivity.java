@@ -113,9 +113,9 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     private LinearLayout presentationSection;
     private LinearLayout textResponseSection;
 
-    private TextView btnIntroAnalysis;
-    private TextView btnPresentationAnalysis;
-    private TextView btnTextResponse;
+    private Button btnIntroAnalysis;
+    private Button btnPresentationAnalysis;
+    private Button btnTextResponse;
 
     // --- 상태 변수 및 데이터 ---
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -1128,7 +1128,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         if (speechRecognizer != null) speechRecognizer.destroy();
         super.onDestroy();
     }
-    private void onSectionButtonClick(TextView clickedButton) {
+    private void onSectionButtonClick(Button clickedButton) {
         // 모든 버튼을 기본 상태로 설정
         updateButtonStyle(btnIntroAnalysis, false);
         updateButtonStyle(btnPresentationAnalysis, false);
@@ -1153,12 +1153,12 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    private void updateButtonStyle(TextView button, boolean isSelected) {
+    private void updateButtonStyle(Button button, boolean isSelected) {
         if (isSelected) {
-            button.setTextAppearance(this, R.style.FilterButton_Selected);
+            button.setTextAppearance(this, R.style.SectionButton_Selected);
             button.setBackgroundResource(R.drawable.professional_button_secondary);
         } else {
-            button.setTextAppearance(this, R.style.FilterButton);
+            button.setTextAppearance(this, R.style.SectionButton);
             button.setBackgroundResource(R.drawable.professional_button_tertiary);
         }
     }
