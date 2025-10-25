@@ -1156,7 +1156,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     private void updateButtonStyle(Button button, boolean isSelected) {
         if (isSelected) {
             button.setTextAppearance(this, R.style.SectionButton_Selected);
-            button.setBackgroundResource(R.drawable.professional_button_secondary);
+            button.setBackgroundResource(R.drawable.professional_button_primary);
         } else {
             button.setTextAppearance(this, R.style.SectionButton);
             button.setBackgroundResource(R.drawable.professional_button_tertiary);

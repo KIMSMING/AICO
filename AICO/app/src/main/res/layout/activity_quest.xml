@@ -110,14 +110,14 @@
                 android:layout_marginBottom="16dp"
                 android:background="@drawable/professional_card_bg"
                 android:orientation="vertical"
-                android:padding="20dp">
+                android:padding="16dp">
 
                 <LinearLayout
                     android:id="@+id/btnSectionSelector"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginBottom="16dp">
+                    android:layout_marginBottom="8dp">
 
                     <Button
                         android:id="@+id/btnIntroAnalysis"
@@ -218,7 +218,6 @@
                     android:id="@+id/presentationSection"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
                     android:background="@drawable/professional_card_bg"
                     android:orientation="vertical"
                     android:padding="20dp">
@@ -288,7 +287,6 @@
                     android:id="@+id/textResponseSection"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
                     android:background="@drawable/professional_card_bg"
                     android:orientation="vertical"
                     android:padding="20dp">
@@ -328,6 +326,7 @@
                             android:id="@+id/textResponse"
                             android:layout_width="match_parent"
                             android:layout_height="120dp"
+                            android:layout_marginBottom="8dp"
                             android:gravity="top|start"
                             android:inputType="textMultiLine"
                             android:maxLength="500"
@@ -341,28 +340,27 @@
 
                         <Button
                             android:id="@+id/btnRequest"
-                            style="@style/ProfessionalButtonPrimary"
+                            style="@style/CompactButtonPrimary"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="8dp"
+                            android:layout_marginEnd="4dp"
                             android:layout_weight="1"
                             android:text="답변 제출" />
 
                         <Button
                             android:id="@+id/btnNextQuestion"
-                            style="@style/ProfessionalButtonPrimary"
+                            style="@style/CompactButtonPrimary"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="8dp"
+                            android:layout_marginEnd="4dp"
                             android:layout_weight="1"
                             android:text="다음 질문" />
 
                         <Button
                             android:id="@+id/btnFollowup"
-                            style="@style/ProfessionalButtonPrimary"
+                            style="@style/CompactButtonPrimary"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="8dp"
                             android:layout_weight="1"
                             android:text="연관 질문" />
 

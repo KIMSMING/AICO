@@ -31,6 +31,8 @@
         <item name="android:minHeight">40dp</item>
         <item name="android:paddingStart">16dp</item>
         <item name="android:paddingEnd">16dp</item>
+        <item name="backgroundTint">@null</item>
+        <item name="rippleColor">@android:color/transparent</item>
     </style>
 
     <!-- 전문적인 텍스트 스타일 -->
@@ -165,6 +167,25 @@
         <item name="android:textStyle">bold</item>
         <item name="android:background">@drawable/professional_button_primary</item>
         <item name="backgroundTint">@null</item>
+    </style>
+
+    <!-- 컴팩트 버튼 스타일 (답변 제출, 다음 질문, 연관 질문용) -->
+    <style name="CompactButtonPrimary" parent="Widget.MaterialComponents.Button">
+        <item name="android:background">@drawable/professional_button_primary</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:elevation">3dp</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="android:minHeight">36dp</item>
+        <item name="android:paddingStart">4dp</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:letterSpacing">0.01</item>
+        <item name="backgroundTint">@null</item>
+        <item name="rippleColor">@android:color/transparent</item>
     </style>
 </resources>
 
