@@ -104,39 +104,47 @@
 
             </LinearLayout>
 
-            <!-- 버튼 3개 추가 -->
+            <!-- 섹션 선택 버튼 -->
             <LinearLayout
                 android:id="@+id/btnSectionSelector"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:gravity="center"
                 android:orientation="horizontal"
-                android:weightSum="3">
+                android:padding="16dp"
+                android:background="?android:colorBackground">
 
-                <Button
-                    android:id="@+id/btnIntroAnalysis"
-                    style="@style/FilterButton.Selected"
+                <HorizontalScrollView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="자기소개 분석" />
+                    android:scrollbars="none">
 
-                <Button
-                    android:id="@+id/btnPresentationAnalysis"
-                    style="@style/FilterButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="질문 답변 분석" />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
 
-                <Button
-                    android:id="@+id/btnTextResponse"
-                    style="@style/FilterButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="답변 작성" />
+                        <TextView
+                            android:id="@+id/btnIntroAnalysis"
+                            style="@style/FilterButton.Selected"
+                            android:text="자기소개 분석" />
+
+                        <TextView
+                            android:id="@+id/btnPresentationAnalysis"
+                            style="@style/FilterButton"
+                            android:text="질문 답변 분석" />
+
+                        <TextView
+                            android:id="@+id/btnTextResponse"
+                            style="@style/FilterButton"
+                            android:text="답변 작성" />
+
+                    </LinearLayout>
+
+                </HorizontalScrollView>
+
             </LinearLayout>
 
             <!-- 자기소개 분석 섹션 -->

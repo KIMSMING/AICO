@@ -113,9 +113,9 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     private LinearLayout presentationSection;
     private LinearLayout textResponseSection;
 
-    private Button btnIntroAnalysis;
-    private Button btnPresentationAnalysis;
-    private Button btnTextResponse;
+    private TextView btnIntroAnalysis;
+    private TextView btnPresentationAnalysis;
+    private TextView btnTextResponse;
 
     // --- 상태 변수 및 데이터 ---
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -181,39 +181,13 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         btnPresentationAnalysis = findViewById(R.id.btnPresentationAnalysis);
         btnTextResponse = findViewById(R.id.btnTextResponse);
 
-        introSection.setVisibility(View.VISIBLE);
-        presentationSection.setVisibility(View.GONE);
-        textResponseSection.setVisibility(View.GONE);
+        // 섹션 선택 버튼 클릭 이벤트
+        btnIntroAnalysis.setOnClickListener(v -> onSectionButtonClick(btnIntroAnalysis));
+        btnPresentationAnalysis.setOnClickListener(v -> onSectionButtonClick(btnPresentationAnalysis));
+        btnTextResponse.setOnClickListener(v -> onSectionButtonClick(btnTextResponse));
 
-        View.OnClickListener filterClickListener = this::onFilterButtonClick;
-
-        // 3) 버튼 클릭 이벤트
-        btnIntroAnalysis.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                introSection.setVisibility(View.VISIBLE);
-                presentationSection.setVisibility(View.GONE);
-                textResponseSection.setVisibility(View.GONE);
-            }
-        });
-
-        btnPresentationAnalysis.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                introSection.setVisibility(View.GONE);
-                presentationSection.setVisibility(View.VISIBLE);
-                textResponseSection.setVisibility(View.GONE);
-            }
-        });
-
-        btnTextResponse.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                introSection.setVisibility(View.GONE);
-                presentationSection.setVisibility(View.GONE);
-                textResponseSection.setVisibility(View.VISIBLE);
-            }
-        });
+        // 초기 상태 설정 (첫 번째 버튼 선택)
+        onSectionButtonClick(btnIntroAnalysis);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -1154,21 +1128,38 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         if (speechRecognizer != null) speechRecognizer.destroy();
         super.onDestroy();
     }
-    private void onFilterButtonClick(View view) {
-        updateFilterButtonsUI();
+    private void onSectionButtonClick(TextView clickedButton) {
+        // 모든 버튼을 기본 상태로 설정
+        updateButtonStyle(btnIntroAnalysis, false);
+        updateButtonStyle(btnPresentationAnalysis, false);
+        updateButtonStyle(btnTextResponse, false);
+        
+        // 클릭된 버튼을 선택 상태로 설정
+        updateButtonStyle(clickedButton, true);
+        
+        // 레이아웃 전환
+        if (clickedButton == btnIntroAnalysis) {
+            introSection.setVisibility(View.VISIBLE);
+            presentationSection.setVisibility(View.GONE);
+            textResponseSection.setVisibility(View.GONE);
+        } else if (clickedButton == btnPresentationAnalysis) {
+            introSection.setVisibility(View.GONE);
+            presentationSection.setVisibility(View.VISIBLE);
+            textResponseSection.setVisibility(View.GONE);
+        } else if (clickedButton == btnTextResponse) {
+            introSection.setVisibility(View.GONE);
+            presentationSection.setVisibility(View.GONE);
+            textResponseSection.setVisibility(View.VISIBLE);
+        }
     }
 
-    private void updateFilterButtonsUI() {
-        TextView[] buttons = {btnIntroAnalysis, btnPresentationAnalysis, btnTextResponse};
-        for (TextView button : buttons) {
-            boolean isSelected = button.getText().toString().equals(btnIntroAnalysis);
-            if (isSelected) {
-                button.setTextAppearance(R.style.FilterButton_Selected);
-                button.setBackgroundResource(R.drawable.professional_button_secondary);
-            } else {
-                button.setTextAppearance(R.style.FilterButton);
-                button.setBackgroundResource(R.drawable.professional_button_tertiary);
-            }
+    private void updateButtonStyle(TextView button, boolean isSelected) {
+        if (isSelected) {
+            button.setTextAppearance(this, R.style.FilterButton_Selected);
+            button.setBackgroundResource(R.drawable.professional_button_secondary);
+        } else {
+            button.setTextAppearance(this, R.style.FilterButton);
+            button.setBackgroundResource(R.drawable.professional_button_tertiary);
         }
     }
 }
