@@ -93,14 +93,32 @@
                     android:textColor="?attr/colorOnSurface"
                     android:textSize="18sp" />
 
-                <TextView
-                    android:id="@+id/textTip"
-                    android:layout_width="wrap_content"
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:textColor="?attr/colorOnSurfaceVariant"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="16dp">
+                    <ImageView
+                        android:id="@+id/iconTip"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_lightbulb"
+                        app:tint="#FFC107"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/textTip" />
+                    <TextView
+                        android:id="@+id/textTip"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:lineSpacingExtra="4dp"
+                        app:layout_constraintStart_toEndOf="@+id/iconTip"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </LinearLayout>
 
@@ -164,7 +182,8 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_marginEnd="8dp"
-                            app:tint="@color/professional_primary" />
+                            android:src="@drawable/ic_person"
+                            app:tint="?attr/colorSecondary" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -233,7 +252,8 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_marginEnd="8dp"
-                            app:tint="@color/professional_primary" />
+                            android:src="@drawable/ic_person"
+                            app:tint="?attr/colorSecondary" />
 
                         <TextView
                             android:layout_width="wrap_content"
