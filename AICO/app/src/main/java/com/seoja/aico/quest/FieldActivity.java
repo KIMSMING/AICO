@@ -125,9 +125,20 @@ public class FieldActivity extends AppCompatActivity implements View.OnClickList
                     selectedSecond = "";
                     return;
                 }
+                
                 List<String> secondList = new ArrayList<>(rawSecondList);
                 ArrayAdapter<String> secondAdapter = new ArrayAdapter<>(FieldActivity.this, android.R.layout.simple_spinner_dropdown_item, secondList);
                 secondSpinner.setAdapter(secondAdapter);
+
+                // 소분류가 하나만 있는 경우 자동 선택 및 비활성화
+                if (rawSecondList.size() == 1) {
+                    selectedSecond = rawSecondList.get(0);
+                    secondSpinner.setEnabled(false); // Spinner 비활성화
+                    secondSpinner.setSelection(0); // 첫 번째 항목 선택
+                } else {
+                    // 여러 개인 경우 활성화
+                    secondSpinner.setEnabled(true);
+                }
 
                 // 소분류 표시
                 secondSpinner.setVisibility(View.VISIBLE);

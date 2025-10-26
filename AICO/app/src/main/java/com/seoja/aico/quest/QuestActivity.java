@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -249,6 +250,30 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         introText.setText("자기소개 영상을 촬영하여 분석을 시작해주세요");
         btnStopCamera.setEnabled(false);
         presentationScoreText.setText("질문 답변 영상을 촬영하여 분석을 시작해주세요");
+        
+        // 입력창 포커스 시 자동 스크롤
+        setupAutoScroll();
+    }
+
+    private void setupAutoScroll() {
+        textResponse.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                // 포커스가 되면 약간의 딜레이 후 스크롤
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    ScrollView scrollView = findViewById(R.id.scrollViewMain);
+                    if (scrollView != null) {
+                        View view = v;
+                        // 입력창의 위치를 계산하여 스크롤
+                        int[] location = new int[2];
+                        view.getLocationOnScreen(location);
+                        int scrollY = location[1] - 200;
+                        if (scrollY > 0) {
+                            scrollView.smoothScrollTo(0, scrollView.getScrollY() + scrollY);
+                        }
+                    }
+                }, 300);
+            }
+        });
     }
 
     private void initializeNetworking() {
