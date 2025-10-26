@@ -11,6 +11,8 @@ import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -27,6 +29,8 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -208,15 +212,18 @@ public class MainActivity extends AppCompatActivity {
 
     //질문 추가하기 다이얼로그 함수
     private void showQuestionDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
         builder.setTitle("듣고 싶은 질문을 입력해주세요");
+        LayoutInflater inflater = this.getLayoutInflater();
 
-        final EditText input = new EditText(this);
-        input.setHint("예: 이 직무에서 가장 도전적인 부분은?");
-        builder.setView(input);
+        View dialogView = inflater.inflate(R.layout.dialog_add_question, null);
+
+        final TextInputEditText input = dialogView.findViewById(R.id.text_input_question);
+
+        builder.setView(dialogView);
 
         builder.setPositiveButton("추가", (dialog, which) -> {
-            String question = input.getText().toString().trim();
+            String question = String.valueOf(input.getText()).trim();
             if (!question.isEmpty()) {
                 saveQuestionToFirebase(question);
             } else {
