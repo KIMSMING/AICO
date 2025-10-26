@@ -13,7 +13,7 @@
     <!-- 대표사진 컨테이너 -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="90dp"
         android:background="@drawable/professional_card_bg"
         android:gravity="center">
 
@@ -30,22 +30,23 @@
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:text=""
         android:textSize="15sp"
         android:textStyle="bold"
         android:textColor="?attr/colorOnSurface"
         android:layout_marginTop="12dp"
-        android:maxLines="2"
+        android:maxLines="3"
         android:ellipsize="end"
-        android:fontFamily="sans-serif-medium" />
+        android:fontFamily="sans-serif-medium"
+        android:gravity="top" />
 
     <!-- 작성자 및 날짜 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:gravity="center_vertical">
 
         <TextView

@@ -291,9 +291,6 @@
                         android:layout_weight="1"
                         android:text="로그아웃"
                         android:textSize="16sp"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:background="?attr/selectableItemBackground"
                         android:textColor="@color/professional_warning" />
                     <ImageView
                         android:layout_width="24dp"
@@ -319,9 +316,6 @@
                         android:layout_weight="1"
                         android:text="계정 삭제"
                         android:textSize="16sp"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:background="?attr/selectableItemBackground"
                         android:textColor="@color/professional_error" />
                     <ImageView
                         android:layout_width="24dp"

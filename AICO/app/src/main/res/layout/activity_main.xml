@@ -111,7 +111,7 @@
                         android:id="@+id/progressLevel"
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="0dp"
-                        android:layout_height="12dp"
+                        android:layout_height="16dp"
                         android:layout_weight="1"
                         android:progress="0"
                         android:progressBackgroundTint="?attr/colorOutlineVariant"
