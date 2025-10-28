@@ -12,7 +12,6 @@
         android:id="@+id/topNavBar"
         layout="@layout/header_toolbar" />
 
-    <!-- 진행률 표시 -->
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
@@ -25,10 +24,12 @@
         app:layout_constraintTop_toBottomOf="@id/topNavBar" />
 
     <ScrollView
+        android:id="@+id/scrollViewMain"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
         android:padding="20dp"
+        android:scrollbars="none"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -93,6 +94,34 @@
                     android:lineSpacingExtra="4dp"
                     android:textColor="?attr/colorOnSurface"
                     android:textSize="18sp" />
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp">
+                    <ImageView
+                        android:id="@+id/iconTip"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_lightbulb"
+                        app:tint="#FFC107"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/textTip" />
+                    <TextView
+                        android:id="@+id/textTip"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:lineSpacingExtra="4dp"
+                        app:layout_constraintStart_toEndOf="@+id/iconTip"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
             </LinearLayout>
 
             <LinearLayout
@@ -101,184 +130,213 @@
                 android:layout_marginBottom="16dp"
                 android:background="@drawable/professional_card_bg"
                 android:orientation="vertical"
-                android:padding="20dp">
+                android:padding="16dp">
 
                 <LinearLayout
+                    android:id="@+id/btnSectionSelector"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="8dp">
 
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginEnd="8dp"
-                        app:tint="@color/professional_primary" />
+                    <Button
+                        android:id="@+id/btnIntroAnalysis"
+                        style="@style/SectionButton.Selected"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:text="자기소개 분석" />
+
+                    <Button
+                        android:id="@+id/btnPresentationAnalysis"
+                        style="@style/SectionButton"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:text="질문 답변 분석" />
+
+                    <Button
+                        android:id="@+id/btnTextResponse"
+                        style="@style/SectionButton"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:text="답변 작성" />
+
+                </LinearLayout>
+                <!-- 자기소개 분석 섹션 -->
+                <LinearLayout
+                    android:id="@+id/introSection"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/professional_card_bg"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginEnd="8dp"
+                            android:src="@drawable/ic_person"
+                            app:tint="?attr/colorSecondary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="자기소개 영상 분석"
+                            android:textColor="@color/professional_text_primary"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:id="@+id/introText"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="자기소개 영상 분석"
-                        android:textColor="@color/professional_text_primary"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:layout_marginBottom="16dp"
+                        android:gravity="top"
+                        android:minHeight="120dp"
+                        android:padding="12dp"
+                        android:text="자기소개 분석을 시작해주세요"
+                        android:textColor="@color/professional_text_secondary"
+                        android:textSize="14sp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/introCameraBtn"
+                            style="@style/ProfessionalButtonPrimary"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_weight="1"
+                            android:text="분석 시작"
+                            android:textColor="@android:color/white" />
+
+                        <Button
+                            android:id="@+id/introCameraStopBtn"
+                            style="@style/ProfessionalButtonSecondary"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:enabled="false"
+                            android:text="⏹️ 분석 중지" />
+                    </LinearLayout>
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/introText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:gravity="top"
-                    android:minHeight="120dp"
-                    android:padding="12dp"
-                    android:text="자기소개 분석을 시작해주세요"
-                    android:textColor="@color/professional_text_secondary"
-                    android:textSize="14sp" />
-
+                <!-- 질문 답변 분석 섹션 -->
                 <LinearLayout
+                    android:id="@+id/presentationSection"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:background="@drawable/professional_card_bg"
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
-                    <Button
-                        android:id="@+id/introCameraBtn"
-                        style="@style/ProfessionalButtonPrimary"
-                        android:layout_width="0dp"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:layout_weight="1"
-                        android:text="분석 시작"
-                        android:textColor="@android:color/white" />
+                        android:layout_marginBottom="12dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
-                    <Button
-                        android:id="@+id/introCameraStopBtn"
-                        style="@style/ProfessionalButtonSecondary"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:enabled="false"
-                        android:text="⏹️ 분석 중지" />
-                </LinearLayout>
-            </LinearLayout>
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginEnd="8dp"
+                            android:src="@drawable/ic_person"
+                            app:tint="?attr/colorSecondary" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:background="@drawable/professional_card_bg"
-                android:orientation="vertical"
-                android:padding="20dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginEnd="8dp"
-                        app:tint="@color/professional_primary" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="질문 답변 분석"
+                            android:textColor="@color/professional_text_primary"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:id="@+id/presentationScoreText"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="질문 답변 분석"
-                        android:textColor="@color/professional_text_primary"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:layout_marginBottom="16dp"
+                        android:gravity="top"
+                        android:minHeight="120dp"
+                        android:padding="12dp"
+                        android:text="카메라 분석을 시작해주세요"
+                        android:textColor="@color/professional_text_secondary"
+                        android:textSize="14sp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/btnStartCamera"
+                            style="@style/ProfessionalButtonPrimary"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_weight="1"
+                            android:text="분석 시작"
+                            android:textColor="@android:color/white" />
+
+                        <Button
+                            android:id="@+id/btnStopCamera"
+                            style="@style/ProfessionalButtonSecondary"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:enabled="false"
+                            android:text="⏹️ 분석 중지" />
+                    </LinearLayout>
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/presentationScoreText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:gravity="top"
-                    android:minHeight="120dp"
-                    android:padding="12dp"
-                    android:text="카메라 분석을 시작해주세요"
-                    android:textColor="@color/professional_text_secondary"
-                    android:textSize="14sp" />
-
+                <!-- 답변 작성 섹션 -->
                 <LinearLayout
+                    android:id="@+id/textResponseSection"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:background="@drawable/professional_card_bg"
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
-                    <Button
-                        android:id="@+id/btnStartCamera"
-                        style="@style/ProfessionalButtonPrimary"
-                        android:layout_width="0dp"
+                    <!-- 기존 답변 작성 UI 동일 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:layout_weight="1"
-                        android:text="분석 시작"
-                        android:textColor="@android:color/white" />
+                        android:layout_marginBottom="12dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
-                    <Button
-                        android:id="@+id/btnStopCamera"
-                        style="@style/ProfessionalButtonSecondary"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:enabled="false"
-                        android:text="⏹️ 분석 중지" />
-                </LinearLayout>
-            </LinearLayout>
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginEnd="8dp"
+                            android:src="@drawable/ic_person"
+                            app:tint="?attr/colorSecondary" />
 
-            <!-- 답변 입력 카드 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:background="@drawable/professional_card_bg"
-                android:orientation="vertical"
-                android:padding="20dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="답변 작성"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginEnd="8dp"
-                        android:src="@drawable/ic_person"
-                        app:tint="?attr/colorSecondary" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="답변 작성"
-                        android:textColor="?attr/colorOnSurface"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <Button
-                        android:id="@+id/btnChangeMic"
-                        style="@style/ProfessionalButtonPrimary"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="90dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_weight="1"
-                        android:text="음성 전환" />
-                </LinearLayout>
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp">
-
-                    <!-- 텍스트 입력 -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/textInputLayout"
                         style="@style/ProfessionalEditText"
@@ -290,124 +348,89 @@
                             android:id="@+id/textResponse"
                             android:layout_width="match_parent"
                             android:layout_height="120dp"
+                            android:layout_marginBottom="8dp"
                             android:gravity="top|start"
                             android:inputType="textMultiLine"
                             android:maxLength="500"
                             android:textColor="?attr/colorOnSurface" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- 마이크 아이콘 -->
-                    <ImageButton
-                        android:id="@+id/micIcon"
-                        android:layout_width="100dp"
-                        android:layout_height="120dp"
-                        android:layout_gravity="center"
-                        android:background="@android:color/transparent"
-                        android:contentDescription="음성 입력 모드"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/ic_mic_on"
-                        android:visibility="gone"
-                        app:tint="?attr/colorOnSurfaceVariant" />
-                </FrameLayout>
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <Button
-                        android:id="@+id/btnRequest"
-                        style="@style/ProfessionalButtonPrimary"
-                        android:layout_width="0dp"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:layout_weight="1"
-                        android:text="답변 제출" />
+                        android:orientation="horizontal" >
 
-                    <Button
-                        android:id="@+id/btnNextQuestion"
-                        style="@style/ProfessionalButtonPrimary"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:layout_weight="1"
-                        android:text="다음 질문" />
+                        <Button
+                            android:id="@+id/btnRequest"
+                            style="@style/CompactButtonPrimary"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="4dp"
+                            android:layout_weight="1"
+                            android:text="답변 제출" />
 
-                    <Button
-                        android:id="@+id/btnFollowup"
-                        style="@style/ProfessionalButtonPrimary"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:layout_weight="1"
-                        android:text="연관 질문" />
+                        <Button
+                            android:id="@+id/btnNextQuestion"
+                            style="@style/CompactButtonPrimary"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="4dp"
+                            android:layout_weight="1"
+                            android:text="다음 질문" />
+
+                        <Button
+                            android:id="@+id/btnFollowup"
+                            style="@style/CompactButtonPrimary"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="연관 질문" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:id="@+id/feedbackSection"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:gravity="center">
+                    android:background="@drawable/professional_card_bg"
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
-                    <ImageView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:src="@drawable/ic_lightbulb" />
+                        android:layout_marginBottom="12dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginEnd="8dp"
+                            android:src="@drawable/ic_check"
+                            app:tint="?attr/colorPrimary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="AI 피드백"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
 
                     <TextView
-                        android:id="@+id/textTip"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/textFeedback"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
+                        android:lineSpacingExtra="2dp"
                         android:textColor="?attr/colorOnSurfaceVariant"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- 피드백 카드 -->
-            <LinearLayout
-                android:id="@+id/feedbackSection"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/professional_card_bg"
-                android:orientation="vertical"
-                android:padding="20dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginEnd="8dp"
-                        android:src="@drawable/ic_check"
-                        app:tint="?attr/colorPrimary" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="AI 피드백"
-                        android:textColor="?attr/colorOnSurface"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:textSize="14sp" />
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/textFeedback"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:lineSpacingExtra="2dp"
-                    android:textColor="?attr/colorOnSurfaceVariant"
-                    android:textSize="14sp" />
+
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

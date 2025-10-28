@@ -18,8 +18,8 @@ import java.util.Locale;
 
 public class BoardListAdapter extends RecyclerView.Adapter<BoardListAdapter.BoardViewHolder> {
 
-    private final List<BoardPost> postList;
-    private final String currentUserId; // 현재 로그인한 사용자
+    private List<BoardPost> postList;
+    private final String currentUserId;
 
     public interface OnItemClickListener {
         void onItemClick(BoardPost post);
@@ -36,6 +36,13 @@ public class BoardListAdapter extends RecyclerView.Adapter<BoardListAdapter.Boar
         this.listener = listener;
     }
 
+    public void filterList(List<BoardPost> filteredList) {
+        // 기존 리스트를 지우고 새로운 리스트로 채운 뒤 갱신
+        this.postList.clear();
+        this.postList.addAll(filteredList);
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public BoardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -45,13 +52,13 @@ public class BoardListAdapter extends RecyclerView.Adapter<BoardListAdapter.Boar
 
     @Override
     public void onBindViewHolder(@NonNull BoardViewHolder holder, int position) {
+        String nickname;
         BoardPost post = postList.get(position);
         holder.tvTitle.setText(post.title);
         holder.tvWriter.setText(post.nickname);
         holder.tvDate.setText(formatDate(post.createdAt));
         holder.tvLikes.setText(String.valueOf(post.likes));
 
-        // 좋아요(하트) 상태만 표시
         boolean isLiked = false;
         if (post.likedUsers != null && currentUserId != null) {
             isLiked = post.likedUsers.containsKey(currentUserId);

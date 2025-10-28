@@ -1,6 +1,7 @@
 package com.seoja.aico.user;
 
 import android.os.Bundle;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +25,7 @@ import java.util.List;
 public class HistoryActivity extends AppCompatActivity {
 
     private TextView titleTextView;
+    private ImageButton btnBack;
     private RecyclerView recyclerView;
     private HistoryAdapter adapter;
     private List<HistoryItem> historyList = new ArrayList<>();
@@ -37,10 +39,14 @@ public class HistoryActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new HistoryAdapter(historyList);
         titleTextView = findViewById(R.id.header_title);
+        btnBack = findViewById(R.id.btnBack);
 
         titleTextView.setText("히스토리");
 
         recyclerView.setAdapter(adapter);
+
+        // 뒤로가기
+        btnBack.setOnClickListener(v -> finish());
 
         loadHistoryFromFirebase();
     }

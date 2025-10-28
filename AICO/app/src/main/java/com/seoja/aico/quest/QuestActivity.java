@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +47,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.seoja.aico.MainActivity;
 import com.seoja.aico.R;
 import com.seoja.aico.gpt.GptApi;
 import com.seoja.aico.gpt.GptRequest;
@@ -104,10 +106,18 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     private TextView textRequest, textFeedback, textTip, titleTextView, introText, presentationScoreText;
     private View textInputLayout;
     private EditText textResponse;
-    private Button btnRequest, btnNextQuestion, btnFollowup, btnChangeMic;
+    private Button btnRequest, btnNextQuestion, btnFollowup;
     private Button introCameraBtn, introCameraStopBtn, btnStartCamera, btnStopCamera;
-    private ImageButton btnBack, btnSoundplay, micIcon;
+    private ImageButton btnBack, btnSoundplay;
     private LinearLayout feedbackSection;
+
+    private LinearLayout introSection;
+    private LinearLayout presentationSection;
+    private LinearLayout textResponseSection;
+
+    private Button btnIntroAnalysis;
+    private Button btnPresentationAnalysis;
+    private Button btnTextResponse;
 
     // --- 상태 변수 및 데이터 ---
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -165,6 +175,22 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         initializeNetworking();
         initializeSpeechRecognizer();
 
+        introSection = findViewById(R.id.introSection);
+        presentationSection = findViewById(R.id.presentationSection);
+        textResponseSection = findViewById(R.id.textResponseSection);
+
+        btnIntroAnalysis = findViewById(R.id.btnIntroAnalysis);
+        btnPresentationAnalysis = findViewById(R.id.btnPresentationAnalysis);
+        btnTextResponse = findViewById(R.id.btnTextResponse);
+
+        // 섹션 선택 버튼 클릭 이벤트
+        btnIntroAnalysis.setOnClickListener(v -> onSectionButtonClick(btnIntroAnalysis));
+        btnPresentationAnalysis.setOnClickListener(v -> onSectionButtonClick(btnPresentationAnalysis));
+        btnTextResponse.setOnClickListener(v -> onSectionButtonClick(btnTextResponse));
+
+        // 초기 상태 설정 (첫 번째 버튼 선택)
+        onSectionButtonClick(btnIntroAnalysis);
+
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             userId = user.getUid();
@@ -207,8 +233,8 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         // STT 및 꼬리질문 UI
         textInputLayout = findViewById(R.id.textInputLayout);
         btnFollowup = findViewById(R.id.btnFollowup);
-        btnChangeMic = findViewById(R.id.btnChangeMic);
-        micIcon = findViewById(R.id.micIcon);
+//        btnChangeMic = findViewById(R.id.btnChangeMic);
+//        micIcon = findViewById(R.id.micIcon);
 
         // 영상 분석 UI
         introCameraBtn = findViewById(R.id.introCameraBtn);
@@ -224,6 +250,30 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         introText.setText("자기소개 영상을 촬영하여 분석을 시작해주세요");
         btnStopCamera.setEnabled(false);
         presentationScoreText.setText("질문 답변 영상을 촬영하여 분석을 시작해주세요");
+        
+        // 입력창 포커스 시 자동 스크롤
+        setupAutoScroll();
+    }
+
+    private void setupAutoScroll() {
+        textResponse.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                // 포커스가 되면 약간의 딜레이 후 스크롤
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    ScrollView scrollView = findViewById(R.id.scrollViewMain);
+                    if (scrollView != null) {
+                        View view = v;
+                        // 입력창의 위치를 계산하여 스크롤
+                        int[] location = new int[2];
+                        view.getLocationOnScreen(location);
+                        int scrollY = location[1] - 200;
+                        if (scrollY > 0) {
+                            scrollView.smoothScrollTo(0, scrollView.getScrollY() + scrollY);
+                        }
+                    }
+                }, 300);
+            }
+        });
     }
 
     private void initializeNetworking() {
@@ -302,19 +352,18 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         btnNextQuestion.setOnClickListener(this);
         btnBack.setOnClickListener(v -> finish());
         btnSoundplay.setOnClickListener(v -> sendTextToServer(question));
-
-        // STT 및 꼬리질문
-        btnChangeMic.setOnClickListener(v -> toggleInputMode());
         btnFollowup.setOnClickListener(this);
-        micIcon.setOnClickListener(v -> {
-            if (!isMicMode) return;
-            try {
-                toggleRecording();
-            } catch (IOException e) {
-                Log.e(TAG, "Recording toggle failed", e);
-                Toast.makeText(this, "녹음 시작/중지에 실패했습니다.", Toast.LENGTH_SHORT).show();
-            }
-        });
+        // STT 및 꼬리질문
+//        btnChangeMic.setOnClickListener(v -> toggleInputMode());
+//        micIcon.setOnClickListener(v -> {
+//            if (!isMicMode) return;
+//            try {
+//                toggleRecording();
+//            } catch (IOException e) {
+//                Log.e(TAG, "Recording toggle failed", e);
+//                Toast.makeText(this, "녹음 시작/중지에 실패했습니다.", Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
         // 영상 분석
         introCameraBtn.setOnClickListener(this);
@@ -495,32 +544,32 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     }
 
     // --- STT 및 꼬리질문 관련 메서드 ---
-    private void toggleInputMode() {
-        if (isRecording) {
-            stopSttRecording();
-        }
-        isMicMode = !isMicMode;
-        if (isMicMode) {
-            textInputLayout.setVisibility(View.GONE);
-            micIcon.setVisibility(View.VISIBLE);
-            btnChangeMic.setText("텍스트 전환");
-            micIcon.setImageResource(R.drawable.ic_mic);
-        } else {
-            textInputLayout.setVisibility(View.VISIBLE);
-            micIcon.setVisibility(View.GONE);
-            btnChangeMic.setText("음성 전환");
-        }
-    }
-
-    private void toggleRecording() throws IOException {
-        if (isRecording) {
-            stopSttRecording();
-            micIcon.setImageResource(R.drawable.ic_mic);
-        } else {
-            startSttRecording();
-            micIcon.setImageResource(R.drawable.ic_mic_on);
-        }
-    }
+//    private void toggleInputMode() {
+//        if (isRecording) {
+//            stopSttRecording();
+//        }
+//        isMicMode = !isMicMode;
+//        if (isMicMode) {
+//            textInputLayout.setVisibility(View.GONE);
+//            micIcon.setVisibility(View.VISIBLE);
+//            btnChangeMic.setText("텍스트 전환");
+//            micIcon.setImageResource(R.drawable.ic_mic);
+//        } else {
+//            textInputLayout.setVisibility(View.VISIBLE);
+//            micIcon.setVisibility(View.GONE);
+//            btnChangeMic.setText("음성 전환");
+//        }
+//    }
+//
+//    private void toggleRecording() throws IOException {
+//        if (isRecording) {
+//            stopSttRecording();
+//            micIcon.setImageResource(R.drawable.ic_mic);
+//        } else {
+//            startSttRecording();
+//            micIcon.setImageResource(R.drawable.ic_mic_on);
+//        }
+//    }
 
     private void startSttRecording() throws IOException {
         File outputDir = new File(getExternalFilesDir(Environment.DIRECTORY_MUSIC), "recordings");
@@ -885,6 +934,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
             introText.setText(scoreText);
             resetAnalysisState();
             showResultsDialog(scoreText, "자기소개");
+            addExperience(5); // 자기소개 분석 성공 시 5점 경험치
         } catch (Exception e) {
             Log.e(TAG, "자기소개 결과 파싱 오류", e);
             showErrorMessage("자기소개 결과 처리 오류");
@@ -912,6 +962,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
             presentationScoreText.setText(scoreText);
             resetAnalysisState();
             showResultsDialog(scoreText, "질문답변");
+            addExperience(4); // 질문답변 분석 성공 시 4점 경험치
         } catch (Exception e) {
             Log.e(TAG, "질문답변 결과 파싱 오류", e);
             showErrorMessage("질문답변 결과 처리 오류");
@@ -994,6 +1045,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                     String content = response.body().getContent();
                     textFeedback.setText(content);
                     summarizeAndSaveHistory(quest, answer, content);
+                    addExperience(2); // 답변 제출 성공 시 2점 경험치
                 } else {
                     textFeedback.setText("응답 실패: " + response.code());
                 }
@@ -1104,5 +1156,103 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
         if (mediaRecorder != null) mediaRecorder.release();
         if (speechRecognizer != null) speechRecognizer.destroy();
         super.onDestroy();
+    }
+    private void onSectionButtonClick(Button clickedButton) {
+        // 모든 버튼을 기본 상태로 설정
+        updateButtonStyle(btnIntroAnalysis, false);
+        updateButtonStyle(btnPresentationAnalysis, false);
+        updateButtonStyle(btnTextResponse, false);
+        
+        // 클릭된 버튼을 선택 상태로 설정
+        updateButtonStyle(clickedButton, true);
+        
+        // 레이아웃 전환
+        if (clickedButton == btnIntroAnalysis) {
+            introSection.setVisibility(View.VISIBLE);
+            presentationSection.setVisibility(View.GONE);
+            textResponseSection.setVisibility(View.GONE);
+        } else if (clickedButton == btnPresentationAnalysis) {
+            introSection.setVisibility(View.GONE);
+            presentationSection.setVisibility(View.VISIBLE);
+            textResponseSection.setVisibility(View.GONE);
+        } else if (clickedButton == btnTextResponse) {
+            introSection.setVisibility(View.GONE);
+            presentationSection.setVisibility(View.GONE);
+            textResponseSection.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void updateButtonStyle(Button button, boolean isSelected) {
+        if (isSelected) {
+            button.setTextAppearance(this, R.style.SectionButton_Selected);
+            button.setBackgroundResource(R.drawable.professional_button_primary);
+        } else {
+            button.setTextAppearance(this, R.style.SectionButton);
+            button.setBackgroundResource(R.drawable.professional_button_tertiary);
+        }
+    }
+    
+    // 경험치 추가 메서드
+    private void addExperience(int exp) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) return;
+        
+        String uid = currentUser.getUid();
+        DatabaseReference userRef = FirebaseDatabase.getInstance()
+                .getReference("users")
+                .child(uid);
+        
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Integer currentLevel = snapshot.child("level").getValue(Integer.class);
+                    Integer currentExp = snapshot.child("experience").getValue(Integer.class);
+                    
+                    if (currentLevel == null) currentLevel = 1;
+                    if (currentExp == null) currentExp = 0;
+                    
+                    int oldLevel = currentLevel;
+                    int newExp = currentExp + exp;
+                    int newLevel = currentLevel;
+                    
+                    // 레벨업 체크
+                    while (newExp >= calculateTotalExpForLevel(newLevel)) {
+                        newLevel++;
+                    }
+                    
+                    // Firebase 업데이트
+                    userRef.child("level").setValue(newLevel);
+                    userRef.child("experience").setValue(newExp);
+                    
+                    // 레벨업 알림
+                    if (newLevel > oldLevel) {
+                        Toast.makeText(QuestActivity.this, "레벨업! 레벨 " + newLevel + " 달성!", Toast.LENGTH_LONG).show();
+                    }
+                    
+                    // 경험치 획득 알림
+                    Toast.makeText(QuestActivity.this, "+" + exp + " 경험치 획득!", Toast.LENGTH_SHORT).show();
+                }
+            }
+            
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.e(TAG, "경험치 추가 실패: " + error.getMessage());
+            }
+        });
+    }
+    
+    // 특정 레벨까지의 총 필요 경험치 계산 (MainActivity와 동일한 로직)
+    private int calculateTotalExpForLevel(int level) {
+        int totalExp = 0;
+        for (int i = 1; i <= level; i++) {
+            totalExp += calculateRequiredExp(i);
+        }
+        return totalExp;
+    }
+    
+    // 레벨업에 필요한 경험치 계산 (MainActivity와 동일한 로직)
+    private int calculateRequiredExp(int level) {
+        return 20 + (level - 1) * 5;
     }
 }

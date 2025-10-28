@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,9 +39,10 @@ import java.util.HashMap;
 public class AddBoardActivity extends AppCompatActivity {
 
     private TextView titleTextView;
-    private EditText editPostTitle, editPostContent;
+    private EditText editPostTitle, editPostContent, editCompanyName;
     private Button btnUpload, btnAddImage;
     private ImageButton btnBack;
+    private RadioGroup radioGroupCategory;
 //    private ImageView imagePreview;
 
     private Uri selectedImageUri = null;
@@ -67,8 +70,10 @@ public class AddBoardActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         editPostTitle = findViewById(R.id.editPostTitle);
         editPostContent = findViewById(R.id.editPostContent);
+        editCompanyName = findViewById(R.id.editCompanyName);
 //        btnAddImage = findViewById(R.id.btnAddImage);
 //        imagePreview = findViewById(R.id.imagePreview);
+        radioGroupCategory = findViewById(R.id.radioGroupCategory);
         btnUpload = findViewById(R.id.btnUpload);
         titleTextView = findViewById(R.id.header_title);
 
@@ -112,6 +117,8 @@ public class AddBoardActivity extends AppCompatActivity {
     private void uploadPost() {
         String title = editPostTitle.getText().toString().trim();
         String content = editPostContent.getText().toString().trim();
+        int selectedId = radioGroupCategory.getCheckedRadioButtonId();
+        String company = editCompanyName.getText().toString().trim();
 
         if (title.isEmpty()) {
             Toast.makeText(this, "제목을 입력하세요.", Toast.LENGTH_SHORT).show();
@@ -121,7 +128,12 @@ public class AddBoardActivity extends AppCompatActivity {
             Toast.makeText(this, "내용을 입력하세요.", Toast.LENGTH_SHORT).show();
             return;
         }
-
+        if (selectedId == -1) {
+            Toast.makeText(this, "카테고리를 선택하세요.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        RadioButton selectedRadioButton = findViewById(selectedId);
+        String category = selectedRadioButton.getText().toString();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             Toast.makeText(this, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
@@ -137,7 +149,7 @@ public class AddBoardActivity extends AppCompatActivity {
             imageRef.putFile(selectedImageUri)
                     .addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                         // 2. 이미지 URL과 함께 게시글 데이터 저장
-                        savePostToDatabase(title, content, user, uri.toString());
+                        savePostToDatabase(title, content, category, company, user, uri.toString());
                     }))
                     .addOnFailureListener(e -> {
                         btnUpload.setEnabled(true);
@@ -145,11 +157,11 @@ public class AddBoardActivity extends AppCompatActivity {
                     });
         } else {
             // 이미지 없이 게시글만 저장
-            savePostToDatabase(title, content, user, "");
+            savePostToDatabase(title, content, category, company, user, "");
         }
     }
 
-    private void savePostToDatabase(String title, String content, FirebaseUser user, String imageUrl) {
+    private void savePostToDatabase(String title, String content, String category, String company, FirebaseUser user, String imageUrl) {
         String uniqueKey = String.valueOf(System.currentTimeMillis());
 
         // 사용자 닉네임 조회
@@ -163,8 +175,10 @@ public class AddBoardActivity extends AppCompatActivity {
                         uniqueKey,
                         title,
                         content,
+                        category,
                         user.getUid(),
                         user.getDisplayName() != null ? user.getDisplayName() : user.getEmail(),
+                        company,
                         nickname,
                         System.currentTimeMillis(),
                         imageUrl,

@@ -4,12 +4,19 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,11 +29,15 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.seoja.aico.quest.FieldActivity;
 import com.seoja.aico.reviewBoard.BoardActivity;
 import com.seoja.aico.reviewBoard.BoardListActivity;
@@ -45,8 +56,12 @@ public class MainActivity extends AppCompatActivity {
 
     ImageButton btnOption;
     private FirebaseAuth mAuth;
-    TextView btnGoBoard;
+    TextView btnGoBoard, tvWelcomeMessage, tvCurrentLevel;
+    ProgressBar progressLevel;
     LinearLayout btnUserView, btnTestSpeech, btnAddQuestion, btnQuest;
+    
+    private int currentLevel = 1;
+    private int currentExperience = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +92,11 @@ public class MainActivity extends AppCompatActivity {
         btnGoBoard = (TextView) findViewById(R.id.btnGoBoard);
         btnTestSpeech = findViewById(R.id.btnTestSpeech);
         btnAddQuestion = findViewById(R.id.btnAddQuestion);
+        
+        // 레벨 관련 UI 초기화
+        progressLevel = findViewById(R.id.progressLevel);
+        tvWelcomeMessage = findViewById(R.id.tvWelcomeMessage);
+        tvCurrentLevel = findViewById(R.id.tvCurrentLevel);
 
         // 설정하기
         btnOption.setOnClickListener(v -> {
@@ -157,6 +177,12 @@ public class MainActivity extends AppCompatActivity {
             previewAdapter.notifyDataSetChanged();
         });
 
+        // 사용자 이름 로드 및 환영 메시지 설정
+        loadUserName();
+        
+        // 레벨 데이터 로드
+        loadUserLevelData();
+        
         // 알람권한
         checkAndRequestPermissions();
     }
@@ -193,15 +219,18 @@ public class MainActivity extends AppCompatActivity {
 
     //질문 추가하기 다이얼로그 함수
     private void showQuestionDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
         builder.setTitle("듣고 싶은 질문을 입력해주세요");
+        LayoutInflater inflater = this.getLayoutInflater();
 
-        final EditText input = new EditText(this);
-        input.setHint("예: 이 직무에서 가장 도전적인 부분은?");
-        builder.setView(input);
+        View dialogView = inflater.inflate(R.layout.dialog_add_question, null);
+
+        final TextInputEditText input = dialogView.findViewById(R.id.text_input_question);
+
+        builder.setView(dialogView);
 
         builder.setPositiveButton("추가", (dialog, which) -> {
-            String question = input.getText().toString().trim();
+            String question = String.valueOf(input.getText()).trim();
             if (!question.isEmpty()) {
                 saveQuestionToFirebase(question);
             } else {
@@ -289,6 +318,207 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(this, "마이크 권한이 거부되었습니다.", Toast.LENGTH_SHORT).show();
                 }
                 break;
+        }
+    }
+    
+    // 사용자 이름 로드
+    private void loadUserName() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) return;
+        
+        String uid = currentUser.getUid();
+        DatabaseReference userRef = FirebaseDatabase.getInstance()
+                .getReference("users")
+                .child(uid);
+        
+        userRef.child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                String userName = snapshot.getValue(String.class);
+                if (userName != null && !userName.isEmpty()) {
+                    tvWelcomeMessage.setText(userName + "님 환영합니다");
+                } else {
+                    tvWelcomeMessage.setText("환영합니다");
+                }
+            }
+            
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.e("MainActivity", "사용자 이름 로드 실패: " + error.getMessage());
+                tvWelcomeMessage.setText("환영합니다");
+            }
+        });
+    }
+    
+    // 레벨 데이터 로드
+    private void loadUserLevelData() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) return;
+        
+        String uid = currentUser.getUid();
+        DatabaseReference userRef = FirebaseDatabase.getInstance()
+                .getReference("users")
+                .child(uid);
+        
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                Log.d("MainActivity", "Firebase 데이터 로드: " + snapshot.toString());
+                
+                if (snapshot.exists()) {
+                    // 기존 데이터가 있으면 로드
+                    Integer level = snapshot.child("level").getValue(Integer.class);
+                    Integer exp = snapshot.child("experience").getValue(Integer.class);
+                    
+                    Log.d("MainActivity", "로드된 레벨: " + level + ", 경험치: " + exp);
+                    
+                    if (level != null) {
+                        currentLevel = level;
+                    } else {
+                        userRef.child("level").setValue(1);
+                        currentLevel = 1;
+                    }
+                    
+                    if (exp != null) {
+                        currentExperience = exp;
+                    } else {
+                        userRef.child("experience").setValue(0);
+                        currentExperience = 0;
+                    }
+                    
+                    // 레벨업 체크 및 처리
+                    checkAndProcessLevelUp();
+                } else {
+                    // 신규 사용자면 기본값 설정
+                    Log.d("MainActivity", "신규 사용자 - 기본값 설정");
+                    userRef.child("level").setValue(1);
+                    userRef.child("experience").setValue(0);
+                    currentLevel = 1;
+                    currentExperience = 0;
+                }
+                updateLevelUI();
+            }
+            
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.e("MainActivity", "레벨 데이터 로드 실패: " + error.getMessage());
+            }
+        });
+    }
+    
+    // 레벨 UI 업데이트
+    private void updateLevelUI() {
+        int requiredExp = calculateRequiredExp(currentLevel);
+        int currentLevelExp = currentExperience - calculateTotalExpForLevel(currentLevel - 1);
+        // 레벨 텍스트 업데이트 (레벨 숫자만 밝게)
+        setLevelTextWithHighlight(currentLevel);
+        
+        int progress = (int) ((float) currentLevelExp / requiredExp * 100);
+        progressLevel.setProgress(progress);
+        
+        Log.d("MainActivity", "프로그레스바 진행률: " + progress + "%");
+    }
+    
+    // 레벨업 체크 및 처리
+    private void checkAndProcessLevelUp() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) return;
+        
+        int oldLevel = currentLevel;
+        int newLevel = currentLevel;
+        
+        // 레벨업 체크
+        while (currentExperience >= calculateTotalExpForLevel(newLevel)) {
+            newLevel++;
+        }
+        
+        // 레벨업이 발생한 경우
+        if (newLevel > oldLevel) {
+            // Firebase에 업데이트
+            String uid = currentUser.getUid();
+            DatabaseReference userRef = FirebaseDatabase.getInstance()
+                    .getReference("users")
+                    .child(uid);
+            
+            userRef.child("level").setValue(newLevel);
+            
+            // 로컬 변수 업데이트
+            currentLevel = newLevel;
+            
+            // 레벨업 알림
+            Toast.makeText(this, "레벨업! 레벨 " + newLevel + " 달성!", Toast.LENGTH_LONG).show();
+        }
+    }
+    
+    // 레벨 텍스트 스타일링 (레벨 숫자만 밝게)
+    private void setLevelTextWithHighlight(int level) {
+        String text = "당신의 레벨은 " + level + " 입니다";
+        SpannableString spannableString = new SpannableString(text);
+        
+        // 레벨 숫자 부분만 밝은 색으로 설정
+        String levelStr = String.valueOf(level);
+        int startIndex = text.indexOf(levelStr);
+        int endIndex = startIndex + levelStr.length();
+        
+        if (startIndex >= 0) {
+            spannableString.setSpan(
+                new ForegroundColorSpan(Color.parseColor("#A5E6A8")),
+                startIndex,
+                endIndex,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            );
+        }
+        
+        tvCurrentLevel.setText(spannableString);
+    }
+    
+    // 레벨업에 필요한 경험치 계산
+    private int calculateRequiredExp(int level) {
+        return 20 + (level - 1) * 5;
+    }
+    
+    // 특정 레벨까지의 총 필요 경험치 계산
+    private int calculateTotalExpForLevel(int level) {
+        int totalExp = 0;
+        for (int i = 1; i <= level; i++) {
+            totalExp += calculateRequiredExp(i);
+        }
+        return totalExp;
+    }
+    
+    // 경험치 추가 및 레벨업 처리
+    public void addExperience(int exp) {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) return;
+        
+        int oldLevel = currentLevel;
+        int newExperience = currentExperience + exp;
+        int newLevel = currentLevel;
+        
+        // 레벨업 체크
+        while (newExperience >= calculateTotalExpForLevel(newLevel)) {
+            newLevel++;
+        }
+        
+        // Firebase에 업데이트
+        String uid = currentUser.getUid();
+        DatabaseReference userRef = FirebaseDatabase.getInstance()
+                .getReference("users")
+                .child(uid);
+        
+        userRef.child("level").setValue(newLevel);
+        userRef.child("experience").setValue(newExperience);
+        
+        // 로컬 변수 업데이트
+        currentLevel = newLevel;
+        currentExperience = newExperience;
+        
+        // UI 업데이트
+        updateLevelUI();
+        
+        // 레벨업 알림
+        if (newLevel > oldLevel) {
+            Toast.makeText(this, "레벨업! 레벨 " + newLevel + " 달성!", Toast.LENGTH_LONG).show();
         }
     }
 }

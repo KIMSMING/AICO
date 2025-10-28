@@ -25,7 +25,7 @@
             android:alpha="0"
             android:scaleX="0.8"
             android:scaleY="0.8"
-            android:src="@drawable/ic_rogo" />
+            android:src="@drawable/ic_logo" />
 
         <!-- AICO 로고 텍스트 -->
         <TextView

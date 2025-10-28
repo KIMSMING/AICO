@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+// SearchView import 추가
+import androidx.appcompat.widget.SearchView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -24,16 +26,20 @@ import com.seoja.aico.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class BoardListActivity extends AppCompatActivity {
 
-    private ImageButton btnBack, btnSearsh;
+    private ImageButton btnBack, btnSearch;
+    private SearchView searchView;
     private RecyclerView recyclerBoardList;
     private FloatingActionButton btnWritePost;
-    private TextView titleTextView;
+    private TextView titleTextView,  btnFilterAll, btnFilterTech, btnFilterPersonality, btnFilterGroup;
+    private String currentCategoryFilter = "전체";
 
     private BoardListAdapter adapter;
-    private List<BoardPost> postList = new ArrayList<>();
+    private List<BoardPost> displayedPostList = new ArrayList<>();
+    private List<BoardPost> originalPostList = new ArrayList<>();
     private DatabaseReference boardRef;
 
     @Override
@@ -46,58 +52,155 @@ public class BoardListActivity extends AppCompatActivity {
         recyclerBoardList = findViewById(R.id.recyclerBoardList);
         btnWritePost = findViewById(R.id.btnWritePost);
         titleTextView = findViewById(R.id.header_title);
-        btnSearsh = findViewById(R.id.btnSearch);
+        btnSearch = findViewById(R.id.btnSearch);
+        searchView = findViewById(R.id.searchView);
+
+        btnFilterAll = findViewById(R.id.btnFilterAll);
+        btnFilterTech = findViewById(R.id.btnFilterTech);
+        btnFilterPersonality = findViewById(R.id.btnFilterPersonality);
+        btnFilterGroup = findViewById(R.id.btnFilterGroup);
 
         titleTextView.setText("면접 후기");
-        btnSearsh.setVisibility(View.VISIBLE);
+        btnSearch.setVisibility(View.VISIBLE);
 
-        // 뒤로가기
-        btnBack.setOnClickListener(v -> finish());
+        View.OnClickListener filterClickListener = this::onFilterButtonClick;
+        btnFilterAll.setOnClickListener(filterClickListener);
+        btnFilterTech.setOnClickListener(filterClickListener);
+        btnFilterPersonality.setOnClickListener(filterClickListener);
+        btnFilterGroup.setOnClickListener(filterClickListener);
 
-        // 글 작성 버튼
+        btnBack.setOnClickListener(v -> handleBackButton());
+
         btnWritePost.setOnClickListener(v -> {
             startActivity(new Intent(this, AddBoardActivity.class));
         });
 
-        // 현재 로그인한 사용자 UID
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String currentUserId = user != null ? user.getUid() : null;
 
-        // RecyclerView 설정
-        adapter = new BoardListAdapter(postList, currentUserId);
+        adapter = new BoardListAdapter(displayedPostList, currentUserId);
         recyclerBoardList.setLayoutManager(new LinearLayoutManager(this));
         recyclerBoardList.setAdapter(adapter);
 
-        // 게시글 클릭 이벤트 예시
         adapter.setOnItemClickListener(post -> {
             Intent intent = new Intent(this, BoardActivity.class);
             intent.putExtra("postKey", post.postId);
             startActivity(intent);
         });
 
-        // Firebase board 경로 참조
         boardRef = FirebaseDatabase.getInstance().getReference("board");
-
-        // 게시글 불러오기
         loadBoardPosts();
+
+        setupSearchFunctionality();
     }
 
     private void loadBoardPosts() {
         boardRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                postList.clear();
+                originalPostList.clear();
                 for (DataSnapshot postSnap : snapshot.getChildren()) {
                     BoardPost post = postSnap.getValue(BoardPost.class);
                     if (post != null) {
                         post.postId = postSnap.getKey();
-                        postList.add(post);
+                        originalPostList.add(post);
                     }
                 }
-                postList.sort((a, b) -> Long.compare(b.createdAt, a.createdAt));
-                adapter.notifyDataSetChanged();
+                originalPostList.sort((a, b) -> Long.compare(b.createdAt, a.createdAt));
+
+                // 현재 검색창에 텍스트가 있으면 그 텍스트로 필터링, 없으면 전체 목록 표시
+                String currentQuery = searchView.getQuery().toString();
+                filter(currentQuery);
             }
             @Override public void onCancelled(@NonNull DatabaseError error) {}
         });
     }
+
+    private void setupSearchFunctionality() {
+        btnSearch.setOnClickListener(v -> {
+            titleTextView.setVisibility(View.GONE);
+            btnSearch.setVisibility(View.GONE);
+            searchView.setVisibility(View.VISIBLE);
+            searchView.requestFocus(); // 검색창에 바로 포커스
+        });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filter(newText);
+                return true;
+            }
+        });
+    }
+
+    private void filter(String searchText) {
+        List<BoardPost> categoryFilteredList = new ArrayList<>();
+
+        // 1. 카테고리 필터링 먼저 적용
+        if (currentCategoryFilter.equals("전체")) {
+            categoryFilteredList.addAll(originalPostList);
+        } else {
+            for (BoardPost post : originalPostList) {
+                // BoardPost 클래스에 category 필드가 있다고 가정합니다.
+                if (post.category != null && post.category.equals(currentCategoryFilter)) {
+                    categoryFilteredList.add(post);
+                }
+            }
+        }
+
+        // 2. 검색어 필터링 적용
+        List<BoardPost> finalList = new ArrayList<>();
+        String query = searchText.toLowerCase(Locale.getDefault()).trim();
+
+        if (query.isEmpty()) {
+            finalList.addAll(categoryFilteredList);
+        } else {
+            for (BoardPost post : categoryFilteredList) {
+                if (post.title.toLowerCase(Locale.getDefault()).contains(query) ||
+                        post.nickname.toLowerCase(Locale.getDefault()).contains(query)) {
+                    finalList.add(post);
+                }
+            }
+        }
+        adapter.filterList(finalList);
+    }
+
+    private void handleBackButton() {
+        if (searchView.getVisibility() == View.VISIBLE) {
+            searchView.setQuery("", false); // 검색어 초기화
+            searchView.setVisibility(View.GONE);
+            titleTextView.setVisibility(View.VISIBLE);
+            btnSearch.setVisibility(View.VISIBLE);
+            adapter.filterList(originalPostList); // 전체 목록으로 복원
+        } else {
+            finish();
+        }
+    }
+
+    private void onFilterButtonClick(View view) {
+        TextView clickedButton = (TextView) view;
+        currentCategoryFilter = clickedButton.getText().toString();
+        updateFilterButtonsUI();
+        filter(searchView.getQuery().toString());
+    }
+
+    private void updateFilterButtonsUI() {
+        TextView[] buttons = {btnFilterAll, btnFilterTech, btnFilterPersonality, btnFilterGroup};
+        for (TextView button : buttons) {
+            boolean isSelected = button.getText().toString().equals(currentCategoryFilter);
+            if (isSelected) {
+                button.setTextAppearance(R.style.FilterButton_Selected);
+                button.setBackgroundResource(R.drawable.professional_button_secondary);
+            } else {
+                button.setTextAppearance(R.style.FilterButton);
+                button.setBackgroundResource(R.drawable.professional_button_tertiary);
+            }
+        }
+    }
+
 }

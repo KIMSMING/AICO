@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F6FA"
+    android:background="?android:colorBackground"
     tools:context=".reviewBoard.UpdateBoardActivity"
     android:fitsSystemWindows="true">
 
@@ -15,7 +15,7 @@
         android:layout_height="0dp"
         android:fillViewport="true"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottomBar"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -78,62 +78,21 @@
 
 
             <!-- 사진 추가 버튼 -->
-            <Button
-                android:id="@+id/btnAddImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="사진 추가"
-                android:textSize="14sp"
-                android:layout_marginTop="8dp"
-                android:backgroundTint="#CCCCCC"
-                android:textColor="#000000"
-                app:layout_constraintTop_toBottomOf="@id/rvImages"
-                app:layout_constraintStart_toStartOf="parent"
-                android:enabled="false"
-                android:layout_marginStart="24dp" />
+<!--            <Button-->
+<!--                android:id="@+id/btnAddImage"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="사진 추가"-->
+<!--                android:textSize="14sp"-->
+<!--                android:layout_marginTop="8dp"-->
+<!--                android:backgroundTint="#CCCCCC"-->
+<!--                android:textColor="#000000"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/rvImages"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                android:enabled="false"-->
+<!--                android:layout_marginStart="24dp" />-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-
-    <!-- 하단 고정 버튼 바 -->
-    <LinearLayout
-        android:id="@+id/bottomBar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="#FFFFFF"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:elevation="8dp">
-
-        <Button
-            android:id="@+id/btnUpdate"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="수정 완료"
-            android:textAllCaps="false"
-            android:textSize="16sp"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#2196F3"
-            android:layout_marginEnd="8dp"/>
-
-        <Button
-            android:id="@+id/btnCancel"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="취소"
-            android:textAllCaps="false"
-            android:textSize="16sp"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#999999"
-            android:layout_marginStart="8dp"/>
-    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

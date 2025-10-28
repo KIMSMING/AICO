@@ -102,9 +102,7 @@
                     <Switch
                         android:id="@+id/switchVibration"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:thumbTint="?attr/colorOnSurface"
-                        android:trackTint="?attr/colorOutline" />
+                        android:layout_height="wrap_content" />
 
                 </LinearLayout>
 
@@ -141,9 +139,7 @@
                     <Switch
                         android:id="@+id/switchNotification"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:thumbTint="?attr/colorOnSurface"
-                        android:trackTint="?attr/colorOutline" />
+                        android:layout_height="wrap_content" />
 
                 </LinearLayout>
 

@@ -27,12 +27,13 @@ public class MiceTestActivity extends AppCompatActivity {
 
     private TextView tvHint, tvResult, titleTextView;
     private boolean isHintHidden = false;
-    private Button imgMic;
+    private Button btnMicetest;
     private boolean isListening = false;
     private SpeechRecognizer speechRecognizer;
     private Intent recognizerIntent;
     private Handler silenceHandler = new Handler();
     private Runnable silenceRunnable;
+    private ImageView imgMic;
     private float baseMicSizeDp = 180f;
     private float maxMicSizeDp = 260f;
 
@@ -41,9 +42,10 @@ public class MiceTestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mice_test);
 
-        imgMic = findViewById(R.id.imgMic);
+        btnMicetest = findViewById(R.id.btnMicetest);
         tvResult = findViewById(R.id.tvResult);
         tvHint = findViewById(R.id.tvHint);
+        imgMic = findViewById(R.id.imgMic);
         titleTextView = findViewById(R.id.header_title);
 
         titleTextView.setText("마이크 테스트");
@@ -53,7 +55,7 @@ public class MiceTestActivity extends AppCompatActivity {
         btnBack.setOnClickListener(v -> finish());
 
         if (!isAudioPermissionGranted()) {
-            imgMic.setEnabled(false);
+            btnMicetest.setEnabled(false);
             tvHint.setText("마이크 권한이 필요합니다.\n설정에서 권한을 허용해주세요.");
             tvHint.setVisibility(View.VISIBLE);
             Toast.makeText(this, "마이크 권한이 없어 음성 테스트를 사용할 수 없습니다.", Toast.LENGTH_LONG).show();
@@ -67,7 +69,7 @@ public class MiceTestActivity extends AppCompatActivity {
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
 
-        imgMic.setOnClickListener(v -> {
+        btnMicetest.setOnClickListener(v -> {
             // 힌트는 액티비티가 살아있는 동안 한 번만 사라지게
             if (!isHintHidden) {
                 tvHint.setVisibility(View.GONE);
@@ -102,7 +104,7 @@ public class MiceTestActivity extends AppCompatActivity {
             @Override
             public void onRmsChanged(float rmsdB) {
                 // 크기 변화: 0.7~1.2배
-                float scale = 0.7f + Math.min(Math.max(rmsdB, 0) / 10f, 0.5f); // 0.7~1.2
+                float scale = 0.7f + Math.min(Math.max(rmsdB, 0) / 10f, 0.5f);
                 float newSize = baseMicSizeDp * scale;
                 if (newSize > maxMicSizeDp) newSize = maxMicSizeDp;
                 animateMicSize(newSize);
@@ -148,7 +150,7 @@ public class MiceTestActivity extends AppCompatActivity {
     private void startListening() {
         isListening = true;
         tvResult.setText("");
-//        imgMic.setImageResource(R.drawable.ic_mic_on); // 활성화 마이크 아이콘
+        imgMic.setImageResource(R.drawable.ic_mic_on);
         animateMicSize(baseMicSizeDp); // 초기 크기
         createSpeechRecognizer(); // 항상 새로 생성
         speechRecognizer.startListening(recognizerIntent);
@@ -164,7 +166,7 @@ public class MiceTestActivity extends AppCompatActivity {
             }
         } catch (Exception ignored) {
         }
-//        imgMic.setImageResource(R.drawable.ic_mic); // 비활성화 마이크 아이콘
+        imgMic.setImageResource(R.drawable.ic_mic); // 비활성화 마이크 아이콘
         animateMicSize(baseMicSizeDp);
         clearSilenceTimer();
         createSpeechRecognizer(); // 다음 녹음을 위해 새 인스턴스 준비
@@ -182,7 +184,6 @@ public class MiceTestActivity extends AppCompatActivity {
     private void resetSilenceTimer() {
         clearSilenceTimer();
         silenceRunnable = () -> {
-            // 2초 무음 시 STT 종료 및 결과 표시
             stopListening();
         };
         silenceHandler.postDelayed(silenceRunnable, 2000);

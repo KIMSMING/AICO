@@ -26,6 +26,8 @@ public class SocialRegisterImpl {
     private static final String FIELD_PHONE = "phone";
     private static final String FIELD_PHOTO_URL = "photoUrl";
     private static final String FIELD_CREATED_AT = "createdAt";
+    private static final String FIELD_LEVEL = "level";
+    private static final String FIELD_EXPERIENCE = "experience";
 
     /**
      * 소셜 회원가입 처리 메서드
@@ -52,6 +54,8 @@ public class SocialRegisterImpl {
         userMap.put(FIELD_PHONE, "");
         userMap.put(FIELD_PHOTO_URL, user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : "");
         userMap.put(FIELD_CREATED_AT, System.currentTimeMillis());
+        userMap.put(FIELD_LEVEL, 1);
+        userMap.put(FIELD_EXPERIENCE, 0);
 
         database.child(uid).setValue(userMap)
                 .addOnSuccessListener(aVoid -> {
