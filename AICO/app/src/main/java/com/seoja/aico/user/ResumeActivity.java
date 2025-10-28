@@ -78,20 +78,20 @@ public class ResumeActivity extends AppCompatActivity {
         ref.setValue(resumeData)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(this, "자기소개서가 제출되었습니다.", Toast.LENGTH_SHORT).show();
-                    requestFirstQuestion(userId); //FastAPI 호출 추가
+                    startInterviewWithResume(userId); //FastAPI 호출 추가
                 })
                 .addOnFailureListener(e -> Toast.makeText(this, "저장 실패 : " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     //FastAPI에 자기소개서 기반 질문 요청
-    private void requestFirstQuestion(String userId) {
+    private void startInterviewWithResume(String userId) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://10.0.2.2:8000/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
         GptApi api = retrofit.create(GptApi.class);
-        Call<GptResponse> call = api.generateResumeQuestion(userId);
+        Call<GptResponse> call = api.matchResumeQuestion(userId);
 
         call.enqueue(new Callback<GptResponse>() {
             @Override

@@ -33,6 +33,7 @@ import com.seoja.aico.reviewBoard.BoardListActivity;
 import com.seoja.aico.reviewBoard.BoardPost;
 import com.seoja.aico.reviewBoard.MainBoardPreviewAdapter;
 import com.seoja.aico.user.LoginActivity;
+import com.seoja.aico.user.ResumeActivity;
 import com.seoja.aico.user.UserViewActivity;
 
 import java.security.MessageDigest;
@@ -94,7 +95,13 @@ public class MainActivity extends AppCompatActivity {
 
         // 퀘스트
         btnQuest.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, FieldActivity.class));
+            try {
+                Intent intent = new Intent(MainActivity.this, ResumeActivity.class);
+                startActivity(intent);
+            } catch (Exception e) {
+                Log.e("MainActivity", "Error while navigating to ResumeActivity: " + e.getMessage());
+                Toast.makeText(MainActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         });
 
         // 후기 게시판

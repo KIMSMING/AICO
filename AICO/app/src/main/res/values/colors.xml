@@ -80,4 +80,7 @@
 
     <!-- 히스토리 관련 색상 -->
     <color name="blue_700">#1D4ED8</color>
+
+    <!-- 이력서 관련 문제 해결용 색상 -->
+    <color name="professional_bg_primary">#FFFFFF</color>
 </resources>

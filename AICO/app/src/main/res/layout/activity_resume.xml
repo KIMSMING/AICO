@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/professional_bg_primary"
+    android:background="#FFFFFF"
     tools:context="user.ResumeActivity">
 
     <LinearLayout
@@ -19,7 +19,7 @@
             android:text="자기소개서 작성"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@color/professional_text_primary"
+            android:textColor="#212121"
             android:layout_marginBottom="16dp"/>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -74,7 +74,6 @@
 
         <Button
             android:id="@+id/btnSubmitResume"
-            style="@style/ProfessionalButtonPrimary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="제출하기"

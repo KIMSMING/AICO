@@ -31,7 +31,7 @@ public interface GptApi {
     @POST("/interview/next") //연관질문 요청
     Call<NextInterviewResponse> nextInterview(@Body NextInterviewRequest request);
 
-    @GET("/generate_resume_question/{user_id}") //이력서 관련 질문 요청
-    Call<GptResponse> generateResumeQuestion(@Path("user_id") String userId);
+    @GET("/match_resume_question/{user_id}") //이력서 관련 질문 요청
+    Call<GptResponse> matchResumeQuestion(@Path("user_id") String userId);
 }
 
