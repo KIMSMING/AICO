@@ -2,6 +2,7 @@ package com.seoja.aico.user;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -77,14 +78,19 @@ public class ResumeActivity extends AppCompatActivity {
         //Firebase 저장
         ref.setValue(resumeData)
                 .addOnSuccessListener(aVoid -> {
+                    Log.d("ResumeActivity", "1. Firebase 저장 성공");
                     Toast.makeText(this, "자기소개서가 제출되었습니다.", Toast.LENGTH_SHORT).show();
                     startInterviewWithResume(userId); //FastAPI 호출 추가
                 })
-                .addOnFailureListener(e -> Toast.makeText(this, "저장 실패 : " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "저장 실패 : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.e("ResumeActivity", "Firebase 저장 실패", e);
+                });
     }
 
     //FastAPI에 자기소개서 기반 질문 요청
     private void startInterviewWithResume(String userId) {
+        Log.d("ResumeActivity", "2. FastAPI 호출 시작");
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://10.0.2.2:8000/")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -92,26 +98,39 @@ public class ResumeActivity extends AppCompatActivity {
 
         GptApi api = retrofit.create(GptApi.class);
         Call<GptResponse> call = api.matchResumeQuestion(userId);
-
         call.enqueue(new Callback<GptResponse>() {
             @Override
             public void onResponse(Call<GptResponse> call, Response<GptResponse> response) {
-                if(response.isSuccessful() && response.body() != null) {
+                if (response.isSuccessful() && response.body() != null) {
                     String firstQuestion = response.body().getContent();
-                    Toast.makeText(ResumeActivity.this, "첫 질문: " + firstQuestion, Toast.LENGTH_SHORT).show();
+                    String matchedCategory = response.body().getMatch();
+                    Log.d("ResumeActivity", "3. FastAPI 응답 성공: " + firstQuestion);
+                    Log.d("ResumeActivity", "4. matchedCategory = " + matchedCategory);
 
-                    //QuestActivity로 이동 + 첫 질문 전달
-                    Intent intent = new Intent(ResumeActivity.this, QuestActivity.class);
-                    intent.putExtra("firstQuestion", firstQuestion);
-                    startActivity(intent);
-                    finish();
+                    //Toast.makeText(ResumeActivity.this, "첫 질문: " + firstQuestion, Toast.LENGTH_SHORT).show();
+
+                    if (matchedCategory != null && matchedCategory.contains("/")) {
+                        String[] parts = matchedCategory.split("/");
+                        String selectedFirst = parts[0].trim();
+                        String selectedSecond = parts[1].trim();
+
+                        //QuestActivity로 이동 + 첫 질문 전달
+                        Intent intent = new Intent(ResumeActivity.this, QuestActivity.class);
+                        intent.putExtra("selectedFirst", selectedFirst);
+                        intent.putExtra("selectedSecond", selectedSecond);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(ResumeActivity.this, "카테고리 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    Toast.makeText(ResumeActivity.this, "질문 생성 실패: " + response.code(), Toast.LENGTH_SHORT).show();
+                    Log.e("ResumeActivity", "FastAPI 응답 실패: " + response.code());
+                    Toast.makeText(ResumeActivity.this, "FastAPI 응답 실패: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
-
             @Override
             public void onFailure(Call<GptResponse> call, Throwable t) {
+                Log.e("ResumeActivity", "FastAPI 호출 실패: ", t);
                 Toast.makeText(ResumeActivity.this, "서버 연결 실패: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
