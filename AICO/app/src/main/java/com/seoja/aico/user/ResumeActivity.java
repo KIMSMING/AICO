@@ -4,9 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,6 +32,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ResumeActivity extends AppCompatActivity {
 
+    private TextView titleTextView;
+    private ImageButton btnBack;
     private TextInputEditText inputJobRole, inputProject, inputStrength, inputWeakness, inputMotivation;
     private Button btnSubmitResume;
 
@@ -43,6 +48,12 @@ public class ResumeActivity extends AppCompatActivity {
         inputWeakness = findViewById(R.id.inputWeakness);
         inputMotivation = findViewById(R.id.inputMotivation);
         btnSubmitResume = findViewById(R.id.btnSubmitResume);
+        titleTextView = findViewById(R.id.header_title);
+        btnBack = findViewById(R.id.btnBack);
+
+        titleTextView.setText("자기소개서 작성");
+
+        btnBack.setOnClickListener(v -> finish());
 
         btnSubmitResume.setOnClickListener(v -> saveResumeToFirebase());
     }
