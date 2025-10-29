@@ -2,10 +2,12 @@ package com.seoja.aico;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -14,6 +16,7 @@ import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -23,7 +26,7 @@ public class OptionActivity extends AppCompatActivity {
     private TextView titleTextView;
     private ImageButton btnBack;
     private SeekBar seekBarVolume;
-    private Switch switchVibration, switchNotification;
+    private Switch switchVibration, switchNotification, switchDarkmode;
     private AudioManager audioManager;
     private SharedPreferences prefs;
 
@@ -47,6 +50,7 @@ public class OptionActivity extends AppCompatActivity {
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         titleTextView = findViewById(R.id.header_title);
 
+
         titleTextView.setText("설정");
 
         int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
@@ -69,6 +73,27 @@ public class OptionActivity extends AppCompatActivity {
         switchVibration.setChecked(vibrationOn);
         switchVibration.setOnCheckedChangeListener((buttonView, isChecked) -> {
             prefs.edit().putBoolean("vibration", isChecked).apply();
+        });
+
+        // 다크모드 ON/OFF
+        switchDarkmode = findViewById(R.id.switchDarkmode);
+        int currentNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+
+        if (currentNightMode == Configuration.UI_MODE_NIGHT_YES) {
+            switchDarkmode.setChecked(true);
+        } else {
+            switchDarkmode.setChecked(false);
+        }
+
+        switchDarkmode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                }
+            }
         });
 
         // 알림 ON/OFF

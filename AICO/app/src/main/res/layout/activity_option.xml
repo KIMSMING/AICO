@@ -111,7 +111,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp" >
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -122,7 +123,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="알림"
+                            android:text="배경"
                             android:textSize="16sp"
                             android:textColor="?attr/colorOnSurface"
                             android:textStyle="bold" />
@@ -138,6 +139,43 @@
 
                     <Switch
                         android:id="@+id/switchNotification"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <!-- 알림 설정 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="다크 모드"
+                            android:textSize="16sp"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="라이트모드 &amp; 다크모드"
+                            android:textSize="12sp"
+                            android:textColor="@color/professional_text_tertiary" />
+
+                    </LinearLayout>
+
+                    <Switch
+                        android:id="@+id/switchDarkmode"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
 
