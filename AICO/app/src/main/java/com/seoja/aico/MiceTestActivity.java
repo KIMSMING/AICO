@@ -3,6 +3,7 @@ package com.seoja.aico;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 
@@ -57,7 +59,10 @@ public class MiceTestActivity extends AppCompatActivity {
         if (!isAudioPermissionGranted()) {
             btnMicetest.setEnabled(false);
             tvHint.setText("마이크 권한이 필요합니다.\n설정에서 권한을 허용해주세요.");
+            tvHint.setTextColor(ContextCompat.getColor(this, R.color.professional_error));
             tvHint.setVisibility(View.VISIBLE);
+            imgMic.setColorFilter(ContextCompat.getColor(this, R.color.professional_error), PorterDuff.Mode.SRC_IN);
+            imgMic.setImageResource(R.drawable.ic_mic_off);
             Toast.makeText(this, "마이크 권한이 없어 음성 테스트를 사용할 수 없습니다.", Toast.LENGTH_LONG).show();
             return;
         }
