@@ -5,11 +5,12 @@ from typing import Optional, List, Dict
 import os
 import uuid
 import time, json
-from firebase_config import db  #Firebase 연동 설정 파일에서 DB import (firebase_config.py에 있어야 함)
+import random
+from firebase_config import db  # Firebase 연동 설정 파일에서 DB import (firebase_config.py에 있어야 함)
 
-#uvicorn main:app --reload
+# uvicorn main:app --reload
 
-#GPT API 키 불러오기
+# GPT API 키 불러오기
 openai_api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=openai_api_key)
 
@@ -19,11 +20,11 @@ router = APIRouter()
 # ==================== 데이터 모델 ====================
 
 class AskRequest(BaseModel):
-    user_id: str       #유저 id
-    message: str       #사용자의 답변 (or 질문)
+    user_id: str       # 유저 id
+    message: str       # 사용자의 답변 (or 질문)
 
 class GptResponse(BaseModel):
-    content: str       #GPT가 반환한 응답
+    content: str       # GPT가 반환한 응답
 
 class HistoryItem(BaseModel):
     user_id: str
@@ -40,7 +41,7 @@ class SummaryResponse(BaseModel):
 
 class DeleteRequest(BaseModel):
     user_id: str
-    history_id: str    #Firebase 내에서 저장된 히스토리 키
+    history_id: str    # Firebase 내에서 저장된 히스토리 키
 
 class StartInterviewRequest(BaseModel):
     user_id: str
@@ -65,10 +66,10 @@ class NextInterviewResponse(BaseModel):
 
 # ==================== 요약 기능 ====================
 
-def summarize_text(text: str, role: str = "내용"):  #GPT에게 텍스트를 간결하게 요약 요청
+def summarize_text(text: str, role: str = "내용"):  # GPT에게 텍스트를 간결하게 요약 요청
     try:
         summary = client.chat.completions.create(
-            model = "gpt-3.5-turbo",    #요약은 비용 적게
+            model = "gpt-3.5-turbo",    # 요약은 비용 적게
             messages = [
                 {"role": "system", "content": f"사용자의 {role}을 문법적으로 올바르고 깔끔하게 100자 이내로 요약해줘. 축약어, 은어, 오타는 피하고, 자연스럽게 다듬어줘"},
                 {"role": "user", "content": text}
@@ -92,7 +93,7 @@ app.include_router(router)
 @app.post("/ask", response_model=GptResponse)
 async def ask_gpt(request: AskRequest):
     try:
-        #GPT에게 피드백 요청
+        # GPT에게 피드백 요청
         chat_completion = client.chat.completions.create(
             model="gpt-4",  # 또는 "gpt-3.5-turbo"
             messages=[
@@ -112,7 +113,7 @@ async def ask_gpt(request: AskRequest):
 @app.post("/save_history")
 def save_history(item: HistoryItem):
     try:
-        #고유한 히스토리 id 생성
+        # 고유한 히스토리 id 생성
         history_id = str(uuid.uuid4())
 
         # 질문/답변/피드백 각각 요약
@@ -121,7 +122,7 @@ def save_history(item: HistoryItem):
         summarized_feedback = summarize_text(item.feedback, role="피드백")
 
 
-        #Firebase에 저장
+        # Firebase에 저장
         ref = db.reference(f'history/{item.user_id}/{history_id}')
         ref.set({
             'question': summarized_question,
@@ -149,7 +150,7 @@ def get_history(user_id: str):
 @app.get("/generate_question/{user_id}", response_model=GptResponse)
 def generate_question(user_id: str):
     try:
-        #이전 질문 불러오기
+        # 이전 질문 불러오기
         ref = db.reference(f'history/{user_id}')
         history = ref.get()
 
@@ -233,7 +234,7 @@ def interview_start(req: StartInterviewRequest):
         "created_at": time.time(),
     }
 
-    #Firebase 세션 메타 저장
+    # Firebase 세션 메타 저장
     ref = db.reference(f"sessions/{req.user_id}/{session_id}")
     ref.set({
         "meta": {
@@ -245,7 +246,7 @@ def interview_start(req: StartInterviewRequest):
     })
 
     first_q = req.seed_question or "가장 자신 있는 프로젝트를 골라 목표와 본인 기여를 설명해 주세요."
-    return {"session_id": session_id, "first_question": first_q}
+    return {"session_id": session_id, "first_question": None}
 
 @app.post("/interview/next", response_model=NextInterviewResponse)
 def interview_next(req: NextInterviewRequest):
@@ -315,12 +316,19 @@ def get_resume(user_id: str):
 
 # ==================== 자기소개서 기반 맞춤 질문 생성 API ====================
 
-@app.get("/generate_resume_question/{user_id}", response_model=GptResponse)
-def generate_resume_question(user_id: str):
+@app.get("/match_resume_question/{user_id}")
+def match_resume_question(user_id: str):
+    """
+    사용자 자기소개서를 기반으로 Firebase의 질문 카테고리 중
+    가장 관련 있는 분야를 자동 선택하고, 그 질문 중 하나를 반환
+    """
     try:
+        print(f"[DEBUG] match_resume_question 호출됨 | user_id: {user_id}")
+
         # Firebase에서 자기소개서 가져오기
-        ref = db.reference(f"resumes/{user_id}")
-        resume = ref.get()
+        ref_resume = db.reference(f"resumes/{user_id}")
+        resume = ref_resume.get()
+        print(f"[DEBUG] resume 데이터: {resume}")
 
         if not resume:
             raise HTTPException(status_code=404, detail="자기소개서 데이터가 없습니다.")
@@ -333,30 +341,85 @@ def generate_resume_question(user_id: str):
             f"약점: {resume.get('weakness', '')}",
             f"지원동기: {resume.get('motivation', '')}"
         ])
+        print(f"🔥 [DEBUG] resume_text 정리 완료:\n{resume_text}")
+
+        # Firebase의 질문 카테고리 전체 불러오기
+        ref_questions = db.reference("면접질문/직업질문")
+        all_categories = ref_questions.get()
+        print(f"🔥 [DEBUG] 질문 카테고리 데이터: {all_categories}")
+
+        if not all_categories:
+            raise HTTPException(status_code=404, detail="면접질문 데이터가 없습니다.")
+        
+        # 대분류/소분류 목록을 문자열로 나열
+        categories_list = []
+        for big_cat, subcats in all_categories.items():
+            if subcats:
+                for small_cat in subcats.keys():
+                    categories_list.append(f"{big_cat} / {small_cat}")
+        categories_text = "\n".join(categories_list)
+        print(f"🔥 [DEBUG] categories_text:\n{categories_text}")
 
 
+        # GPT에게 가장 적합한 분야 매칭 요청
         prompt = f"""
     다음은 사용자의 자기소개서 내용입니다:
     {resume_text}
 
-    이 내용을 바탕으로 면접관이 할 수 있는 구체적이고 인성+직무 관련 1차 질문을 1개 생성해줘.
-    단, 질문만 출력하고 불필요한 설명은 하지 마.
-    """
+    아래는 면접 질문 카테고리 목록입니다:
+    {categories_text}
 
-        #GPT 호출
+    이 자기소개서에 가장 어울리는 카테고리 1개를 골라라.
+    형식은 반드시 '대분류 / 소분류'로만 출력해라.
+            """
+        
+        print("🔥 [DEBUG] GPT 요청 시작")
+
+        # GPT 호출
         chat = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": "너는 채용 면접관이야. 지원자의 자기소개서를 보고 첫 질문을 만든다."},
+                {"role": "system", "content": "너는 면접관이다. 자기소개서 내용을 읽고 가장 관련된 질문 카테고리를 판단한다."},
                 {"role": "user", "content": prompt}
             ],
-            max_tokens=150,
-            temperature=0.7
+            max_tokens=100,
+            temperature=0.3
         )
 
-        question = chat.choices[0].message.content.strip()
-        # 결과 반환
-        return {"content": question}
+        match = chat.choices[0].message.content.strip()
+        print(f"🔥 [DEBUG] GPT 응답: {match}")
+
+        if "/" not in match:
+            raise HTTPException(status_code=500, detail=f"GPT 응답이 잘못되었습니다: {match}")
+        
+        big_cat, small_cat = [x.strip() for x in match.split("/")]
+
+        # Firebase에서 해당 카테고리 질문 가져오기
+        matched_ref = db.reference(f"면접질문/직업질문/{big_cat}/{small_cat}")
+        questions = matched_ref.get()
+        print(f"🔥 [DEBUG] 매칭된 카테고리 질문: {questions}")
+
+        if not questions:
+            raise HTTPException(status_code=404, detail=f"{match} 카테고리 질문이 없습니다.")
+        
+
+        # 리스트/딕셔너리 구분 처리
+        if isinstance(questions, list):
+            question_list = questions
+        elif isinstance(questions, dict):
+            question_list = list(questions.values())
+        else:
+            raise HTTPException(status_code=500, detail=f"알 수 없는 질문 데이터 형식: {type(questions)}")
+
+        selected_question = random.choice(question_list)
+        print(f"🔥 [DEBUG] 최종 선택된 질문: {selected_question}")
+
+        return {"content": selected_question,
+                "match": match
+        }
     
     except Exception as e:
+        import traceback
+        print("🔥 [ERROR] 예외 발생:")
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"질문 생성 실패: {str(e)}")
