@@ -103,7 +103,7 @@ public class ResumeActivity extends AppCompatActivity {
     private void startInterviewWithResume(String userId) {
         Log.d("ResumeActivity", "2. FastAPI 호출 시작");
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:8000/")
+                .baseUrl("http://172.20.10.4:8000/") // 핫스팟 주소
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
