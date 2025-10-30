@@ -32,7 +32,10 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputJobRole"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:nextFocusDown="@id/inputProject" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -51,9 +54,11 @@
                 android:id="@+id/inputProject"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textMultiLine"
+                android:gravity="top|start"
+                android:imeOptions="actionNext"
+                android:inputType="text"
                 android:minLines="3"
-                android:gravity="top|start"/>
+                android:nextFocusDown="@id/inputStrength" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -71,7 +76,10 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputStrength"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:nextFocusDown="@id/inputWeakness" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -89,7 +97,10 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputWeakness"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:nextFocusDown="@id/inputMotivation" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -108,9 +119,10 @@
                 android:id="@+id/inputMotivation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textMultiLine"
-                android:minLines="3"
-                android:gravity="top|start"/>
+                android:gravity="top|start"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:minLines="3" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
@@ -130,7 +142,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/inputMotivationLayout"
-            app:layout_constraintVertical_bias="0.0" /> <!-- 버튼을 마지막 입력창 바로 다음에 오도록 설정 -->
+            app:layout_constraintVertical_bias="0.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

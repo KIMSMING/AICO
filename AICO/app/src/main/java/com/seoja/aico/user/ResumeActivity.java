@@ -139,6 +139,7 @@ public class ResumeActivity extends AppCompatActivity {
                     Toast.makeText(ResumeActivity.this, "FastAPI 응답 실패: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
+
             @Override
             public void onFailure(Call<GptResponse> call, Throwable t) {
                 Log.e("ResumeActivity", "FastAPI 호출 실패: ", t);
