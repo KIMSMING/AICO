@@ -16,24 +16,24 @@ import org.springframework.core.io.ClassPathResource;
 @Configuration
 public class FirebaseConfig {
 
-    private static final Logger log = LoggerFactory.getLogger(FirebaseConfig.class);
-
     @PostConstruct
     public void init() {
         try {
-            // ✅ Firebase 앱 목록을 확인하여 비어있을 경우에만 초기화 진행
             if (FirebaseApp.getApps().isEmpty()) {
-                InputStream serviceAccount = new ClassPathResource("stt-service.json").getInputStream();
+                InputStream serviceAccount =
+                        new ClassPathResource("serviceAccountKey.json").getInputStream();
 
                 FirebaseOptions options = FirebaseOptions.builder()
                         .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                        .setDatabaseUrl("https://aico-1853c-default-rtdb.firebaseio.com") // DB URL 확인
                         .build();
 
                 FirebaseApp.initializeApp(options);
-                log.info("Firebase application has been initialized.");
+                System.out.println("Firebase initialized!");
             }
         } catch (IOException e) {
-            log.error("Error initializing Firebase.", e);
+            e.printStackTrace();
         }
     }
 }
+
