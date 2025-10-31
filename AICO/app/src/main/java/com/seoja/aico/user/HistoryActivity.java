@@ -37,7 +37,7 @@ public class HistoryActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerHistory);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new HistoryAdapter(historyList);
+        adapter = new HistoryAdapter(this, historyList);
         titleTextView = findViewById(R.id.header_title);
         btnBack = findViewById(R.id.btnBack);
 

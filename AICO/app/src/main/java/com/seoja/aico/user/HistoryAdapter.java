@@ -1,5 +1,6 @@
 package com.seoja.aico.user;
 
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,7 +41,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
     private List<HistoryItem> historyList;
     private GptApi api;
 
-    public HistoryAdapter(List<HistoryItem> historyList) {
+    public HistoryAdapter(Context context, List<HistoryItem> historyList) {
         this.historyList = historyList;
 
         // Retrofit 설정
@@ -55,8 +56,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .create();
 
+        String baseUrl = context.getString(R.string.py_server_url);
+
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(String.valueOf(R.string.py_server_url))
+                .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(client)
                 .build();
