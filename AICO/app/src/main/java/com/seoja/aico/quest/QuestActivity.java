@@ -96,8 +96,8 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class QuestActivity extends AppCompatActivity implements View.OnClickListener {
 
-        public static final String BASE_URL = "http://172.31.21.146:8000/"; // 본인 컴퓨터
-    //public static final String BASE_URL = "http://172.20.10.4:8000/"; // 핫스팟 주소
+//        public static final String BASE_URL = "http://172.31.21.146:8000/"; // 본인 컴퓨터
+    public static final String BASE_URL = "http://172.20.10.4:8000/"; // 핫스팟 주소
 
     private static final String TAG = "QuestActivity";
     private static final int PERMISSION_REQUEST_CODE = 1001;

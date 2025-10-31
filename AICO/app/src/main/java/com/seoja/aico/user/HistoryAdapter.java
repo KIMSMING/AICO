@@ -54,7 +54,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
                 .create();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:8000/") // 주소는 환경에 맞게 수정
+                .baseUrl("http://172.20.10.4:8000/") // 주소는 환경에 맞게 수정
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(client)
                 .build();
