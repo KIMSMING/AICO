@@ -96,8 +96,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class QuestActivity extends AppCompatActivity implements View.OnClickListener {
 
-//        public static final String BASE_URL = "http://172.31.21.146:8000/"; // 본인 컴퓨터
-    public static final String BASE_URL = "http://172.20.10.4:8000/"; // 핫스팟 주소
+    // 서버주소(values/strings.xml, py_server_url) 이거사용 -> getString(R.string.py_server_url);
 
     private static final String TAG = "QuestActivity";
     private static final int PERMISSION_REQUEST_CODE = 1001;
@@ -292,7 +291,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                 .create();
 
         retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(getString(R.string.py_server_url))
                 .addConverterFactory(ScalarsConverterFactory.create()) // for STT (String response)
                 .addConverterFactory(GsonConverterFactory.create(gson)) // for GPT (JSON response)
                 .client(client)
@@ -893,7 +892,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private JSONObject analyzeWithServer(String analysisType, File videoFile, File audioFile, String transcribedText) throws Exception {
-        URL url = new URL(BASE_URL + "analyze_video");
+        URL url = new URL(getString(R.string.py_server_url) + "analyze_video");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setDoOutput(true);
@@ -1135,7 +1134,7 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     private void sendTextToServer(String questionText) {
         new Thread(() -> {
             try {
-                URL url = new URL(BASE_URL + "interview/voice");
+                URL url = new URL(getString(R.string.py_server_url) + "interview/voice");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
                 conn.setRequestProperty("Content-Type", "application/json; utf-8");

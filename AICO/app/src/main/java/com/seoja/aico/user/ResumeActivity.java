@@ -33,6 +33,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ResumeActivity extends AppCompatActivity {
 
+    // 서버주소(values/strings.xml, py_server_url) 이거사용 -> getString(R.string.py_server_url);
+
     private TextView titleTextView;
     private ImageButton btnBack;
     private TextInputEditText inputJobRole, inputProject, inputStrength, inputWeakness, inputMotivation;
@@ -138,7 +140,7 @@ public class ResumeActivity extends AppCompatActivity {
     private void startInterviewWithResume(String userId) {
         Log.d("ResumeActivity", "2. FastAPI 호출 시작");
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://172.20.10.4:8000/") // 핫스팟 주소
+                .baseUrl(getString(R.string.py_server_url))
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 

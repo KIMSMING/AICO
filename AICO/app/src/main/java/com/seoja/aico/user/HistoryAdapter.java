@@ -35,6 +35,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder> {
 
+    // 서버주소(values/strings.xml, py_server_url) 이거사용 -> getString(R.string.py_server_url);
+
     private List<HistoryItem> historyList;
     private GptApi api;
 
@@ -54,7 +56,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
                 .create();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://172.20.10.4:8000/") // 주소는 환경에 맞게 수정
+                .baseUrl(String.valueOf(R.string.py_server_url))
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(client)
                 .build();

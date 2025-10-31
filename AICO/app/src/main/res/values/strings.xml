@@ -21,6 +21,14 @@
     <string name="default_web_client_id">148432991298-tbjqhjmalf8b10ukeoor6gpb1bfg82io.apps.googleusercontent.com</string>
     <string name="title_activity_reset_password">ResetPasswordActivity</string>
 
+    <!-- 김민준 ip -->
     <!--    <string name="server_url" translatable="false">146.56.98.69:8081</string>-->
     <string name="server_url" translatable="false">172.31.51.0:8081</string>
+    <!--    <string name="py_server_url" translatable="false">:http//172.31.51.0:8000/</string>-->
+
+    <!-- 강준서 ip -->
+    <!--    <string name="py_server_url" translatable="false">http://172.31.21.146:8000/</string>-->
+
+    <!-- 김성민 하스팟 ip -->
+    <string name="py_server_url" translatable="false">http://172.20.10.4:8000/</string>
 </resources>
