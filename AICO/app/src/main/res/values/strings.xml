@@ -24,7 +24,7 @@
     <!-- 김민준 ip -->
     <!--    <string name="server_url" translatable="false">146.56.98.69:8081</string>-->
     <string name="server_url" translatable="false">172.31.51.0:8081</string>
-    <!--    <string name="py_server_url" translatable="false">:http//172.31.51.0:8000/</string>-->
+<!--    <string name="py_server_url" translatable="false">http://172.31.51.0:8000/</string>-->
 
     <!-- 강준서 ip -->
     <!--    <string name="py_server_url" translatable="false">http://172.31.21.146:8000/</string>-->
