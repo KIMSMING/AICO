@@ -117,26 +117,28 @@
                 android:gravity="end"
                 android:layout_marginTop="24dp">
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnEdit"
+                    style="?attr/materialButtonOutlinedStyle"
                     android:layout_width="wrap_content"
-                    android:layout_height="54dp"
+                    android:layout_height="wrap_content"
                     android:text="수정"
                     android:visibility="gone"
                     android:textSize="16sp"
-                    android:textColor="#FFFFFF"
-                    android:backgroundTint="#4CAF50"
-                    android:layout_marginEnd="8dp"/>
+                    android:layout_marginEnd="8dp"
+                    app:strokeColor="@color/professional_success"
+                    android:textColor="@color/professional_success"/>
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnDelete"
+                    style="?attr/materialButtonOutlinedStyle"
                     android:layout_width="wrap_content"
-                    android:layout_height="54dp"
+                    android:layout_height="wrap_content"
                     android:text="삭제"
                     android:visibility="gone"
                     android:textSize="16sp"
-                    android:textColor="#FFFFFF"
-                    android:backgroundTint="#F44336"/>
+                    app:strokeColor="@color/professional_error"
+                    android:textColor="@color/professional_error"/>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

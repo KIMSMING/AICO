@@ -6,13 +6,10 @@
 
     <title th:text="|${nickname}님의 히스토리|">히스토리 상세</title>
 
-    <link rel="icon" href="/images/ic_launcher.png" type="image/png">
-
     <meta property="og:title" content="AICO 면접 히스토리">
 
     <meta property="og:description" th:content="${question}">
 
-    <meta property="og:image" content=" https://irrelevantly-unirrupted-joaquina.ngrok-free.dev/images/ic_launcher.png">
     <style>
         body {
             margin: 0;
@@ -57,7 +54,7 @@
             height: 48px;
             border-radius: 50%;
             background-color: #E0E0E0;
-            object-fit: cover; /* 이미지 비율 유지하며 채우기 */
+            object-fit: cover;
         }
 
         .profile-section .username {
@@ -115,8 +112,11 @@
 <div th:unless="${error}" class="container">
 
     <div class="profile-section">
-        <img class="profile-image"
-             th:src="${photoUrl != null ? photoUrl : 'https://via.placeholder.com/48'}" alt="프로필 사진" />
+
+        <img th:if="${!#strings.isEmpty(photoUrl)}" class="profile-image"
+             th:src="${photoUrl}" alt="프로필 사진" />
+        <img th:unless="${!#strings.isEmpty(photoUrl)}" class="profile-image"
+             th:src="@{/images/ic_person.png}" alt="프로필 사진" />
         <p class="username" th:text="${nickname}">사용자 이름</p>
     </div>
 
