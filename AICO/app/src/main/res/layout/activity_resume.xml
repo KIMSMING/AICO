@@ -123,22 +123,22 @@
                 android:imeOptions="actionDone"
                 android:inputType="text"
                 android:minLines="3" />
+
+            <Button
+                android:id="@+id/btnSaveResume"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="제출하기"
+                android:layout_marginTop="20dp"/>
+
+            <Button
+                android:id="@+id/btnLoadResume"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="불러오기"
+                android:layout_marginTop="8dp" />
+
         </com.google.android.material.textfield.TextInputLayout>
-
-        <Button
-            android:id="@+id/btnSaveResume"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="제출하기"
-            android:layout_marginTop="20dp"/>
-
-        <Button
-            android:id="@+id/btnLoadResume"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="불러오기"
-            android:layout_marginTop="8dp" />
-    </LinearLayout>
-
+        
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

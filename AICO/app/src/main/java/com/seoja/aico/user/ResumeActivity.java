@@ -50,7 +50,6 @@ public class ResumeActivity extends AppCompatActivity {
         inputMotivation = findViewById(R.id.inputMotivation);
         btnSaveResume = findViewById(R.id.btnSaveResume);
         btnLoadResume = findViewById(R.id.btnLoadResume);
-        btnSubmitResume = findViewById(R.id.btnSubmitResume);
         titleTextView = findViewById(R.id.header_title);
         btnBack = findViewById(R.id.btnBack);
 
