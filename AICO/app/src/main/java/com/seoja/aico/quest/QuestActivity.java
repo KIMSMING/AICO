@@ -96,8 +96,8 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class QuestActivity extends AppCompatActivity implements View.OnClickListener {
 
-    //    public static final String BASE_URL = "http://192.168.56.1:8000/"; // 본인 컴퓨터
-    public static final String BASE_URL = "http://172.20.10.4:8000/"; // 핫스팟 주소
+        public static final String BASE_URL = "http://172.31.21.146:8000/"; // 본인 컴퓨터
+    //public static final String BASE_URL = "http://172.20.10.4:8000/"; // 핫스팟 주소
 
     private static final String TAG = "QuestActivity";
     private static final int PERMISSION_REQUEST_CODE = 1001;
@@ -451,7 +451,11 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
     private void fetchJobQuestion() {
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference("면접질문");
         DatabaseReference rootRef2 = FirebaseDatabase.getInstance().getReference("면접팁");
-        final int[] loadCounter = {2};
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference customRef = FirebaseDatabase.getInstance().getReference("users")
+                .child(user.getUid())
+                .child("custom_questions");
+        final int[] loadCounter = {3};
 
         ValueEventListener completionListener = new ValueEventListener() {
             @Override
@@ -502,6 +506,35 @@ public class QuestActivity extends AppCompatActivity implements View.OnClickList
                 tipList.clear();
                 for (DataSnapshot tipSnap : snapshot.getChildren())
                     tipList.add(tipSnap.getValue(String.class));
+                completionListener.onDataChange(snapshot);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                completionListener.onCancelled(error);
+            }
+        });
+
+        // 사용자 커스텀 질문 로드
+        customRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<String> customQuestions = new ArrayList<>();
+                for (DataSnapshot q : snapshot.getChildren()) {
+                    String question = q.getValue(String.class);
+                    if (question != null && !question.trim().isEmpty()) {
+                        customQuestions.add(question);
+                    }
+                }
+
+                if (!customQuestions.isEmpty()) {
+                    // 커스텀 질문을 questionList 맨 앞에 추가
+                    Collections.shuffle(customQuestions); // 사용자 질문 여러개면 랜덤
+                    questionList.addAll(0, customQuestions);
+                    Log.d(TAG, "사용자 커스텀 질문 로드 완료: " + customQuestions.size() + "개");
+                } else {
+                    Log.d(TAG, "커스텀 질문 없음");
+                }
                 completionListener.onDataChange(snapshot);
             }
 
