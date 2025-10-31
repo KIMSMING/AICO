@@ -73,11 +73,18 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
-            android:id="@+id/btnSubmitResume"
+            android:id="@+id/btnSaveResume"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="제출하기"
             android:layout_marginTop="20dp"/>
+
+        <Button
+            android:id="@+id/btnLoadResume"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="불러오기"
+            android:layout_marginTop="8dp" />
     </LinearLayout>
 
 </ScrollView>

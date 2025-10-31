@@ -1,5 +1,8 @@
 package com.seoja.aico.gpt;
 
+import com.seoja.aico.user.ResumeRequest;
+import com.seoja.aico.user.ResumeResponse;
+
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -33,5 +36,11 @@ public interface GptApi {
 
     @GET("/match_resume_question/{user_id}") //이력서 관련 질문 요청
     Call<GptResponse> matchResumeQuestion(@Path("user_id") String userId);
+
+    @GET("/get_resume/{user_id}")
+    Call<ResumeResponse> getResume(@Path("user_id") String userId);
+
+    @POST("/save_resume")
+    Call<Void> saveResume(@Body ResumeRequest request);
 }
 
