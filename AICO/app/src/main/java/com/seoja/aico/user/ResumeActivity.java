@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.seoja.aico.R;
+import com.seoja.aico.gpt.ApiClient;
 import com.seoja.aico.gpt.GptApi;
 import com.seoja.aico.gpt.GptResponse;
 import com.seoja.aico.quest.QuestActivity;
@@ -35,7 +36,7 @@ public class ResumeActivity extends AppCompatActivity {
     private TextView titleTextView;
     private ImageButton btnBack;
     private TextInputEditText inputJobRole, inputProject, inputStrength, inputWeakness, inputMotivation;
-    private Button btnSubmitResume;
+    private Button btnSaveResume, btnLoadResume;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +48,8 @@ public class ResumeActivity extends AppCompatActivity {
         inputStrength = findViewById(R.id.inputStrength);
         inputWeakness = findViewById(R.id.inputWeakness);
         inputMotivation = findViewById(R.id.inputMotivation);
+        btnSaveResume = findViewById(R.id.btnSaveResume);
+        btnLoadResume = findViewById(R.id.btnLoadResume);
         btnSubmitResume = findViewById(R.id.btnSubmitResume);
         titleTextView = findViewById(R.id.header_title);
         btnBack = findViewById(R.id.btnBack);
@@ -55,7 +58,10 @@ public class ResumeActivity extends AppCompatActivity {
 
         btnBack.setOnClickListener(v -> finish());
 
-        btnSubmitResume.setOnClickListener(v -> saveResumeToFirebase());
+        btnSaveResume.setOnClickListener(v -> saveResumeToFirebase());
+        btnLoadResume.setOnClickListener(v -> loadSavedResume());
+
+        loadSavedResume();
     }
 
     private void saveResumeToFirebase() {
@@ -97,6 +103,36 @@ public class ResumeActivity extends AppCompatActivity {
                     Toast.makeText(this, "저장 실패 : " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     Log.e("ResumeActivity", "Firebase 저장 실패", e);
                 });
+    }
+
+    private void loadSavedResume() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) return;
+
+        String userId = user.getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance()
+                .getReference("resumes")
+                .child(userId);
+
+        ref.get().addOnSuccessListener(snapshot -> {
+            if (snapshot.exists()) {
+                String jobRole = snapshot.child("job_role").getValue(String.class);
+                String project = snapshot.child("project_experience").getValue(String.class);
+                String strength = snapshot.child("strength").getValue(String.class);
+                String weakness = snapshot.child("weakness").getValue(String.class);
+                String motivation = snapshot.child("motivation").getValue(String.class);
+
+                inputJobRole.setText(jobRole != null ? jobRole : "");
+                inputProject.setText(project != null ? project : "");
+                inputStrength.setText(strength != null ? strength : "");
+                inputWeakness.setText(weakness != null ? weakness : "");
+                inputMotivation.setText(motivation != null ? motivation : "");
+
+                Toast.makeText(this, "이전에 작성한 자기소개서를 불러왔습니다.", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(e -> {
+            Log.e("ResumeActivity", "자기소개서 불러오기 실패: " + e.getMessage());
+        });
     }
 
     //FastAPI에 자기소개서 기반 질문 요청
