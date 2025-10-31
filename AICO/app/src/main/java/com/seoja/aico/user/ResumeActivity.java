@@ -2,6 +2,8 @@ package com.seoja.aico.user;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -37,8 +39,10 @@ public class ResumeActivity extends AppCompatActivity {
 
     private TextView titleTextView;
     private ImageButton btnBack;
+
+    private TextWatcher resumeTextWatcher;
     private TextInputEditText inputJobRole, inputProject, inputStrength, inputWeakness, inputMotivation;
-    private Button btnSaveResume, btnLoadResume;
+    private Button btnSaveResume, btnReset;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,18 +55,29 @@ public class ResumeActivity extends AppCompatActivity {
         inputWeakness = findViewById(R.id.inputWeakness);
         inputMotivation = findViewById(R.id.inputMotivation);
         btnSaveResume = findViewById(R.id.btnSaveResume);
-        btnLoadResume = findViewById(R.id.btnLoadResume);
+        btnReset = findViewById(R.id.btnReset);
         titleTextView = findViewById(R.id.header_title);
         btnBack = findViewById(R.id.btnBack);
+
+        initTextWatcher();
+        inputJobRole.addTextChangedListener(resumeTextWatcher);
+        inputProject.addTextChangedListener(resumeTextWatcher);
+        inputStrength.addTextChangedListener(resumeTextWatcher);
+        inputWeakness.addTextChangedListener(resumeTextWatcher);
+        inputMotivation.addTextChangedListener(resumeTextWatcher);
 
         titleTextView.setText("자기소개서 작성");
 
         btnBack.setOnClickListener(v -> finish());
 
         btnSaveResume.setOnClickListener(v -> saveResumeToFirebase());
-        btnLoadResume.setOnClickListener(v -> loadSavedResume());
+        btnReset.setOnClickListener(v -> clearInputFields());
+
+        btnSaveResume.setEnabled(false);
+        btnReset.setEnabled(false);
 
         loadSavedResume();
+
     }
 
     private void saveResumeToFirebase() {
@@ -106,9 +121,59 @@ public class ResumeActivity extends AppCompatActivity {
                 });
     }
 
+    private void initTextWatcher() {
+        resumeTextWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // 아무것도 안 함
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // 아무것도 안 함
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // 텍스트가 변경된 후, 버튼 상태를 업데이트합니다.
+                updateButtonStates();
+            }
+        };
+    }
+
+    private void updateButtonStates() {
+        String jobRole = inputJobRole.getText().toString().trim();
+        String project = inputProject.getText().toString().trim();
+        String strength = inputStrength.getText().toString().trim();
+        String weakness = inputWeakness.getText().toString().trim();
+        String motivation = inputMotivation.getText().toString().trim();
+
+        // 모든 필드가 비어있으면 true
+        boolean allEmpty = jobRole.isEmpty() && project.isEmpty() && strength.isEmpty() &&
+                weakness.isEmpty() && motivation.isEmpty();
+
+        btnReset.setEnabled(!allEmpty);
+
+        boolean allFieldsFilled = !jobRole.isEmpty() && !project.isEmpty() && !strength.isEmpty() &&
+                !weakness.isEmpty() && !motivation.isEmpty();
+
+        btnSaveResume.setEnabled(allFieldsFilled);
+    }
+
+    private void clearInputFields() {
+        inputJobRole.setText(null);
+        inputProject.setText(null);
+        inputStrength.setText(null);
+        inputWeakness.setText(null);
+        inputMotivation.setText(null);
+    }
+
     private void loadSavedResume() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) return;
+        if (user == null) {
+            updateButtonStates();
+            return;
+        }
 
         String userId = user.getUid();
         DatabaseReference ref = FirebaseDatabase.getInstance()
@@ -128,11 +193,11 @@ public class ResumeActivity extends AppCompatActivity {
                 inputStrength.setText(strength != null ? strength : "");
                 inputWeakness.setText(weakness != null ? weakness : "");
                 inputMotivation.setText(motivation != null ? motivation : "");
-
-                Toast.makeText(this, "이전에 작성한 자기소개서를 불러왔습니다.", Toast.LENGTH_SHORT).show();
             }
+            updateButtonStates();
         }).addOnFailureListener(e -> {
             Log.e("ResumeActivity", "자기소개서 불러오기 실패: " + e.getMessage());
+            updateButtonStates();
         });
     }
 
