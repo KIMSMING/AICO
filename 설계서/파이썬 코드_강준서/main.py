@@ -1207,10 +1207,24 @@ def interview_next(req: NextInterviewRequest):
     }
     sess["turns"].append(turn)
 
+    #Firebase 저장
     if firebase_initialized:
         try:
+            #세션별 턴 저장
             ref = db.reference(f"sessions/{req.user_id}/{req.session_id}/turns")
             ref.push(turn)
+            logger.info(f"세션 턴 저장 완료: user={req.user_id}, session={req.session_id}")
+
+            #히스토리 저장
+            history_id = str(uuid.uuid4())
+            ref_history = db.reference(f"history/{req.user_id}/{history_id}")
+            ref_history.set({
+                "question": req.last_question,
+                "answer": req.user_answer,
+                "feedback": data.get("feedback", ""),
+            })
+            logger.info(f"✅ 히스토리 저장 완료: {history_id}")
+
         except Exception as e:
             logger.warning(f"Firebase 턴 저장 실패: {str(e)}")
 
