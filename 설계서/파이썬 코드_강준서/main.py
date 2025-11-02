@@ -440,35 +440,36 @@ class EnhancedInterviewAnalyzer:
             return self._get_default_text_analysis()
     
     def _calculate_intro_scores(self, video_analysis: Dict, audio_analysis: Dict, text_analysis: Dict) -> Dict[str, float]:
-        """자기소개 점수 계산"""
+        """자기소개 점수 계산 """
         confidence_expression = (
-            video_analysis['eye_contact_rate'] * 50 +
-            video_analysis['posture_score'] * 0.35 +
-            audio_analysis['fluency_score'] * 0.15
-        ) - video_analysis.get('movement_penalty', 0)
+            video_analysis['eye_contact_rate'] * 60 +
+            video_analysis['posture_score'] * 0.40 +
+            audio_analysis['fluency_score'] * 0.20
+        ) - video_analysis.get('movement_penalty', 0) * 0.5 + 10
         
         voice_tone = (
-            audio_analysis['tone_consistency'] * 0.55 +
-            audio_analysis['structure_score'] * 0.35 +
+            audio_analysis['tone_consistency'] * 0.60 +
+            audio_analysis['structure_score'] * 0.30 +
             audio_analysis['fluency_score'] * 0.10
-        )
+        ) + 8
         
         content_structure = (
-            text_analysis['structure_score'] * 0.5 +
-            text_analysis['content_score'] * 0.3 +
-            text_analysis['keyword_match'] * 0.2
-        )
+            text_analysis['structure_score'] * 0.50 +
+            text_analysis['content_score'] * 0.35 +
+            text_analysis['keyword_match'] * 0.15
+        ) + 12
         
         posture_expression = (
-            video_analysis['posture_score'] * 0.4 +
-            video_analysis['posture_stability'] * 0.3 +
-            video_analysis['face_detection_rate'] * 30
-        )
+            video_analysis['posture_score'] * 0.45 +
+            video_analysis['posture_stability'] * 0.35 +
+            video_analysis['face_detection_rate'] * 35
+        ) + 10
         
-        confidence_expression = max(20, min(95, confidence_expression))
-        voice_tone = max(30, min(92, voice_tone))
-        content_structure = max(25, min(95, content_structure))
-        posture_expression = max(30, min(95, posture_expression))
+        # 최소/최대값 조정 (더 관대하게)
+        confidence_expression = max(55, min(95, confidence_expression))
+        voice_tone = max(60, min(95, voice_tone))
+        content_structure = max(58, min(95, content_structure))
+        posture_expression = max(62, min(95, posture_expression))
         
         weights = self.intro_config['weights']
         total_score = (
@@ -1207,24 +1208,10 @@ def interview_next(req: NextInterviewRequest):
     }
     sess["turns"].append(turn)
 
-    #Firebase 저장
     if firebase_initialized:
         try:
-            #세션별 턴 저장
             ref = db.reference(f"sessions/{req.user_id}/{req.session_id}/turns")
             ref.push(turn)
-            logger.info(f"세션 턴 저장 완료: user={req.user_id}, session={req.session_id}")
-
-            #히스토리 저장
-            history_id = str(uuid.uuid4())
-            ref_history = db.reference(f"history/{req.user_id}/{history_id}")
-            ref_history.set({
-                "question": req.last_question,
-                "answer": req.user_answer,
-                "feedback": data.get("feedback", ""),
-            })
-            logger.info(f"✅ 히스토리 저장 완료: {history_id}")
-
         except Exception as e:
             logger.warning(f"Firebase 턴 저장 실패: {str(e)}")
 
@@ -1419,7 +1406,32 @@ def match_resume_question(user_id: str, retry: int = 0):
             "match": "일반 / 기본질문",
             "note": f"오류 발생: {str(e)}"
         }
+# ==================== 자기소개서 저장 API ====================
 
+@app.post("/save_resume")
+def save_resume(request: dict):
+    """
+    사용자 자기소개서를 Firebase에 저장 또는 갱신하는 API
+    """
+    try:
+        user_id = request.get("user_id")
+        if not user_id:
+            raise HTTPException(status_code=400, detail="user_id가 없습니다.")
+
+        ref = db.reference(f"resumes/{user_id}")
+        ref.update({
+            "job_role": request.get("job_role", ""),
+            "project_experience": request.get("project_experience", ""),
+            "strength": request.get("strength", ""),
+            "weakness": request.get("weakness", ""),
+            "motivation": request.get("motivation", ""),
+            "updated_at": time.time()
+        })
+
+        return {"status": "success", "message": "자기소개서 저장 완료"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"저장 실패: {str(e)}")
+    
 # ==================== 404 에러 핸들러 ====================
 
 @app.exception_handler(404)
